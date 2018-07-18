@@ -1,0 +1,144 @@
+.block-apsolu-courses-h3 {
+    background-color: #434241;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    color: #f39c12;
+    font-size: 1.1em;
+    padding: .5em;
+}
+
+.block-apsolu-activities-box-div {
+    border: 1px solid #333333;
+    padding: .5em;
+}
+
+.block-apsolu-activities-box-div:hover {
+    background-color: #eeeeee;
+}
+
+.block-apsolu-activities-time-p,
+.block-apsolu-activities-contacts-ul {
+    float: right;
+    margin-right: 1em;
+}
+
+ul.block-apsolu-activities-contacts-ul {
+    margin-left: .5em;
+}
+
+.block .list li.block-apsolu-activities-contacts-email-li {
+    background-image: url('[[pix:core|t/email]]');
+    background-position: left center;
+    background-repeat: no-repeat;
+    padding-left: 1em;
+}
+
+#block-apsolu-courses-unallowed-enrolments {
+    line-height: 1em;
+}
+
+#block-apsolu-courses-unallowed-enrolments-h3 {
+    font-weight: bold;
+    margin-top: 0;
+}
+
+#block-apsolu-courses-unallowed-enrolments-list {
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+.block-apsolu-courses-warning {
+    background-image: url('[[pix:core|i/risk_xss]]');
+    background-position: left center;
+    background-repeat: no-repeat;
+    padding-left: 1.5em;
+}
+
+#apsolu-courses-list-ul .apsolu-courses-items-li {
+    margin: .5em;
+    padding: 1em;
+}
+
+
+
+.block-apsolu-teachers .apsolu-block-mark {
+    background-color: #008a0c;
+    border: 1px solid #333333;
+    border-radius: .5em;
+    color: #ffffff;
+    display: block;
+    font-size: .9em;
+    font-weight: bold;
+    height: 2em;
+    letter-spacing: .2em;
+    line-height: 1.7em;
+    text-align: center;
+}
+
+.block-apsolu-teachers .apsolu-block-mark a {
+    color: #ffffff;
+    display: block;
+}
+
+#apsolu-courses-list-ul {
+    margin: 0 20px;
+}
+
+.block-apsolu-teachers .apsolu-courses-items-li {
+    padding: .5em 0;
+}
+
+.block-apsolu-teachers .apsolu-courses-items-li:nth-child(n+2) {
+    border-top: .1em solid #333333;
+}
+
+#apsolu-courses-list-pix-ul {
+    display: inline-block;
+    margin-left: .5em;
+}
+
+#apsolu-courses-list-pix-ul li {
+    padding-right: .25em;
+}
+
+#apsolu-courses-list-pix-ul li:last-child {
+    padding-right: 0;
+}
+
+#apsolu-courses-list-pix-ul li a {
+    padding: 0 .25em;
+}
+
+#apsolu-courses-list-pix-ul img {
+    border: 1px outset;
+    padding: .2em;
+    width: 1.2em;
+}
+
+#page-blocks-apsolu_teachers-students form select#userid {
+    max-width: 500px;
+}
+
+#apsolu-courses-search-students,
+#apsolu-courses-search-ffsu,
+#apsolu-courses-search-shnu {
+    background-image: url('[[pix:core|t/preview]]');
+}
+
+#apsolu-courses-search-grades {
+    background-image: url('[[pix:core|i/grades]]');
+}
+
+#apsolu-courses-search-students,
+#apsolu-courses-search-ffsu,
+#apsolu-courses-search-shnu,
+#apsolu-courses-search-grades {
+    background-position: left center;
+    background-repeat: no-repeat;
+    margin: 0 1em;
+    padding-left: 20px;
+}
+
+.text-right {
+    text-align: right;
+}

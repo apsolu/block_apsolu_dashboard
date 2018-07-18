@@ -1,0 +1,32 @@
+<div id="courses" class="tab-pane fade in">
+  {{^has_courses}}
+  <p class="alert alert-info">{{#str}}no_courses, block_apsolu_courses{{/str}}</p>
+  {{/has_courses}}
+
+  {{#has_courses}}
+  <ul class="list-inline">
+    {{#shnu}}
+    <li class="list-inline-item"><a id="apsolu-courses-search-shnu" class="btn btn-primary" href="{{wwwroot}}/local/apsolu_rennes/reports/shnu.php">{{#str}}myshnu, block_apsolu_courses{{/str}}</a></li>
+    {{/shnu}}
+    {{#count_courses}}
+    <li class="list-inline-item"><a id="apsolu-courses-search-students" class="btn btn-primary" href="{{wwwroot}}/local/apsolu_rennes/reports/extractions.php">{{#str}}mystudents, block_apsolu_courses{{/str}}</a></li>
+    <li class="list-inline-item"><a id="apsolu-courses-search-ffsu" class="btn btn-primary" href="{{wwwroot}}/local/apsolu_rennes/reports/ffsu.php">{{#str}}myffsu, block_apsolu_courses{{/str}}</a></li>
+    <li class="list-inline-item"><a id="apsolu-courses-search-grades" class="btn btn-primary" href="{{wwwroot}}/local/apsolu_rennes/grades/index.php">{{#str}}grades{{/str}}</a></li>
+    {{/count_courses}}
+  </ul>
+  <ul id="apsolu-courses-list-ul" class="list-unstyled">
+    {{#courses}}
+    <li class="apsolu-courses-items-li well">
+      <p><a href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
+      <p>{{#str}}enrolment_type, block_apsolu_courses{{/str}} : {{role}}</p>
+      {{#is_teacher}}
+      <ul id="apsolu-courses-list-pix-ulx" class="list-inline text-right">
+        <li class="list-inline-item"><a class="btn btn-default" href="{{wwwroot}}/enrol/select/manage.php?enrolid={{enrolid}}">{{#str}}enrolusers, block_apsolu_courses{{/str}}</a></li>
+        <li class="list-inline-item"><a class="btn btn-default" href="{{wwwroot}}/enrol/select/export.php?enrolid={{enrolid}}&format=xls">{{#str}}export, block_apsolu_courses{{/str}}</a></li>
+      </ul>
+      {{/is_teacher}}
+    </li>
+    {{/courses}}
+  </ul>
+  {{/has_courses}}
+</div>

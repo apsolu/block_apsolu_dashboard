@@ -1,0 +1,333 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Gère l'affichage du bloc Mon espace.
+ *
+ * @package    block_apsolu_courses
+ * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+class block_apsolu_courses extends block_base {
+
+    /**
+     * Initialise le bloc.
+     */
+    public function init() {
+        $this->title = get_string('pluginname', 'block_apsolu_courses');
+    }
+
+    /**
+     * Retourne une session formatée correctement pour l'afficahge.
+     *
+     * @return stdClass the content
+     */
+    private function format_session($session) {
+        global $CFG;
+
+        $today = mktime(23, 59, 59);
+        $tomorrow = $today + 24 * 60 * 60;
+
+        if ($today > $session->sessiontime) {
+            $formatdate = '%FT%T%z|'.get_string('today', 'calendar').' '.get_string('strftimetime');
+            list($start, $startstr) = explode('|', userdate($session->sessiontime, $formatdate));
+        } else if ($tomorrow > $session->sessiontime) {
+            $formatdate = '%FT%T%z|'.get_string('tomorrow', 'calendar').' '.get_string('strftimetime');
+            list($start, $startstr) = explode('|', userdate($session->sessiontime, $formatdate));
+        } else {
+            $formatdate = '%FT%T%z|'.get_string('strftimedayshort').' '.get_string('strftimetime');
+            list($start, $startstr) = explode('|', userdate($session->sessiontime, $formatdate));
+        }
+
+        $endstr = $session->endtime;
+        $end = str_replace('T'.$session->starttime, 'T'.$session->endtime, $start);
+
+        if (empty($session->location)) {
+            $session->location = '<p>'.get_string('nodescription', 'block_apsolu_courses').'</p>';
+        } else if ($session->locationid !== $session->defaultlocationid) {
+            $session->location = '<span class="block-apsolu-attendance-warning text-danger">'.$session->location.'</span>';
+        }
+
+        if (empty($session->event)) {
+            $session->label = $session->activity.' - '.$session->skill;
+        } else {
+            $session->label = $session->activity.' '.$session->event.' - '.$session->skill;
+        }
+        $session->link = html_writer::link($CFG->wwwroot.'/course/view.php?id='.$session->courseid, $session->label);
+
+        $session->start = $start;
+        $session->startstr = $startstr;
+        $session->end = $end;
+        $session->endstr = $endstr;
+
+        $session->defaultsessiontime = (strftime('%u%H:%M', $session->sessiontime) === $session->numweekday.$session->starttime);
+
+        return $session;
+    }
+
+    private function set_contacts() {
+        global $DB;
+
+        $this->courses_contacts = array();
+
+        $sql = "SELECT ra.id, ac.id AS courseid, u.firstname, u.lastname, u.email".
+            " FROM {role_assignments} ra".
+            " JOIN {context} ctx ON ctx.id = ra.contextid".
+            " JOIN {apsolu_courses} ac ON ac.id = ctx.instanceid".
+            " JOIN {user} u ON u.id = ra.userid".
+            " WHERE ctx.contextlevel = 50".
+            " AND ra.roleid = 3".
+            " AND u.deleted = 0".
+            " ORDER BY u.lastname, u.firstname";
+        $assignments = $DB->get_records_sql($sql);
+        foreach ($assignments as $assignment) {
+            if (isset($this->courses_contacts[$assignment->courseid]) === false) {
+                $this->courses_contacts[$assignment->courseid] = new stdClass();
+                $this->courses_contacts[$assignment->courseid]->teachers = array();
+                $this->courses_contacts[$assignment->courseid]->count_teachers = 0;
+            }
+
+            $teacher = new stdClass();
+            $teacher->firstname = $assignment->firstname;
+            $teacher->lastname = $assignment->lastname;
+            $teacher->email = $assignment->email;
+            $this->courses_contacts[$assignment->courseid]->teachers[] = $teacher;
+            $this->courses_contacts[$assignment->courseid]->count_teachers++;
+        }
+    }
+
+    private function set_locations() {
+        global $DB;
+
+        $this->locations = array();
+        foreach ($DB->get_records('apsolu_locations') as $location) {
+            $this->locations[$location->name] = $location;
+        }
+    }
+
+    private function get_pre_next_rendez_vous() {
+        global $DB, $USER;
+
+        $sql = "SELECT sess.*, c.id AS courseid, c.fullname, apc.event, aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend, apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
+            " FROM {apsolu_attendance_sessions} sess".
+            " JOIN {course} c ON c.id = sess.courseid".
+            " JOIN {course_categories} cc ON cc.id = c.category".
+            " JOIN {apsolu_courses} apc ON apc.id = c.id".
+            " JOIN {apsolu_skills} aps ON aps.id = apc.skillid".
+            " JOIN {apsolu_locations} apl ON apl.id = sess.locationid".
+            " JOIN {enrol} e ON c.id = e.courseid".
+            " JOIN {user_enrolments} ue ON e.id = ue.enrolid".
+            " WHERE c.visible = 1".
+            " AND e.status = 0". // Only active enrolments.
+            " AND ue.status IN (2,3)". // Only active user enrolments.
+            " AND ue.userid = :userid".
+            " AND (ue.timeend = 0 OR ue.timeend > :currenttime)". // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
+            " AND sess.sessiontime BETWEEN :today AND :maxtime".
+            " GROUP BY c.id". // Ne retourne que la première session (ORDER BY sess.sessiontime) de chaque cours.
+            " ORDER BY sess.sessiontime, c.fullname";
+        $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'today' => $this->currenttime, 'maxtime' => $this->maxtime);
+
+        $sessions = array();
+        foreach ($DB->get_recordset_sql($sql, $params) as $session) {
+            if ($session->sessiontime + 60 * 60 < $this->currenttime) {
+                // N'affiche pas ce cours dans le bloc si la première session du cours est déjà dépassée.
+                continue;
+            }
+
+            if (isset($this->courses_contacts[$session->courseid]) === false) {
+                $this->courses_contacts[$session->courseid] = array();
+            }
+
+            $session->teachers = $this->courses_contacts[$session->courseid]->teachers;
+            $session->count_teachers = $this->courses_contacts[$session->courseid]->count_teachers;
+
+            $location = strip_tags($session->location);
+            if (isset($this->locations[$location]) === true) {
+                $session->latitude = $this->locations[$location]->latitude;
+                $session->longitude = $this->locations[$location]->longitude;
+                $session->marker_pix = $this->marker_pix;
+            }
+
+            $sessions[] = $session;
+        }
+
+        return $sessions;
+    }
+
+    private function get_next_rendez_vous() {
+        global $DB, $USER;
+
+        $sql = "SELECT sess.*, c.id AS courseid, c.fullname, apc.event, aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend, apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
+            " FROM {apsolu_attendance_sessions} sess".
+            " JOIN {course} c ON c.id = sess.courseid".
+            " JOIN {course_categories} cc ON cc.id = c.category".
+            " JOIN {apsolu_courses} apc ON apc.id = c.id".
+            " JOIN {apsolu_skills} aps ON aps.id = apc.skillid".
+            " JOIN {apsolu_locations} apl ON apl.id = sess.locationid".
+            " JOIN {enrol} e ON c.id = e.courseid".
+            " JOIN {user_enrolments} ue ON e.id = ue.enrolid".
+            " WHERE c.visible = 1".
+            " AND e.status = 0". // Only active enrolments.
+            " AND ue.status = 0". // Only active user enrolments.
+            " AND ue.userid = :userid".
+            " AND (ue.timeend = 0 OR ue.timeend > :currenttime)". // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
+            " AND sess.sessiontime BETWEEN :today AND :maxtime".
+            " ORDER BY sess.sessiontime, c.fullname";
+        $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'today' => $this->currenttime, 'maxtime' => $this->maxtime);
+
+        $sessions = array();
+        foreach ($DB->get_recordset_sql($sql, $params) as $session) {
+            $session->started = ($session->timestart <= time());
+
+            if (isset($this->courses_contacts[$session->courseid]) === false) {
+                $this->courses_contacts[$session->courseid] = array();
+            }
+
+            $session->teachers = $this->courses_contacts[$session->courseid]->teachers;
+            $session->count_teachers = $this->courses_contacts[$session->courseid]->count_teachers;
+
+            $location = strip_tags($session->location);
+            if (isset($this->locations[$location]) === true) {
+                $session->latitude = $this->locations[$location]->latitude;
+                $session->longitude = $this->locations[$location]->longitude;
+                $session->marker_pix = $this->marker_pix;
+            }
+
+            $sessions[] = $session;
+        }
+
+        return $sessions;
+    }
+
+    /**
+     * Return the content of this block.
+     *
+     * @return stdClass the content
+     */
+    public function get_content() {
+        global $CFG, $DB, $OUTPUT, $PAGE, $USER;
+
+        if ($this->content !== null) {
+            return $this->content;
+        }
+
+        $this->content = new stdClass;
+        $this->content->text = '';
+
+        $this->set_contacts();
+        $this->set_locations();
+
+        $this->currenttime = time();
+        $this->maxtime = $this->currenttime + 1.5 * 30 * 24 * 60 * 60; // Affiche les rendez-vous des 45 prochains jours.
+        $this->marker_pix = $OUTPUT->pix_icon('a/marker', $alt = '', 'enrol_select', array('class' => 'apsolu-location-markers-img', 'width' => '15px', 'height' => '20px'));
+
+        // Template data.
+        $data = new stdClass();
+        $data->wwwroot = $CFG->wwwroot;
+        $data->tabs = array('Mes rendez-vous', 'Mes cours');
+        $data->pre_sessions = array();
+        $data->pre_count_sessions = 0;
+        $data->isonwaitlist = false;
+        $data->sessions = array();
+        $data->count_sessions = 0;
+        $data->enrolment_errors = array();
+        $data->count_enrolment_errors = 0;
+        $data->marker_pix = $this->marker_pix;
+
+        // Pre-rendez-vous à venir.
+        foreach ($this->get_pre_next_rendez_vous() as $session) {
+            $data->pre_sessions[] = $this->format_session($session);
+            $data->pre_count_sessions++;
+
+            if ($session->status === '3') {
+                $data->isonwaitlist = true;
+            }
+        }
+
+        // Rendez-vous à venir.
+        foreach ($this->get_next_rendez_vous() as $session) {
+            $data->sessions[] = $this->format_session($session);
+            $data->count_sessions++;
+        }
+
+        // Vérifie si l'étudiant peut s'inscrire à ce cours, afin d'afficher un avertissement à l'étudiant.
+        $sesame = $DB->get_record('user_info_data', array('userid' => $USER->id, 'fieldid' => 11)); // TODO: rendre plus flexible.
+        if ($sesame !== false && $sesame->data === '1') {
+            require_once $CFG->dirroot.'/enrol/select/locallib.php';
+
+            $roles = role_fix_names($DB->get_records('role'));
+
+            $enrolments = UniversiteRennes2\Apsolu\get_real_user_activity_enrolments();
+            foreach ($enrolments as $enrolment) {
+                $sql = "SELECT ac.id".
+                   " FROM {apsolu_colleges} ac".
+                   " JOIN {apsolu_colleges_members} acm ON ac.id = acm.collegeid".
+                   " JOIN {cohort_members} cm ON cm.cohortid = acm.cohortid".
+                   " JOIN {enrol_select_cohorts} esc ON cm.cohortid = esc.cohortid".
+                   " WHERE cm.userid = :userid".
+                   " AND ac.roleid = :roleid".
+                   " AND esc.enrolid = :enrolid";
+                $allow = $DB->get_records_sql($sql, array('userid' => $USER->id, 'roleid' => $enrolment->roleid, 'enrolid' => $enrolment->enrolid));
+                if (count($allow) === 0) {
+                    $params = new stdClass();
+                    $params->rolename = $roles[$enrolment->roleid]->name;
+                    $params->coursename = $enrolment->fullname;
+                    $data->enrolment_errors[] = get_string('unallowed_enrolment_to', 'block_apsolu_courses', $params);
+                    $data->count_enrolment_errors++;
+                }
+            }
+        }
+
+        // Récupère les cours où l'utilisateur enseigne.
+        $data->courses = array();
+        $data->count_courses = 0;
+        $roles = role_fix_names($DB->get_records('role', array(), 'sortorder'));
+
+        $sql = "SELECT DISTINCT c.id, c.fullname, e.id AS enrolid, ra.roleid".
+            " FROM {course} c".
+            " JOIN {apsolu_courses} apc ON apc.id = c.id".
+            " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
+            " JOIN {role_assignments} ra ON ctx.id = ra.contextid".
+            " JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND e.enrol = 'select'".
+            " WHERE ra.userid = ?".
+            " GROUP BY c.id".
+            " ORDER BY apc.numweekday, apc.starttime";
+        $courses = $DB->get_records_sql($sql, array($USER->id));
+        foreach ($courses as $course) {
+            $course->role = $roles[$course->roleid]->localname;
+            $course->is_teacher = ($course->roleid === '3');
+
+            $data->courses[] = $course;
+            $data->count_courses++;
+
+        }
+
+        // TODO: rendre plus flexible.
+        $shnu = $DB->get_record('role_assignments', array('contextid' => 16964, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 320.
+        $data->shnu = ($shnu !== false);
+
+        $data->has_courses = ($data->count_courses > 0 || $data->shnu === true);
+
+        // Display templates
+        $this->content->text .= $OUTPUT->render_from_template('block_apsolu_courses/content', $data);
+
+        $PAGE->requires->css(new moodle_url($CFG->wwwroot.'/enrol/select/styles/ol.css'));
+        $PAGE->requires->js_call_amd('enrol_select/select_mapping', 'initialise');
+
+        return $this->content;
+    }
+}
