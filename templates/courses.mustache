@@ -1,4 +1,8 @@
 <div id="courses" class="tab-pane fade in">
+  {{! Bouton d'inscription aux cours. }}
+  <p class="text-right"><a class="btn btn-success" href="{{wwwroot}}/enrol/select/overview.php">{{#str}}signup, block_apsolu_dashboard{{/str}}</a></p>
+
+  {{! Liste des cours de l'utilisateur. }}
   {{^has_courses}}
   <p class="alert alert-info">{{#str}}no_courses, block_apsolu_dashboard{{/str}}</p>
   {{/has_courses}}

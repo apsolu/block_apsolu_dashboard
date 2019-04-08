@@ -52,6 +52,7 @@ $string['my_payments'] = 'Mes paiements';
 $string['my_teachings'] = 'Mes enseignements';
 $string['no_courses'] = 'Aucun cours';
 $string['enrolment_type'] = 'Type d\'inscription';
+$string['signup'] = 'S\'inscrire';
 
 // $string['blocktitle'] = 'Liste de mes cours';
 /*
