@@ -48,6 +48,8 @@ $string['unallowed_enrolment_contact'] = 'Merci de contacter votre enseignant po
 
 $string['my_rendez-vous'] = 'Mes rendez-vous';
 $string['my_courses'] = 'Mes cours';
+$string['my_payments'] = 'Mes paiements';
+$string['my_teachings'] = 'Mes enseignements';
 $string['no_courses'] = 'Aucun cours';
 $string['enrolment_type'] = 'Type d\'inscription';
 
