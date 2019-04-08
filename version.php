@@ -17,7 +17,7 @@
 /**
  * Version details.
  *
- * @package    block_apsolu_courses
+ * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,4 +31,4 @@ $plugin->version   = 2018040500;
 $plugin->requires  = 2015111000;
 
 // Full name of the plugin (used for diagnostics).
-$plugin->component = 'block_apsolu_courses';
+$plugin->component = 'block_apsolu_dashboard';

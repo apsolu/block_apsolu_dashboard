@@ -17,15 +17,15 @@
 /**
  * Language strings.
  *
- * @package    block_apsolu_courses
- * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @package   block_apsolu_dashboard
+ * @copyright 2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Mon espace SIUAPS';
 
-$string['apsolu_courses:addinstance'] = 'Ajouter un bloc '.$string['pluginname'];
-$string['apsolu_courses:myaddinstance'] = 'Ajouter un nouveau bloc '.$string['pluginname'].' au tableau de bord';
+$string['apsolu_dashboard:addinstance'] = 'Ajouter un bloc '.$string['pluginname'];
+$string['apsolu_dashboard:myaddinstance'] = 'Ajouter un nouveau bloc '.$string['pluginname'].' au tableau de bord';
 
 $string['nodescription'] = 'Session régulière de cours';
 $string['noupcomingevents'] = 'Aucun rendez-vous à venir';

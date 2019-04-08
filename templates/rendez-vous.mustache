@@ -1,14 +1,14 @@
 <div id="home" class="tab-pane fade in active">
   {{^count_sessions}}
     {{^pre_count_sessions}}
-      <div class="post alert alert-info">{{#str}}noupcomingevents,block_apsolu_courses{{/str}}</div>
+      <div class="post alert alert-info">{{#str}}noupcomingevents,block_apsolu_dashboard{{/str}}</div>
     {{/pre_count_sessions}}
   {{/count_sessions}}
 
   {{#pre_count_sessions}}
-    <h3 class="block-apsolu-attendance-h3">{{#str}}presessions,block_apsolu_courses{{/str}}</h3>
+    <h3 class="block-apsolu-attendance-h3">{{#str}}presessions,block_apsolu_dashboard{{/str}}</h3>
     {{#isonwaitlist}}
-    {{#str}}presessionsnotice,block_apsolu_courses{{/str}}
+    {{#str}}presessionsnotice,block_apsolu_dashboard{{/str}}
     {{/isonwaitlist}}
 
     {{#pre_sessions}}
@@ -42,19 +42,19 @@
 
   {{#count_sessions}}
     {{#pre_count_sessions}}
-    <h3 class="block-apsolu-attendance-h3">{{#str}}sessions,block_apsolu_courses{{/str}}</h3>
+    <h3 class="block-apsolu-attendance-h3">{{#str}}sessions,block_apsolu_dashboard{{/str}}</h3>
     {{/pre_count_sessions}}
 
     {{#count_enrolment_errors}}
       <div class="alert alert-danger" id="block-apsolu-attendance-unallowed-enrolments">
-        <h3 id="block-apsolu-attendance-unallowed-enrolments-h3">{{#str}}important, block_apsolu_courses{{/str}}</h3>
-        <p>{{#str}}unallowed_enrolment, block_apsolu_courses{{/str}}</p>
+        <h3 id="block-apsolu-attendance-unallowed-enrolments-h3">{{#str}}important, block_apsolu_dashboard{{/str}}</h3>
+        <p>{{#str}}unallowed_enrolment, block_apsolu_dashboard{{/str}}</p>
         <ul id="block-apsolu-attendance-unallowed-enrolments-list">
         {{#enrolment_errors}}
           <li>{{{.}}}</li>
         {{/enrolment_errors}}
         </ul>
-        <p>{{#str}}unallowed_enrolment_contact, block_apsolu_courses{{/str}}</p>
+        <p>{{#str}}unallowed_enrolment_contact, block_apsolu_dashboard{{/str}}</p>
       </div>
     {{/count_enrolment_errors}}
 

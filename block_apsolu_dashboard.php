@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Gère l'affichage du bloc Mon espace.
+ * Gère l'affichage du bloc Mon espace SIUAPS.
  *
- * @package    block_apsolu_courses
+ * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class block_apsolu_courses extends block_base {
+class block_apsolu_dashboard extends block_base {
 
     /**
      * Initialise le bloc.
      */
     public function init() {
-        $this->title = get_string('pluginname', 'block_apsolu_courses');
+        $this->title = get_string('pluginname', 'block_apsolu_dashboard');
     }
 
     /**
@@ -57,7 +57,7 @@ class block_apsolu_courses extends block_base {
         $end = str_replace('T'.$session->starttime, 'T'.$session->endtime, $start);
 
         if (empty($session->location)) {
-            $session->location = '<p>'.get_string('nodescription', 'block_apsolu_courses').'</p>';
+            $session->location = '<p>'.get_string('nodescription', 'block_apsolu_dashboard').'</p>';
         } else if ($session->locationid !== $session->defaultlocationid) {
             $session->location = '<span class="block-apsolu-attendance-warning text-danger">'.$session->location.'</span>';
         }
@@ -286,7 +286,7 @@ class block_apsolu_courses extends block_base {
                     $params = new stdClass();
                     $params->rolename = $roles[$enrolment->roleid]->name;
                     $params->coursename = $enrolment->fullname;
-                    $data->enrolment_errors[] = get_string('unallowed_enrolment_to', 'block_apsolu_courses', $params);
+                    $data->enrolment_errors[] = get_string('unallowed_enrolment_to', 'block_apsolu_dashboard', $params);
                     $data->count_enrolment_errors++;
                 }
             }
@@ -323,7 +323,7 @@ class block_apsolu_courses extends block_base {
         $data->has_courses = ($data->count_courses > 0 || $data->shnu === true);
 
         // Display templates
-        $this->content->text .= $OUTPUT->render_from_template('block_apsolu_courses/content', $data);
+        $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/content', $data);
 
         $PAGE->requires->css(new moodle_url($CFG->wwwroot.'/enrol/select/styles/ol.css'));
         $PAGE->requires->js_call_amd('enrol_select/select_mapping', 'initialise');
