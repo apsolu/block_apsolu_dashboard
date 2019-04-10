@@ -1,0 +1,25 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>{{#str}}fullname{{/str}}</th>
+            <th>{{#str}}enrolmentinstances, enrol{{/str}}</th>
+            {{#enrolmentstypes}}
+            <th>{{.}}</th>
+            {{/enrolmentstypes}}
+            <th>{{#str}}last_enrolment, block_apsolu_dashboard{{/str}}</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {{#enrols}}
+        <tr{{#warninglastenrolment}} class="table-warning"{{/warninglastenrolment}}>
+            <td>{{fullname}}</td>
+            <td><a href="{{wwwroot}}/enrol/select/manage.php?enrolid={{id}}">{{name}}</a></td>
+            {{#enrolments}}
+            <td>{{.}}</td>
+            {{/enrolments}}
+            <td>{{lastenrolment}}</td>
+        </tr>
+    {{/enrols}}
+    </tbody>
+</table>

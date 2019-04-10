@@ -1,23 +1,23 @@
 <div id="home" class="tab-pane fade in active">
   {{^count_sessions}}
     {{^pre_count_sessions}}
-      <div class="post alert alert-info">{{#str}}noupcomingevents,block_apsolu_dashboard{{/str}}</div>
+      <div class="post alert alert-info">{{#str}}no_upcoming_events, block_apsolu_dashboard{{/str}}</div>
     {{/pre_count_sessions}}
   {{/count_sessions}}
 
   {{#pre_count_sessions}}
-    <h3 class="block-apsolu-attendance-h3">{{#str}}presessions,block_apsolu_dashboard{{/str}}</h3>
+    <h3 class="block-apsolu-attendance-h3">{{#str}}pre-sessions, block_apsolu_dashboard{{/str}}</h3>
     {{#isonwaitlist}}
-    {{#str}}presessionsnotice,block_apsolu_dashboard{{/str}}
+    {{#str}}pre-sessions_notice, block_apsolu_dashboard{{/str}}
     {{/isonwaitlist}}
 
     {{#pre_sessions}}
-    <div class="block-apsolu-activities-box-div">
+    <div class="block-apsolu-activities-box-div well">
       <div class="clearfix">
         <p class="pull-left">{{label}}</p>
         {{#count_teachers}}
         <div class="pull-right">
-          <p class="pull-left">Contacter votre enseignant :</p>
+          <p class="pull-left">{{#str}}contact_your_teacher, block_apsolu_dashboard{{/str}}</p>
           <ul class="pull-right list list-inline block-apsolu-activities-contacts-ul">
             {{#teachers}}
             <li class="block-apsolu-activities-contacts-email-li"><a href="mailto:{{email}}">{{firstname}} {{lastname}}</a></li>
@@ -42,7 +42,7 @@
 
   {{#count_sessions}}
     {{#pre_count_sessions}}
-    <h3 class="block-apsolu-attendance-h3">{{#str}}sessions,block_apsolu_dashboard{{/str}}</h3>
+    <h3 class="block-apsolu-attendance-h3">{{#str}}sessions, block_apsolu_dashboard{{/str}}</h3>
     {{/pre_count_sessions}}
 
     {{#count_enrolment_errors}}
@@ -59,7 +59,7 @@
     {{/count_enrolment_errors}}
 
     {{#sessions}}
-    <div class="block-apsolu-activities-box-div">
+    <div class="block-apsolu-activities-box-div well">
       <div class="clearfix">
         {{#started}}
         <p class="pull-left">{{{link}}}</p>
@@ -69,7 +69,7 @@
         {{/started}}
         {{#count_teachers}}
         <div class="pull-right">
-          <p class="pull-left">Contacter votre enseignant :</p>
+          <p class="pull-left">{{#str}}contact_your_teacher, block_apsolu_dashboard{{/str}}</p>
           <ul class="pull-right list list-inline block-apsolu-activities-contacts-ul">
             {{#teachers}}
             <li class="block-apsolu-activities-contacts-email-li"><a href="mailto:{{email}}">{{firstname}} {{lastname}}</a></li>

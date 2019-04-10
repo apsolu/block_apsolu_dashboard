@@ -22,17 +22,18 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class block_apsolu_dashboard extends block_base {
+use UniversiteRennes2\Apsolu\Payment;
 
+class block_apsolu_dashboard extends block_base {
     /**
      * Initialise le bloc.
      */
     public function init() {
-        $this->title = get_string('pluginname', 'block_apsolu_dashboard');
+        $this->title = get_string('title', 'block_apsolu_dashboard');
     }
 
     /**
-     * Retourne une session formatée correctement pour l'afficahge.
+     * Retourne une session formatée correctement pour l'affichage.
      *
      * @return stdClass the content
      */
@@ -57,7 +58,7 @@ class block_apsolu_dashboard extends block_base {
         $end = str_replace('T'.$session->starttime, 'T'.$session->endtime, $start);
 
         if (empty($session->location)) {
-            $session->location = '<p>'.get_string('nodescription', 'block_apsolu_dashboard').'</p>';
+            $session->location = '<p>'.get_string('no_description', 'block_apsolu_dashboard').'</p>';
         } else if ($session->locationid !== $session->defaultlocationid) {
             $session->location = '<span class="block-apsolu-attendance-warning text-danger">'.$session->location.'</span>';
         }
@@ -77,6 +78,94 @@ class block_apsolu_dashboard extends block_base {
         $session->defaultsessiontime = (strftime('%u%H:%M', $session->sessiontime) === $session->numweekday.$session->starttime);
 
         return $session;
+    }
+
+    /*
+     * Retourne la liste des cours où l'utilisateur courant étudie.
+     *
+     * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours)
+     */
+    private function get_courses($archetype = 'student') {
+        global $DB, $USER;
+
+        $courses = array();
+        $count_courses = 0;
+
+        $roles = role_fix_names($DB->get_records('role', array(), 'sortorder'));
+
+        $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, ra.roleid, apc.id AS apsolucourse".
+            " FROM {course} c".
+            " LEFT JOIN {apsolu_courses} apc ON apc.id = c.id".
+            " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
+            " JOIN {role_assignments} ra ON ctx.id = ra.contextid".
+            " JOIN {role} r ON r.id = ra.roleid".
+            " JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND ra.itemid = e.id".
+            " WHERE ra.userid = :userid".
+            " AND r.archetype = :archetype".
+            " ORDER BY apc.numweekday, apc.starttime, e.customint7";
+        $parameters = array('userid' => $USER->id, 'archetype' => $archetype);
+
+        foreach ($DB->get_recordset_sql($sql, $parameters) as $course) {
+            if (isset($courses[$course->id]) === false) {
+                $course->enrolments = array();
+                $course->count_enrolments = 0;
+                $courses[$course->id] = $course;
+
+                $count_courses++;
+            }
+
+            if ($course->apsolucourse !== null) {
+                $parameters = new stdClass();
+                $parameters->startcourse = userdate($course->customint7, get_string('strftimedate'));
+                $parameters->endcourse = userdate($course->customint8, get_string('strftimedate'));
+                $parameters->role = strtolower($roles[$course->roleid]->localname);
+
+                $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolement_type', 'block_apsolu_dashboard', $parameters);
+                $courses[$course->id]->count_enrolments++;
+            }
+        }
+
+        return array(array_values($courses), $count_courses);
+    }
+
+    /*
+     * Retourne la liste des cours où l'utilisateur enseigne.
+     *
+     * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours, liste_des_autres_cours[], nombre de cours 'autres')
+     */
+    private function get_teachings() {
+        global $DB, $USER;
+
+        $mains = array();
+        $count_mains = 0;
+
+        $others = array();
+        $count_others = 0;
+
+        $sql = "SELECT c.id, c.fullname, c.visible, e.id AS enrolid, ra.roleid, apc.id AS apsolucourse".
+            " FROM {course} c".
+            " LEFT JOIN {apsolu_courses} apc ON apc.id = c.id".
+            " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
+            " JOIN {role_assignments} ra ON ctx.id = ra.contextid".
+            " JOIN {role} r ON r.id = ra.roleid".
+            " JOIN {enrol} e ON c.id = e.courseid AND e.status = 0".
+            " WHERE ra.userid = :userid".
+            " AND r.archetype = 'editingteacher'".
+            " ORDER BY c.visible DESC, apc.numweekday, apc.starttime, c.fullname";
+        $parameters = array('userid' => $USER->id);
+
+        foreach ($DB->get_recordset_sql($sql, $parameters) as $course) {
+            // Différencie les cours apsolu et les 'autres' cours (meta-cours, etc).
+            if ($course->apsolucourse === null) {
+                $others[$course->id] = $course;
+                $count_others++;
+            } else {
+                $mains[$course->id] = $course;
+                $count_mains++;
+            }
+        }
+
+        return array(array_values($mains), $count_mains, array_values($others), $count_others);
     }
 
     private function set_contacts() {
@@ -194,7 +283,9 @@ class block_apsolu_dashboard extends block_base {
             $session->started = ($session->timestart <= time());
 
             if (isset($this->courses_contacts[$session->courseid]) === false) {
-                $this->courses_contacts[$session->courseid] = array();
+                $this->courses_contacts[$session->courseid] = new stdClass();
+                $this->courses_contacts[$session->courseid]->teachers = '';
+                $this->courses_contacts[$session->courseid]->count_teachers = 0;
             }
 
             $session->teachers = $this->courses_contacts[$session->courseid]->teachers;
@@ -238,7 +329,7 @@ class block_apsolu_dashboard extends block_base {
         // Template data.
         $data = new stdClass();
         $data->wwwroot = $CFG->wwwroot;
-        $data->tabs = array('Mes rendez-vous', 'Mes cours');
+        $data->is_siuaps_rennes = isset($CFG->is_siuaps_rennes);
         $data->pre_sessions = array();
         $data->pre_count_sessions = 0;
         $data->isonwaitlist = false;
@@ -292,35 +383,58 @@ class block_apsolu_dashboard extends block_base {
             }
         }
 
+        // Récupère les cours que l'utilisateur suit.
+        list($data->courses, $data->count_courses) = $this->get_courses('student');
+
         // Récupère les cours où l'utilisateur enseigne.
-        $data->courses = array();
-        $data->count_courses = 0;
-        $roles = role_fix_names($DB->get_records('role', array(), 'sortorder'));
-
-        $sql = "SELECT DISTINCT c.id, c.fullname, e.id AS enrolid, ra.roleid".
-            " FROM {course} c".
-            " JOIN {apsolu_courses} apc ON apc.id = c.id".
-            " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
-            " JOIN {role_assignments} ra ON ctx.id = ra.contextid".
-            " JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND e.enrol = 'select'".
-            " WHERE ra.userid = ?".
-            " GROUP BY c.id".
-            " ORDER BY apc.numweekday, apc.starttime";
-        $courses = $DB->get_records_sql($sql, array($USER->id));
-        foreach ($courses as $course) {
-            $course->role = $roles[$course->roleid]->localname;
-            $course->is_teacher = ($course->roleid === '3');
-
-            $data->courses[] = $course;
-            $data->count_courses++;
-
-        }
+        list($data->main_teachings, $data->count_main_teachings, $data->other_teachings, $data->count_other_teachings) = $this->get_teachings();
+        $data->count_teachings = $data->count_main_teachings + $data->count_other_teachings;
 
         // TODO: rendre plus flexible.
         $shnu = $DB->get_record('role_assignments', array('contextid' => 16964, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 320.
         $data->shnu = ($shnu !== false);
 
-        $data->has_courses = ($data->count_courses > 0 || $data->shnu === true);
+        // Gestion de l'onglet "mes paiements".
+        $payments_startdate = get_config('local_apsolu', 'payments_startdate');
+        $payments_enddate = get_config('local_apsolu', 'payments_enddate');
+        $data->payments_open = (time() > $payments_startdate && time() < $payments_enddate);
+        $data->count_cards = 0;
+
+        if ($data->payments_open === true) {
+            // Calcule des cartes dues.
+            require_once($CFG->dirroot.'/local/apsolu/locallib.php');
+            require_once($CFG->dirroot.'/local/apsolu/classes/apsolu/payment.php');
+
+            $data->images = Payment::get_statuses_images();
+
+            $data->count_due_cards = 0;
+
+            $cards = Payment::get_user_cards();
+            $data->count_cards = count($cards);
+            if ($data->count_cards > 0) {
+                $gift = false;
+
+                foreach ($cards as $card) {
+                    $card->status = Payment::get_user_card_status($card);
+                    $card->image = $data->images[$card->status]->image;
+
+                    switch ($card->status) {
+                        case Payment::DUE:
+                            $data->count_due_cards++;
+                            break;
+                        case Payment::GIFT:
+                            $gift = true;
+                    }
+                }
+
+                if( $gift === false) {
+                    unset($data->images[Payment::GIFT]);
+                }
+
+                $data->cards = array_values($cards);
+                $data->images = array_values($data->images);
+            }
+        }
 
         // Display templates
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/content', $data);

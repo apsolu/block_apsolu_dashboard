@@ -6,30 +6,34 @@
   <li class="nav-item">
     <a role="tab" aria-controls="rendez-vous" aria-selected="true" class="nav-link active" data-toggle="tab" href="#rendez-vous">{{#str}}my_rendez-vous, block_apsolu_dashboard{{/str}}</a>
   </li>
-  {{#teacher}}
+  {{#count_teachings}}
   <li class="nav-item">
     <a role="tab" aria-controls="teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#teachings">{{#str}}my_teachings, block_apsolu_dashboard{{/str}}</a>
   </li>
-  {{/teacher}}
+  {{/count_teachings}}
+  {{#payments_open}}
   <li class="nav-item">
     <a role="tab" aria-controls="payments" aria-selected="true" class="nav-link" data-toggle="tab" href="#payments">{{#str}}my_payments, block_apsolu_dashboard{{/str}}</a>
   </li>
+  {{/payments_open}}
 </ul>
 
 {{! Liste des contenus }}
-<div class="tab-content">
+<div id="apsolu-dashboard-tab-content" class="tab-content">
   <div id="courses" class="tab-pane fade" role="tabpanel" aria-labelledby="courses-tab">
     {{> block_apsolu_dashboard/courses }}
   </div>
   <div id="rendez-vous" class="tab-pane show active" role="tabpanel" aria-labelledby="rendez-vous-tab">
     {{> block_apsolu_dashboard/rendez-vous }}
   </div>
-  {{#teacher}}
+  {{#count_teachings}}
   <div id="teachings" class="tab-pane fade" role="tabpanel" aria-labelledby="teachings-tab">
     {{> block_apsolu_dashboard/teachings }}
   </div>
-  {{/teacher}}
+  {{/count_teachings}}
+  {{#payments_open}}
   <div id="payments" class="tab-pane fade" role="tabpanel" aria-labelledby="payments-tab">
     {{> block_apsolu_dashboard/payments }}
   </div>
+  {{/payments_open}}
 </div>

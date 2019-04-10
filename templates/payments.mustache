@@ -1,3 +1,26 @@
 <div id="payments" class="tab-pane fade in">
-  <p class="alert alert-warning">TODO</p>
+  {{^count_cards}}
+  <p class="alert alert-info">{{#str}}no_payment_required, block_apsolu_dashboard{{/str}}</p>
+  {{/count_cards}}
+
+  {{#count_cards}}
+    {{#count_due_cards}}
+	  <p class="well"><a class="btn btn-success" href="{{wwwroot}}/local/apsolu/payment/index.php">{{#str}}pay, block_apsolu_dashboard{{/str}}</a></p>
+    {{/count_due_cards}}
+
+    <ul class="list list-unstyled">
+    {{#cards}}
+      <li>{{{image}}} {{name}}</li>
+    {{/cards}}
+    </ul>
+
+    <div id="apsolu-dashboard-payment-legend" class="well">
+      <h3 class="small">Légende</h3>
+      <ul class="list-inline">
+        {{#images}}
+        <li class="list-inline-item">{{{image}}} {{definition}}</li>
+        {{/images}}
+      </ul>
+    </div>
+  {{/count_cards}}
 </div>

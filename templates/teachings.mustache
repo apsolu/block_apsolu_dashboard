@@ -1,3 +1,67 @@
 <div id="teachings" class="tab-pane fade in">
-  <p class="alert alert-warning">TODO</p>
+  <ul class="list-inline">
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-students" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/extractions.php">{{#str}}my_students, block_apsolu_dashboard{{/str}}</a></li>
+
+    {{#is_siuaps_rennes}}
+		{{#shnu}}
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-shnu" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/shnu.php">{{#str}}my_shnu, block_apsolu_dashboard{{/str}}</a></li>
+		{{/shnu}}
+
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-ffsu" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/ffsu.php">{{#str}}my_ffsu, block_apsolu_dashboard{{/str}}</a></li>
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-grades" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/grades.php">{{#str}}grades{{/str}}</a></li>
+    {{/is_siuaps_rennes}}
+
+    {{#pendingenrolments}}
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-pendingenrolments" class="btn btn-warning" href="{{wwwroot}}/blocks/apsolu_dashboard/pendingenrolments.php">{{#str}}pending_enrolments, block_apsolu_dashboard{{/str}} ({{pendingenrolments}})</a></li>
+    {{/pendingenrolments}}
+    {{^pendingenrolments}}
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-pendingenrolments" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/pendingenrolments.php">{{#str}}pending_enrolments, block_apsolu_dashboard{{/str}}</a></li>
+    {{/pendingenrolments}}
+  </ul>
+
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a role="tab" aria-controls="main-teachings" aria-selected="false" class="nav-link active" data-toggle="tab" href="#main-teachings">{{#str}}my_main_teachings, block_apsolu_dashboard{{/str}}</a>
+    </li>
+    <li class="nav-item">
+      <a role="tab" aria-controls="other-teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#other-teachings">{{#str}}my_other_teachings, block_apsolu_dashboard{{/str}}</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="main-teachings" class="tab-pane show active" role="tabpanel" aria-labelledby="main-teachings-tab">
+      {{^count_main_teachings}}
+      <p class="alert alert-info">{{#str}}no_courses, block_apsolu_dashboard{{/str}}</p>
+      {{/count_main_teachings}}
+
+      {{#count_main_teachings}}
+      <ul class="list-unstyled">
+        {{#main_teachings}}
+        <li class="well">
+          <p><a {{^visible}}class="text-muted" {{/visible}}href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
+          <ul class="list-inline text-right">
+            <li class="list-inline-item"><a class="btn btn-default" href="{{wwwroot}}/enrol/select/manage.php?enrolid={{enrolid}}">{{#str}}enrol_users, block_apsolu_dashboard{{/str}}</a></li>
+            <li class="list-inline-item"><a class="btn btn-default" href="{{wwwroot}}/enrol/select/export.php?enrolid={{enrolid}}&format=xls">{{#str}}export, block_apsolu_dashboard{{/str}}</a></li>
+          </ul>
+        </li>
+        {{/main_teachings}}
+      </ul>
+      {{/count_main_teachings}}
+    </div>
+    <div id="other-teachings" class="tab-pane fade" role="tabpanel" aria-labelledby="other-teachings-tab">
+      {{^count_other_teachings}}
+      <p class="alert alert-info">{{#str}}no_courses, block_apsolu_dashboard{{/str}}</p>
+      {{/count_other_teachings}}
+
+      {{#count_other_teachings}}
+      <ul class="list-unstyled">
+        {{#other_teachings}}
+        <li class="well">
+          <p><a {{^visible}}class="text-muted" {{/visible}}href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
+        </li>
+        {{/other_teachings}}
+      </ul>
+      {{/count_other_teachings}}
+    </div>
+  </div>
 </div>

@@ -22,16 +22,17 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Mon espace SIUAPS';
+$string['pluginname'] = 'Tableau de bord Apsolu';
+$string['title'] = 'Mon espace SIUAPS';
 
 $string['apsolu_dashboard:addinstance'] = 'Ajouter un bloc '.$string['pluginname'];
 $string['apsolu_dashboard:myaddinstance'] = 'Ajouter un nouveau bloc '.$string['pluginname'].' au tableau de bord';
 
-$string['nodescription'] = 'Session régulière de cours';
-$string['noupcomingevents'] = 'Aucun rendez-vous à venir';
+$string['no_description'] = 'Session régulière de cours';
+$string['no_upcoming_events'] = 'Aucun rendez-vous à venir';
 
-$string['presessions'] = 'Séances de pré-rentrée';
-$string['presessionsnotice'] = '<div class="alert alert-info">'.
+$string['pre-sessions'] = 'Séances de pré-rentrée';
+$string['pre-sessions_notice'] = '<div class="alert alert-info">'.
     '<p><strong>Si vous n\'avez pu vous pré-inscrire que sur liste complémentaire :</strong></p>'.
     '<p>Tout n\'est pas perdu ! 2 possiblités :</p>'.
     '<ul>'.
@@ -52,56 +53,21 @@ $string['my_payments'] = 'Mes paiements';
 $string['my_teachings'] = 'Mes enseignements';
 $string['no_courses'] = 'Aucun cours';
 $string['enrolment_type'] = 'Type d\'inscription';
-$string['signup'] = 'S\'inscrire';
+$string['courses_signup'] = 'S\'inscrire à une activité';
 
-// $string['blocktitle'] = 'Liste de mes cours';
-/*
-$string['cohorts'] = 'Cohortes autorisées';
-$string['noenrolmethod'] = 'Pas de méthode d\'inscription configurée.';
-$string['noenrolperiod'] = 'Pas de date définie.';
-$string['norole'] = 'Aucun statut défini.';
-$string['nocohort'] = 'Aucune cohorte définie.';
-$string['noquota'] = 'Aucun quota défini.';
-$string['roles'] = 'Statuts';
- */
-$string['mystudents'] = 'Liste de mes étudiants';
-$string['mygradedstudents'] = 'Mes étudiants à évaluer';
-$string['myffsu'] = 'Liste FFSU';
-$string['myshnu'] = 'Liste SHNU';
+$string['my_students'] = 'Liste de mes étudiants';
+$string['my_ffsu'] = 'Liste FFSU';
+$string['my_shnu'] = 'Liste SHNU';
+$string['pending_enrolments'] = 'Inscription en attente d\'approbation';
+$string['last_enrolment'] = 'Date de la dernière inscription';
+$string['pay'] = 'Payer';
+$string['from_date_to_date_with_enrolement_type'] = 'Du {$a->startcourse} au {$a->endcourse} en inscription {$a->role}.';
+$string['my_main_teachings'] = 'Mes créneaux';
+$string['my_other_teachings'] = 'Mes autres enseignements';
+$string['no_payment_required'] = 'Aucune inscription nécessitant un paiement.';
 
-$string['enrolusers'] = 'Gérer les inscriptions';
+$string['my_graded_students'] = 'Mes étudiants à évaluer';
+$string['contact_your_teacher'] = 'Contacter votre enseignant :';
+
+$string['enrol_users'] = 'Gérer les inscriptions';
 $string['export'] = 'Expoter la liste des inscrits';
-/*
-$string['display'] = 'Afficher';
-$string['export'] = 'Exporter au format Excel';
-$string['notify'] = 'Notifier';
-$string['paid'] = 'Payé';
-$string['sexe'] = 'Sexe';
-$string['male'] = 'Garçon';
-$string['female'] = 'Fille';
-
-$string['departmentslist'] = 'Liste des départements';
-
-$string['studentname'] = 'Nom de famille';
-$string['studentname_help'] = 'Noms de famille partiels d\'une ou plusieurs personnnes séparés par des virgules.<br />Exemple: neveu,niece';
-
-$string['departments'] = 'Départements';
-$string['departments_help'] = 'Noms partiels d\'un ou plusieurs départements séparés par des virgules.<br />Exemple: pharma,ondo';
-
-$string['no_student'] = 'Aucun étudiant';
-$string['found_students'] = '{$a} utilisateur(s) trouvé(s)';
-
-$string['defaultnotifysubject'] = 'Notification du SIUAPS';
-
-// Grades.
-$string['grade1'] = 'Note pratique S1';
-$string['grade2'] = 'Note théorique S1';
-$string['grade3'] = 'Note pratique S2';
-$string['grade4'] = 'Note théorique S2';
-$string['practicegrade'] = 'Note pratique';
-$string['theorygrade'] = 'Note théorique';
-$string['firstsemester'] = '1er semestre';
-$string['secondsemester'] = '2nd semestre';
-$string['accessdenied'] = 'Vous n\'avez pas le droit d\'accéder à cette page.';
-$string['no_grading_student'] = 'Aucun étudiant à noter.';
-*/
