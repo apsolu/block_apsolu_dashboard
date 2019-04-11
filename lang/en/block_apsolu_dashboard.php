@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Tableau de bord Apsolu';
+$string['pluginname'] = 'APSOLU: Tableau de bord';
 $string['title'] = 'Mon espace SIUAPS';
 
 $string['apsolu_dashboard:addinstance'] = 'Ajouter un bloc '.$string['pluginname'];
