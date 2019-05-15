@@ -1,0 +1,7 @@
+<p class="mb-0">
+    <i class="icon fa fa-fw fa-globe navicon" aria-hidden="true" tabindex="-1"></i>
+    {{{ location }}}
+    {{#latitude}}
+        <a target="_blank" href="https://www.openstreetmap.org/?mlat={{latitude}}&mlon={{longitude}}" class="apsolu-location-markers-a" data-longitude="{{ longitude }}" data-latitude="{{ latitude }}">{{{ marker_pix }}}</a>
+    {{/latitude}}
+</p>

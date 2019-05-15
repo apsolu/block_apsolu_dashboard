@@ -1,7 +1,4 @@
 <div id="courses" class="tab-pane fade in">
-  {{! Bouton d'inscription aux cours. }}
-  <p class="well"><a class="btn btn-success" href="{{wwwroot}}/enrol/select/overview.php">{{#str}}courses_signup, block_apsolu_dashboard{{/str}}</a></p>
-
   {{! Liste des cours de l'utilisateur. }}
   {{^count_courses}}
   <p class="alert alert-info">{{#str}}no_courses, block_apsolu_dashboard{{/str}}</p>
@@ -10,7 +7,7 @@
   {{#count_courses}}
   <ul class="list-unstyled">
     {{#courses}}
-    <li class="well">
+    <li class="well mb-1">
       <p><a href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
       {{#count_enrolments}}
       <ul>

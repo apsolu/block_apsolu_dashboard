@@ -1,0 +1,6 @@
+<p class="block-apsolu-activities-time-p{{^defaultsessiontime}} text-danger{{/defaultsessiontime}}">
+    {{#defaultsessiontime}}<i class="icon fa fa-fw fa-calendar navicon" aria-hidden="true" tabindex="-1"></i>{{/defaultsessiontime}}
+    {{^defaultsessiontime}}<i class="icon fa fa-fw fa-warning navicon" aria-hidden="true" tabindex="-1"></i>{{/defaultsessiontime}}
+
+    <time datetime="{{start}}">{{startstr}}</time> &raquo; <time datetime="{{end}}">{{endstr}}</time>
+</p>

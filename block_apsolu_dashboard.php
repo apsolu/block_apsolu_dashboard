@@ -102,7 +102,7 @@ class block_apsolu_dashboard extends block_base {
             " JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND ra.itemid = e.id".
             " WHERE ra.userid = :userid".
             " AND r.archetype = :archetype".
-            " ORDER BY apc.numweekday, apc.starttime, e.customint7";
+            " ORDER BY apc.numweekday IS NULL ASC, apc.starttime IS NULL ASC, e.customint7, c.fullname";
         $parameters = array('userid' => $USER->id, 'archetype' => $archetype);
 
         foreach ($DB->get_recordset_sql($sql, $parameters) as $course) {
@@ -437,7 +437,7 @@ class block_apsolu_dashboard extends block_base {
         }
 
         // Display templates
-        $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/content', $data);
+        $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
 
         $PAGE->requires->css(new moodle_url($CFG->wwwroot.'/enrol/select/styles/ol.css'));
         $PAGE->requires->js_call_amd('enrol_select/select_mapping', 'initialise');

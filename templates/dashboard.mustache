@@ -1,3 +1,13 @@
+{{! Barre contenant le bouton d'inscription aux cours et éventuellement le bouton de paiement. }}
+<ul class="list-inline text-right">
+  <li class="list-item-inline"><a class="btn btn-success" href="{{wwwroot}}/enrol/select/overview.php">{{#str}}courses_signup, block_apsolu_dashboard{{/str}}</a></li>
+  {{#count_cards}}
+    {{#count_due_cards}}
+	  <li class="list-item-inline"><a class="btn btn-success" href="{{wwwroot}}/local/apsolu/payment/index.php">{{#str}}pay, block_apsolu_dashboard{{/str}}</a></li>
+    {{/count_due_cards}}
+  {{/count_cards}}
+</ul>
+
 {{! Liste des onglets }}
 <ul class="nav nav-tabs" role="tablist">
   <li class="nav-item">
@@ -24,7 +34,7 @@
     {{> block_apsolu_dashboard/courses }}
   </div>
   <div id="rendez-vous" class="tab-pane show active" role="tabpanel" aria-labelledby="rendez-vous-tab">
-    {{> block_apsolu_dashboard/rendez-vous }}
+    {{> block_apsolu_dashboard/rendezvous }}
   </div>
   {{#count_teachings}}
   <div id="teachings" class="tab-pane fade" role="tabpanel" aria-labelledby="teachings-tab">

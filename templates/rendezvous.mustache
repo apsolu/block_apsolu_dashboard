@@ -1,0 +1,81 @@
+<div id="home" class="tab-pane fade in active">
+    {{^count_sessions}} {{^pre_count_sessions}}
+    <div class="post alert alert-info">{{#str}}no_upcoming_events, block_apsolu_dashboard{{/str}}</div>
+    {{/pre_count_sessions}} {{/count_sessions}}
+
+    {{#pre_count_sessions}}
+        <h3 class="block-apsolu-attendance-h3">{{#str}}pre-sessions, block_apsolu_dashboard{{/str}}</h3>
+        {{#isonwaitlist}}
+            {{#str}}pre-sessions_notice, block_apsolu_dashboard{{/str}}
+        {{/isonwaitlist}}
+
+        <div class="well">
+            {{#pre_sessions}}
+                <div class="row">
+                    <div class="col">
+                        <p>{{ label }}</p>
+                    </div>
+                    {{#count_teachers}}
+                    <div class="col">
+                        {{> block_apsolu_dashboard/rendezvous_contacts }}
+                    </div>
+                    {{/count_teachers}}
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{> block_apsolu_dashboard/rendezvous_location }}
+                    </div>
+                    <div class="col">
+                        {{> block_apsolu_dashboard/rendezvous_datetime }}
+                    </div>
+                </div>
+            {{/pre_sessions}}
+        </div>
+    {{/pre_count_sessions}}
+
+    {{#count_sessions}}
+        {{#pre_count_sessions}}
+            <h3 class="block-apsolu-attendance-h3 mt-3">{{#str}}sessions, block_apsolu_dashboard{{/str}}</h3>
+        {{/pre_count_sessions}}
+
+        {{#count_enrolment_errors}}
+        <div class="alert alert-danger" id="block-apsolu-attendance-unallowed-enrolments">
+            <h3 id="block-apsolu-attendance-unallowed-enrolments-h3">{{#str}}important, block_apsolu_dashboard{{/str}}</h3>
+            <p>{{#str}}unallowed_enrolment, block_apsolu_dashboard{{/str}}</p>
+            <ul id="block-apsolu-attendance-unallowed-enrolments-list">
+            {{#enrolment_errors}}
+                <li>{{{.}}}</li>
+            {{/enrolment_errors}}
+            </ul>
+            <p>{{#str}}unallowed_enrolment_contact, block_apsolu_dashboard{{/str}}</p>
+        </div>
+        {{/count_enrolment_errors}}
+
+        <div class="well">
+            {{#sessions}}
+                <div class="row">
+                    <div class="col">
+                        {{#started}}<p>{{{ link }}}</p>{{/started}}
+                        {{^started}}<p>{{ label }}</p>{{/started}}
+                    </div>
+                    {{#count_teachers}}
+                    <div class="col">
+                        {{> block_apsolu_dashboard/rendezvous_contacts }}
+                    </div>
+                    {{/count_teachers}}
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{> block_apsolu_dashboard/rendezvous_location }}
+                    </div>
+                    <div class="col">
+                        {{> block_apsolu_dashboard/rendezvous_datetime }}
+                    </div>
+                </div>
+            {{/sessions}}
+        </div>
+    {{/count_sessions}}
+
+    <div id="apsolu-location-map"></div>
+    <div><span style="display: none;">{{{ marker_pix_url }}}</span></div>
+</div>

@@ -15,7 +15,3 @@ trim_trailing_whitespace = true
 # Tab indentation (no size specified)
 [{composer.json,makefile}]
 indent_style = tab
-
-[*.{html,mustache,tpl}]
-indent_style = space
-indent_size = 2
