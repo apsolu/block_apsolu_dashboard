@@ -81,7 +81,7 @@ class block_apsolu_dashboard extends block_base {
     }
 
     /*
-     * Retourne la liste des cours où l'utilisateur courant étudie.
+     * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes cours".
      *
      * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours)
      */
@@ -102,6 +102,7 @@ class block_apsolu_dashboard extends block_base {
             " JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND ra.itemid = e.id".
             " WHERE ra.userid = :userid".
             " AND r.archetype = :archetype".
+            " AND c.visible = 1".
             " ORDER BY apc.numweekday IS NULL ASC, apc.starttime IS NULL ASC, e.customint7, c.fullname";
         $parameters = array('userid' => $USER->id, 'archetype' => $archetype);
 
