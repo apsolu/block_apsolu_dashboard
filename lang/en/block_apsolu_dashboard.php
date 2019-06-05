@@ -70,4 +70,4 @@ $string['my_graded_students'] = 'Mes étudiants à évaluer';
 $string['contact_your_teacher'] = 'Contacter votre enseignant :';
 
 $string['enrol_users'] = 'Gérer les inscriptions';
-$string['export'] = 'Expoter la liste des inscrits';
+$string['export'] = 'Exporter la liste des inscrits';
