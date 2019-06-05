@@ -391,9 +391,25 @@ class block_apsolu_dashboard extends block_base {
         list($data->main_teachings, $data->count_main_teachings, $data->other_teachings, $data->count_other_teachings) = $this->get_teachings();
         $data->count_teachings = $data->count_main_teachings + $data->count_other_teachings;
 
-        // TODO: rendre plus flexible.
-        $shnu = $DB->get_record('role_assignments', array('contextid' => 16964, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 320.
-        $data->shnu = ($shnu !== false);
+        if ($data->count_teachings > 0) {
+            // TODO: rendre plus flexible.
+            $shnu = $DB->get_record('role_assignments', array('contextid' => 16964, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 320.
+            $data->shnu = ($shnu !== false);
+
+            // Vérifie si des inscriptions sont en attente.
+            $sql = "SELECT ue.id, ue.userid".
+                " FROM {user_enrolments} ue".
+                " JOIN {enrol} e ON e.id = ue.enrolid".
+                " JOIN {context} ctx ON e.courseid = ctx.instanceid AND ctx.contextlevel = 50".
+                " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
+                " WHERE e.enrol = 'select'".
+                " AND e.status = 0".
+                " AND ue.status IN (1, 2)". // Liste principale et liste complémentaire.
+                " AND ue.timecreated >= :lastlogin".
+                " AND ra.userid = :teacherid".
+                " AND ue.userid != :userid";
+            $data->pendingenrolments = count($DB->get_records_sql($sql, array('teacherid' => $USER->id, 'userid' => $USER->id, 'lastlogin' => $USER->lastlogin)));
+        }
 
         // Gestion de l'onglet "mes paiements".
         $payments_startdate = get_config('local_apsolu', 'payments_startdate');
