@@ -47,8 +47,8 @@
 #apsolu-dashboard-search-shnu,
 #apsolu-dashboard-search-grades,
 #apsolu-dashboard-search-pendingenrolments {
-    background-position: left center;
+    background-position: .5em center;
     background-repeat: no-repeat;
     margin: 0 1em;
-    padding-left: 20px;
+    padding-left: 2em;
 }
