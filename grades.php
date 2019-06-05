@@ -331,7 +331,7 @@ if ($courseid) {
                 $user->grades[] = ''.
                     '<td'.$classattr.'><input type="checkbox" name="abi['.$user->id.']['.$grade.']" value="1" '.$abi.$gradeattr.'/></td>'.
                     '<td'.$classattr.'><input type="checkbox" name="abj['.$user->id.']['.$grade.']" value="1" '.$abj.$gradeattr.'/></td>'.
-                    '<td'.$classattr.'><input type="text" pattern="[0-9.,]*|abi|abj" name="grade['.$user->id.']['.$grade.']" placeholder="'.$placeholder.'" value="'.$user->{$grade}.'" '.$gradeattr.'/></td>';
+                    '<td'.$classattr.'><input type="text" pattern="[0-9.,]*|abi|abj" name="grade['.$user->id.']['.$grade.']" placeholder="'.$placeholder.'" size="10" value="'.$user->{$grade}.'" '.$gradeattr.'/></td>';
             }
 
             $user->htmlpicture = $OUTPUT->user_picture($user, array('courseid' => $courseid));
