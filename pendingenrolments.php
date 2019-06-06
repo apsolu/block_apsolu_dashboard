@@ -33,13 +33,12 @@ $PAGE->navbar->add(get_string('pending_enrolments', 'block_apsolu_dashboard'));
 
 require_login();
 
-// Teachers.
+// Récupère les cours et les méthodes d'inscription de l'enseignant.
 $sql = "SELECT DISTINCT e.*, c.fullname".
     " FROM {course} c".
+    " JOIN {apsolu_courses} ac ON ac.id = c.id".
     " JOIN {course_categories} cc ON cc.id = c.category".
     " JOIN {enrol} e ON c.id = e.courseid".
-    " JOIN {enrol_select_roles} esr ON e.id = esr.enrolid AND esr.roleid IN (9, 10)".
-    " JOIN {apsolu_courses} ac ON ac.id = c.id".
     " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
     " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
     " WHERE ra.userid = ?".
@@ -52,6 +51,7 @@ if (count($enrols) === 0) {
     print_error('accessdenied', 'block_apsolu_dashboard');
 }
 
+// Récupère les utilisateurs inscrits au cours.
 $sql = "SELECT ue.status, ue.enrolid, e.courseid, COUNT(ue.id) AS total, MAX(ue.timecreated) AS lastenrolment".
     " FROM {user_enrolments} ue".
     " JOIN {enrol} e ON e.id = ue.enrolid".

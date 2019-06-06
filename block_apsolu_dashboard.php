@@ -400,6 +400,7 @@ class block_apsolu_dashboard extends block_base {
             $sql = "SELECT ue.id, ue.userid".
                 " FROM {user_enrolments} ue".
                 " JOIN {enrol} e ON e.id = ue.enrolid".
+                " JOIN {apsolu_courses} ac ON ac.id = e.courseid".
                 " JOIN {context} ctx ON e.courseid = ctx.instanceid AND ctx.contextlevel = 50".
                 " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
                 " WHERE e.enrol = 'select'".
