@@ -87,7 +87,19 @@ foreach ($DB->get_recordset_sql($sql, array('userid' => $USER->id)) as $record) 
     }
 }
 
-foreach ($enrols as $enrol) {
+foreach ($enrols as $enrolid => $enrol) {
+    if (empty($enrol->name) === true) {
+        // Ajoute au besoin d'un nom par défaut à la méthode d'inscription.
+        $enrol->name = get_string('pluginname', 'enrol_select');
+    }
+
+    if (isset($enrol->lastenrolment) === false) {
+        // Initialise les valeurs par défaut d'une méthode sans aucune inscription.
+        $enrol->enrolments = array_fill(0, count(enrol_select_plugin::$states), '0');
+        $enrol->lastenrolment = get_string('none');
+        continue;
+    }
+
     // Format la date de la dernière inscription.
     $enrol->lastenrolment = userdate($enrol->lastenrolment, get_string('strftimedatetime', 'langconfig'));
 
