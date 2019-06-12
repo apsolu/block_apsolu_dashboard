@@ -149,7 +149,7 @@ class block_apsolu_dashboard extends block_base {
             " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
             " JOIN {role_assignments} ra ON ctx.id = ra.contextid".
             " JOIN {role} r ON r.id = ra.roleid".
-            " JOIN {enrol} e ON c.id = e.courseid AND e.status = 0".
+            " LEFT JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND e.enrol = 'select'".
             " WHERE ra.userid = :userid".
             " AND r.archetype = 'editingteacher'".
             " ORDER BY c.visible DESC, apc.numweekday, apc.starttime, c.fullname";

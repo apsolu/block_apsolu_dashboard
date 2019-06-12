@@ -35,14 +35,16 @@
       {{/count_main_teachings}}
 
       {{#count_main_teachings}}
-      <ul class="list-unstyled">
+      <ul class="list-unstyled list-group">
         {{#main_teachings}}
-        <li class="well">
-          <p><a {{^visible}}class="text-muted" {{/visible}}href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
-          <ul class="list-inline text-right">
+        <li class="list-group-item list-group-item-action">
+          <p class="pull-left"><a {{^visible}}class="text-muted" {{/visible}}href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
+          {{#enrolid}}
+          <ul class="list-inline pull-right">
             <li class="list-inline-item"><a class="btn btn-default" href="{{wwwroot}}/enrol/select/manage.php?enrolid={{enrolid}}">{{#str}}enrol_users, block_apsolu_dashboard{{/str}}</a></li>
             <li class="list-inline-item"><a class="btn btn-default" href="{{wwwroot}}/enrol/select/export.php?enrolid={{enrolid}}&format=xls">{{#str}}export, block_apsolu_dashboard{{/str}}</a></li>
           </ul>
+          {{/enrolid}}
         </li>
         {{/main_teachings}}
       </ul>
@@ -54,9 +56,9 @@
       {{/count_other_teachings}}
 
       {{#count_other_teachings}}
-      <ul class="list-unstyled">
+      <ul class="list-unstyled list-group">
         {{#other_teachings}}
-        <li class="well">
+        <li class="list-group-item list-group-item-action">
           <p><a {{^visible}}class="text-muted" {{/visible}}href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
         </li>
         {{/other_teachings}}
