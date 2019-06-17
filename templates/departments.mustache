@@ -1,7 +1,12 @@
 <hr/>
-<h3 id="departments-list">{{#str}}departmentslist, local_apsolu{{/str}}</h3>
-<ol class="list">
-{{#departments}}
-	<li>{{.}}</li>
-{{/departments}}
-</ul>
+<details>
+    <summary>
+        <h3 class="d-inline" id="departments-list">{{#str}}departmentslist, local_apsolu{{/str}}</h3>
+    </summary>
+
+    <ul>
+    {{#departments}}
+        <li>{{.}}</li>
+    {{/departments}}
+    </ul>
+</details>
