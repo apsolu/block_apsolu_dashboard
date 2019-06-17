@@ -245,7 +245,7 @@ if ($data = $mform->get_data()) {
             $data->count_users++;
         }
 
-        $data->found_users = get_string('found_students', 'local_apsolu', $data->count_users);
+        $data->found_users = get_string('students_found', 'local_apsolu', $data->count_users);
 
         $PAGE->requires->js_call_amd('block_apsolu_dashboard/extractions', 'initialise');
 
