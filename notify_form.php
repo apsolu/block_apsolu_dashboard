@@ -62,8 +62,7 @@ class block_apsolu_dashboard_notify_form extends moodleform {
         $mform->setType('message', PARAM_TEXT);
 
         // Submit buttons.
-        $attributes = array('class' => 'btn btn-primary');
-        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('notify', 'block_apsolu_dashboard'), $attributes);
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('notify', 'block_apsolu_dashboard'));
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
     }

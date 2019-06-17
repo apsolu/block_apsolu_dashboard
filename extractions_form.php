@@ -84,9 +84,8 @@ class local_apsolu_courses_users_export_form extends moodleform {
         $mform->addRule('paids', get_string('required'), 'required', null, 'client');
 
         // Submit buttons.
-        $attributes = array('class' => 'btn btn-primary');
-        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('display', 'local_apsolu'), $attributes);
-        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('export', 'local_apsolu'), $attributes);
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('display', 'local_apsolu'));
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('export', 'local_apsolu'));
         // $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('notify', 'local_apsolu'), $attributes);
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);

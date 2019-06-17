@@ -69,9 +69,8 @@ class block_apsolu_dashboard_federation_export_form extends moodleform {
         $mform->addRule('paids', get_string('required'), 'required', null, 'client');
 
         // Submit buttons.
-        $attributes = array('class' => 'btn btn-primary');
-        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('show'), $attributes);
-        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('export', 'local_apsolu'), $attributes);
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('show'));
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('export', 'local_apsolu'));
         // $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('notify', 'local_apsolu'), $attributes);
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
