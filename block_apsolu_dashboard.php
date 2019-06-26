@@ -242,8 +242,13 @@ class block_apsolu_dashboard extends block_base {
 
         $sessions = array();
         foreach ($DB->get_recordset_sql($sql, $params) as $session) {
-            if ($session->sessiontime + 60 * 60 < $this->currenttime) {
-                // N'affiche pas ce cours dans le bloc si la première session du cours est déjà dépassée.
+            $duration = $session->endtime - $session->starttime;
+            if ($duration <= 0) {
+                $duration = 60 * 60;
+            }
+
+            if ($session->sessiontime + $duration < $this->currenttime) {
+                // N'affiche pas ce cours dans le bloc si la première session du cours est déjà terminée.
                 continue;
             }
 
