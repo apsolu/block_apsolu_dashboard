@@ -8,7 +8,14 @@
   <ul class="list-unstyled">
     {{#courses}}
     <li class="well mb-1">
+      {{^viewable}}
+      <p>{{fullname}}</p>
+      {{/viewable}}
+
+      {{#viewable}}
       <p><a href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
+      {{/viewable}}
+
       {{#count_enrolments}}
       <ul>
         {{#enrolments}}

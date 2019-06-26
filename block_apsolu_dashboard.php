@@ -93,13 +93,14 @@ class block_apsolu_dashboard extends block_base {
 
         $roles = role_fix_names($DB->get_records('role', array(), 'sortorder'));
 
-        $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, ra.roleid, apc.id AS apsolucourse".
+        $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, ra.roleid, apc.id AS apsolucourse, ue.status".
             " FROM {course} c".
             " LEFT JOIN {apsolu_courses} apc ON apc.id = c.id".
             " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
             " JOIN {role_assignments} ra ON ctx.id = ra.contextid".
             " JOIN {role} r ON r.id = ra.roleid".
             " JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND ra.itemid = e.id".
+            " JOIN {user_enrolments} ue ON e.id = ue.enrolid AND ue.userid = ra.userid".
             " WHERE ra.userid = :userid".
             " AND r.archetype = :archetype".
             " AND c.visible = 1".
@@ -108,6 +109,7 @@ class block_apsolu_dashboard extends block_base {
 
         foreach ($DB->get_recordset_sql($sql, $parameters) as $course) {
             if (isset($courses[$course->id]) === false) {
+                $course->viewable = false;
                 $course->enrolments = array();
                 $course->count_enrolments = 0;
                 $courses[$course->id] = $course;
@@ -116,10 +118,17 @@ class block_apsolu_dashboard extends block_base {
             }
 
             if ($course->apsolucourse !== null) {
+                $startcourse = $course->customint7;
+                $endcourse = $course->customint8;
+
                 $parameters = new stdClass();
-                $parameters->startcourse = userdate($course->customint7, get_string('strftimedate'));
-                $parameters->endcourse = userdate($course->customint8, get_string('strftimedate'));
+                $parameters->startcourse = userdate($startcourse, get_string('strftimedate'));
+                $parameters->endcourse = userdate($endcourse, get_string('strftimedate'));
                 $parameters->role = strtolower($roles[$course->roleid]->localname);
+
+                if (time() >= $startcourse && time() <= $endcourse && $course->status === '0') {
+                    $course->viewable = true;
+                }
 
                 $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolement_type', 'block_apsolu_dashboard', $parameters);
                 $courses[$course->id]->count_enrolments++;
