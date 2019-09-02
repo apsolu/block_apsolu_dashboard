@@ -468,6 +468,13 @@ class block_apsolu_dashboard extends block_base {
             }
         }
 
+        // Gestion de l'onglet collaboratif.
+        $data->collaborative = false;
+        if (isset($CFG->is_siuaps_rennes) === true) {
+            $sql = "SELECT ue.userid FROM {user_enrolments} ue JOIN {enrol} e ON e.id = ue.enrolid WHERE e.courseid = 284 AND ue.userid = :userid";
+            $data->collaborative = $DB->get_record_sql($sql, array('userid' => $USER->id));
+        }
+
         // Display templates
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
 
