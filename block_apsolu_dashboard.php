@@ -242,7 +242,15 @@ class block_apsolu_dashboard extends block_base {
 
         $sessions = array();
         foreach ($DB->get_recordset_sql($sql, $params) as $session) {
-            $duration = $session->endtime - $session->starttime;
+            $duration = 0;
+
+            $endtime = explode(':', $session->endtime);
+            $starttime = explode(':', $session->starttime);
+
+            if (isset($endtime[1], $starttime[1]) === true) {
+                $duration = ($endtime[0] * 60 * 60 + $endtime[1] * 60) - ($starttime[0] * 60 * 60 + $starttime[1] * 60);
+            }
+
             if ($duration <= 0) {
                 $duration = 60 * 60;
             }
