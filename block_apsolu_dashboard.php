@@ -131,18 +131,18 @@ class block_apsolu_dashboard extends block_base {
                 $count_courses++;
             }
 
-            if ($course->apsolucourse !== null) {
-                $startcourse = $course->customint7;
-                $endcourse = $course->customint8;
+            $startcourse = $course->customint7;
+            $endcourse = $course->customint8;
 
+            if (time() >= $startcourse && time() <= $endcourse && $course->status === '0') {
+                $course->viewable = true;
+            }
+
+            if ($course->apsolucourse !== null) {
                 $parameters = new stdClass();
                 $parameters->startcourse = userdate($startcourse, get_string('strftimedate'));
                 $parameters->endcourse = userdate($endcourse, get_string('strftimedate'));
                 $parameters->role = strtolower($roles[$course->roleid]->localname);
-
-                if (time() >= $startcourse && time() <= $endcourse && $course->status === '0') {
-                    $course->viewable = true;
-                }
 
                 $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolement_type', 'block_apsolu_dashboard', $parameters);
                 $courses[$course->id]->count_enrolments++;
