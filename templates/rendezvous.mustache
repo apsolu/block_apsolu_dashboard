@@ -13,7 +13,7 @@
             {{#pre_sessions}}
                 <div class="row">
                     <div class="col">
-                        <p>{{ label }}</p>
+                        <p>{{ label }}{{#enrolment_list}} (<em class="text-danger">{{enrolment_list}}</em>){{/enrolment_list}}</p>
                     </div>
                     {{#count_teachers}}
                     <div class="col">

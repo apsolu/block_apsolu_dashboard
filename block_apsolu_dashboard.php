@@ -24,6 +24,8 @@
 
 use UniversiteRennes2\Apsolu\Payment;
 
+require_once($CFG->dirroot.'/enrol/select/lib.php');
+
 class block_apsolu_dashboard extends block_base {
     /**
      * Initialise le bloc.
@@ -63,11 +65,23 @@ class block_apsolu_dashboard extends block_base {
             $session->location = '<span class="block-apsolu-attendance-warning text-danger">'.$session->location.'</span>';
         }
 
-        if (empty($session->event)) {
+        if (empty($session->event) === true) {
             $session->label = $session->activity.' - '.$session->skill;
         } else {
             $session->label = $session->activity.' '.$session->event.' - '.$session->skill;
         }
+
+        switch ($session->status) {
+            case enrol_select_plugin::MAIN:
+                $session->enrolment_list = enrol_select_plugin::get_enrolment_list_name(enrol_select_plugin::MAIN);
+                break;
+            case enrol_select_plugin::WAIT:
+                $session->enrolment_list = enrol_select_plugin::get_enrolment_list_name(enrol_select_plugin::WAIT);
+                break;
+            default:
+                $session->enrolment_list = '';
+        }
+
         $session->link = html_writer::link($CFG->wwwroot.'/course/view.php?id='.$session->courseid, $session->label);
 
         $session->start = $start;
@@ -367,7 +381,7 @@ class block_apsolu_dashboard extends block_base {
             $data->pre_sessions[] = $this->format_session($session);
             $data->pre_count_sessions++;
 
-            if ($session->status === '3' && isset($CFG->is_siuaps_rennes) === true) {
+            if ($session->status === enrol_select_plugin::WAIT && isset($CFG->is_siuaps_rennes) === true) {
                 $data->isonwaitlist = true;
             }
         }
