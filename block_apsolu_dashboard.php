@@ -367,7 +367,7 @@ class block_apsolu_dashboard extends block_base {
             $data->pre_sessions[] = $this->format_session($session);
             $data->pre_count_sessions++;
 
-            if ($session->status === '3') {
+            if ($session->status === '3' && isset($CFG->is_siuaps_rennes) === true) {
                 $data->isonwaitlist = true;
             }
         }
@@ -379,29 +379,31 @@ class block_apsolu_dashboard extends block_base {
         }
 
         // Vérifie si l'étudiant peut s'inscrire à ce cours, afin d'afficher un avertissement à l'étudiant.
-        $sesame = $DB->get_record('user_info_data', array('userid' => $USER->id, 'fieldid' => 11)); // TODO: rendre plus flexible.
-        if ($sesame !== false && $sesame->data === '1') {
-            require_once $CFG->dirroot.'/enrol/select/locallib.php';
+        if (isset($CFG->is_siuaps_rennes) === true) {
+            $sesame = $DB->get_record('user_info_data', array('userid' => $USER->id, 'fieldid' => 11)); // TODO: rendre plus flexible.
+            if ($sesame !== false && $sesame->data === '1') {
+                require_once $CFG->dirroot.'/enrol/select/locallib.php';
 
-            $roles = role_fix_names($DB->get_records('role'));
+                $roles = role_fix_names($DB->get_records('role'));
 
-            $enrolments = UniversiteRennes2\Apsolu\get_real_user_activity_enrolments();
-            foreach ($enrolments as $enrolment) {
-                $sql = "SELECT ac.id".
-                   " FROM {apsolu_colleges} ac".
-                   " JOIN {apsolu_colleges_members} acm ON ac.id = acm.collegeid".
-                   " JOIN {cohort_members} cm ON cm.cohortid = acm.cohortid".
-                   " JOIN {enrol_select_cohorts} esc ON cm.cohortid = esc.cohortid".
-                   " WHERE cm.userid = :userid".
-                   " AND ac.roleid = :roleid".
-                   " AND esc.enrolid = :enrolid";
-                $allow = $DB->get_records_sql($sql, array('userid' => $USER->id, 'roleid' => $enrolment->roleid, 'enrolid' => $enrolment->enrolid));
-                if (count($allow) === 0) {
-                    $params = new stdClass();
-                    $params->rolename = $roles[$enrolment->roleid]->name;
-                    $params->coursename = $enrolment->fullname;
-                    $data->enrolment_errors[] = get_string('unallowed_enrolment_to', 'block_apsolu_dashboard', $params);
-                    $data->count_enrolment_errors++;
+                $enrolments = UniversiteRennes2\Apsolu\get_real_user_activity_enrolments();
+                foreach ($enrolments as $enrolment) {
+                    $sql = "SELECT ac.id".
+                       " FROM {apsolu_colleges} ac".
+                       " JOIN {apsolu_colleges_members} acm ON ac.id = acm.collegeid".
+                       " JOIN {cohort_members} cm ON cm.cohortid = acm.cohortid".
+                       " JOIN {enrol_select_cohorts} esc ON cm.cohortid = esc.cohortid".
+                       " WHERE cm.userid = :userid".
+                       " AND ac.roleid = :roleid".
+                       " AND esc.enrolid = :enrolid";
+                    $allow = $DB->get_records_sql($sql, array('userid' => $USER->id, 'roleid' => $enrolment->roleid, 'enrolid' => $enrolment->enrolid));
+                    if (count($allow) === 0) {
+                        $params = new stdClass();
+                        $params->rolename = $roles[$enrolment->roleid]->name;
+                        $params->coursename = $enrolment->fullname;
+                        $data->enrolment_errors[] = get_string('unallowed_enrolment_to', 'block_apsolu_dashboard', $params);
+                        $data->count_enrolment_errors++;
+                    }
                 }
             }
         }
