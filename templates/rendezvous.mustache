@@ -11,6 +11,7 @@
 
         <div class="well">
             {{#pre_sessions}}
+            <div class="border-bottom border-dark mb-2">
                 <div class="row">
                     <div class="col">
                         <p>{{ label }}{{#enrolment_list}} (<em class="text-danger">{{enrolment_list}}</em>){{/enrolment_list}}</p>
@@ -29,6 +30,7 @@
                         {{> block_apsolu_dashboard/rendezvous_datetime }}
                     </div>
                 </div>
+            </div>
             {{/pre_sessions}}
         </div>
     {{/pre_count_sessions}}
@@ -53,6 +55,7 @@
 
         <div class="well">
             {{#sessions}}
+            <div class="border-bottom border-dark mb-2">
                 <div class="row">
                     <div class="col">
                         {{#started}}<p>{{{ link }}}</p>{{/started}}
@@ -72,6 +75,7 @@
                         {{> block_apsolu_dashboard/rendezvous_datetime }}
                     </div>
                 </div>
+            </div>
             {{/sessions}}
         </div>
     {{/count_sessions}}
