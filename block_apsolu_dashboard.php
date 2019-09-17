@@ -249,10 +249,10 @@ class block_apsolu_dashboard extends block_base {
             " AND ue.status IN (2,3)". // Only active user enrolments.
             " AND ue.userid = :userid".
             " AND (ue.timeend = 0 OR ue.timeend > :currenttime)". // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
-            " AND sess.sessiontime BETWEEN :today AND :maxtime".
+            " AND sess.sessiontime <= :maxtime".
             " GROUP BY c.id". // Ne retourne que la première session (ORDER BY sess.sessiontime) de chaque cours.
             " ORDER BY sess.sessiontime, c.fullname";
-        $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'today' => $this->currenttime, 'maxtime' => $this->maxtime);
+        $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime);
 
         $sessions = array();
         foreach ($DB->get_recordset_sql($sql, $params) as $session) {
