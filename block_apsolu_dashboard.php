@@ -431,7 +431,8 @@ class block_apsolu_dashboard extends block_base {
 
         if ($data->count_teachings > 0) {
             // TODO: rendre plus flexible.
-            $shnu = $DB->get_record('role_assignments', array('contextid' => 16964, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 320.
+            // $shnu = $DB->get_record('role_assignments', array('contextid' => 16964, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 320. // 2017-2018
+            $shnu = $DB->get_record('role_assignments', array('contextid' => 29119, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 423. // 2019-2020
             $data->shnu = ($shnu !== false);
 
             // Vérifie si des inscriptions sont en attente.
