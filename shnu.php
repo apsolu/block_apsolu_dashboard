@@ -98,7 +98,7 @@ if ($data = $mform->get_data()) {
         " JOIN {enrol} e ON e.id = ue.enrolid AND e.status = 0".
         " JOIN {course} c ON c.id = e.courseid AND c.id = ".SHNUID.
         " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
-        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 5";
+        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND u.id = ra.userid AND ra.roleid = 5";
 
     $where = array('u.deleted = 0');
 
