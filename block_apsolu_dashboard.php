@@ -133,8 +133,8 @@ class block_apsolu_dashboard extends block_base {
 
             $startcourse = $course->customint7;
             $endcourse = $course->customint8;
-
-            if (time() >= $startcourse && time() <= $endcourse && $course->status === '0') {
+             
+            if (time() >= $startcourse && time() <= (is_null($endcourse)?time():$endcourse) && $course->status === '0') {
                 $course->viewable = true;
             }
 
