@@ -23,6 +23,7 @@
  */
 
 use UniversiteRennes2\Apsolu\Payment;
+use local_apsolu\core\attendance as Attendance;
 
 require_once($CFG->dirroot.'/enrol/select/lib.php');
 
@@ -99,6 +100,27 @@ class block_apsolu_dashboard extends block_base {
      *
      * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours)
      */
+    private function get_attendances($courseid = null) {
+        global $USER;
+
+        $attendances = Attendance::getUserPresencesPerCourses($USER->id);
+
+        if ($courseid !== null) {
+            if (isset($attendances[$courseid]) === false) {
+                $attendances[$courseid] = new stdClass();
+            }
+
+            return array($attendances[$courseid]);
+        }
+
+        return array_values($attendances);
+    }
+
+    /*
+     * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes cours".
+     *
+     * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours)
+     */
     private function get_courses($archetype = 'student') {
         global $DB, $USER;
 
@@ -133,7 +155,7 @@ class block_apsolu_dashboard extends block_base {
 
             $startcourse = $course->customint7;
             $endcourse = $course->customint8;
-             
+
             if (time() >= $startcourse && time() <= (is_null($endcourse)?time():$endcourse) && $course->status === '0') {
                 $course->viewable = true;
             }
@@ -424,6 +446,11 @@ class block_apsolu_dashboard extends block_base {
 
         // Récupère les cours que l'utilisateur suit.
         list($data->courses, $data->count_courses) = $this->get_courses('student');
+
+
+        // Récupère les présences de l'utilisateur.
+        $data->attendances = $this->get_attendances();
+        $data->count_attendances = count($data->attendances);
 
         // Récupère les cours où l'utilisateur enseigne.
         list($data->main_teachings, $data->count_main_teachings, $data->other_teachings, $data->count_other_teachings) = $this->get_teachings();

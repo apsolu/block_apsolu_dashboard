@@ -29,6 +29,7 @@ $string['title'] = 'Mon espace SIUAPS';
 $string['apsolu_dashboard:addinstance'] = 'Ajouter un bloc '.$string['pluginname'];
 $string['apsolu_dashboard:myaddinstance'] = 'Ajouter un nouveau bloc '.$string['pluginname'].' au tableau de bord';
 
+$string['download_all_my_attendances'] = 'Télécharger toutes mes présences';
 $string['no_description'] = 'Session régulière de cours';
 $string['no_upcoming_events'] = 'Aucun rendez-vous à venir';
 
@@ -48,9 +49,10 @@ $string['unallowed_enrolment'] = 'D\'après votre contrat pédagogique, vous ne 
 $string['unallowed_enrolment_to'] = 'être inscrit en <strong>{$a->rolename}</strong> au cours <strong>{$a->coursename}</strong>';
 $string['unallowed_enrolment_contact'] = 'Merci de contacter votre enseignant pour plus d\'information.';
 
-$string['my_rendez-vous'] = 'Mes rendez-vous';
+$string['my_attendances'] = 'Mes présences';
 $string['my_courses'] = 'Mes cours';
 $string['my_payments'] = 'Mes paiements';
+$string['my_rendez-vous'] = 'Mes rendez-vous';
 $string['my_teachings'] = 'Mes enseignements';
 $string['no_courses'] = 'Aucun cours';
 $string['enrolment_type'] = 'Type d\'inscription';

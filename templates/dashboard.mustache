@@ -16,6 +16,11 @@
   <li class="nav-item">
     <a role="tab" aria-controls="rendez-vous" aria-selected="true" class="nav-link active" data-toggle="tab" href="#rendez-vous">{{#str}}my_rendez-vous, block_apsolu_dashboard{{/str}}</a>
   </li>
+  {{#count_attendances}}
+  <li class="nav-item sr-only">
+    <a role="tab" aria-controls="attendances" aria-selected="true" class="nav-link" data-toggle="tab" href="#attendances">{{#str}}my_attendances, block_apsolu_dashboard{{/str}}</a>
+  </li>
+  {{/count_attendances}}
   {{#count_teachings}}
   <li class="nav-item">
     <a role="tab" aria-controls="teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#teachings">{{#str}}my_teachings, block_apsolu_dashboard{{/str}}</a>
@@ -41,6 +46,11 @@
   <div id="rendez-vous" class="tab-pane show active" role="tabpanel" aria-labelledby="rendez-vous-tab">
     {{> block_apsolu_dashboard/rendezvous }}
   </div>
+  {{#count_attendances}}
+  <div id="attendances" class="tab-pane fade sr-only" role="tabpanel" aria-labelledby="attendances-tab">
+    {{> block_apsolu_dashboard/attendances }}
+  </div>
+  {{/count_attendances}}
   {{#count_teachings}}
   <div id="teachings" class="tab-pane fade" role="tabpanel" aria-labelledby="teachings-tab">
     {{> block_apsolu_dashboard/teachings }}
