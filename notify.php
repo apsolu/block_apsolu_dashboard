@@ -91,17 +91,16 @@ if ($mform->is_cancelled()) {
         }
 
         foreach ($users as $user) {
-            $eventdata = (object) array(
-                'name' => 'select_notification',
-                'component' => 'enrol_select',
-                'userfrom' => $USER,
-                'userto' => $user,
-                'subject' => $data->subject,
-                'fullmessage' => $data->message,
-                'fullmessageformat' => FORMAT_PLAIN,
-                'fullmessagehtml' => null,
-                'smallmessage' => ''
-            );
+            $eventdata = new \core\message\message();
+            $eventdata->name = 'select_notification';
+            $eventdata->component = 'enrol_select';
+            $eventdata->userfrom = $USER;
+            $eventdata->userto = $user;
+            $eventdata->subject = $data->subject;
+            $eventdata->fullmessage = $data->message;
+            $eventdata->fullmessageformat = FORMAT_PLAIN;
+            $eventdata->fullmessagehtml = '';
+            $eventdata->smallmessage = '';
 
             message_send($eventdata);
         }
