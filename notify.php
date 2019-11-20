@@ -30,10 +30,10 @@ if (!isset($_POST['users'])) {
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
 $PAGE->set_url('/blocks/apsolu_dashboard/notify.php');
-$PAGE->set_title(get_string('mystudents', 'block_apsolu_dashboard'));
+$PAGE->set_title(get_string('mystudents', 'local_apsolu'));
 
 // Navigation.
-$PAGE->navbar->add(get_string('mystudents', 'block_apsolu_dashboard'));
+$PAGE->navbar->add(get_string('mystudents', 'local_apsolu'));
 
 require_login();
 
