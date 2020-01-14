@@ -271,8 +271,8 @@ class block_apsolu_dashboard extends block_base {
             " AND ue.status IN (2,3)". // Only active user enrolments.
             " AND ue.userid = :userid".
             " AND (ue.timeend = 0 OR ue.timeend > :currenttime)". // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
-            " AND sess.sessiontime <= :maxtime".
-            " AND sess.sessiontime <= ue.timeend".
+            " AND sess.sessiontime BETWEEN ue.timestart AND ue.timeend". // Seulement les sessions correspondantes à la période d'inscription au cours.
+            " AND sess.sessiontime <= :maxtime". // Seulement les sessions à venir dans les 45 prochains jours.
             " GROUP BY c.id". // Ne retourne que la première session (ORDER BY sess.sessiontime) de chaque cours.
             " ORDER BY sess.sessiontime, c.fullname";
         $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime);
@@ -334,8 +334,8 @@ class block_apsolu_dashboard extends block_base {
             " AND ue.status = 0". // Only active user enrolments.
             " AND ue.userid = :userid".
             " AND (ue.timeend = 0 OR ue.timeend > :currenttime)". // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
+            " AND (sess.sessiontime BETWEEN ue.timestart AND ue.timeend OR ue.timeend = 0)". // Seulement les sessions correspondantes à la période d'inscription au cours.
             " AND sess.sessiontime BETWEEN :today AND :maxtime".
-            " AND sess.sessiontime <= ue.timeend".
             " ORDER BY sess.sessiontime, c.fullname";
         $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'today' => $this->currenttime, 'maxtime' => $this->maxtime);
 
