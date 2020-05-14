@@ -27,6 +27,13 @@ use local_apsolu\core\attendance as Attendance;
 
 require_once($CFG->dirroot.'/enrol/select/lib.php');
 
+/**
+ * Classe principale du module block_apsolu_dashboard.
+ *
+ * @package    block_apsolu_dashboard
+ * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class block_apsolu_dashboard extends block_base {
     /**
      * Initialise le bloc.
@@ -38,7 +45,9 @@ class block_apsolu_dashboard extends block_base {
     /**
      * Retourne une session formatée correctement pour l'affichage.
      *
-     * @return stdClass the content
+     * @param stdClass $session Mets en forme une session.
+     *
+     * @return stdClass Retourne une session formatée pour le rendu HTML.
      */
     private function format_session($session) {
         global $CFG;
@@ -95,8 +104,10 @@ class block_apsolu_dashboard extends block_base {
         return $session;
     }
 
-    /*
+    /**
      * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes cours".
+     *
+     * @param int|null $courseid Identifiant du cours.
      *
      * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours)
      */
@@ -116,8 +127,10 @@ class block_apsolu_dashboard extends block_base {
         return array_values($attendances);
     }
 
-    /*
+    /**
      * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes cours".
+     *
+     * @param string $archetype Nom de l'archétype du rôle.
      *
      * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours)
      */
@@ -174,7 +187,7 @@ class block_apsolu_dashboard extends block_base {
         return array(array_values($courses), $count_courses);
     }
 
-    /*
+    /**
      * Retourne la liste des cours où l'utilisateur enseigne.
      *
      * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours, liste_des_autres_cours[], nombre de cours 'autres')
@@ -214,6 +227,11 @@ class block_apsolu_dashboard extends block_base {
         return array(array_values($mains), $count_mains, array_values($others), $count_others);
     }
 
+    /**
+     * Définis les contacts du cours.
+     *
+     * @return void
+     */
     private function set_contacts() {
         global $DB;
 
@@ -245,6 +263,11 @@ class block_apsolu_dashboard extends block_base {
         }
     }
 
+    /**
+     * Définis les lieux de pratique du cours.
+     *
+     * @return void
+     */
     private function set_locations() {
         global $DB;
 
@@ -254,6 +277,11 @@ class block_apsolu_dashboard extends block_base {
         }
     }
 
+    /**
+     * Retourne les sessions de pré-rentrée.
+     *
+     * @return array Un tableau de sessions de cours.
+     */
     private function get_pre_next_rendez_vous() {
         global $DB, $USER;
         // $this->currenttime = mktime(0, 0, 0, 1, 25);
@@ -317,6 +345,11 @@ class block_apsolu_dashboard extends block_base {
         return $sessions;
     }
 
+    /**
+     * Retourne les sessions de rentrée.
+     *
+     * @return array Un tableau de sessions de cours.
+     */
     private function get_next_rendez_vous() {
         global $DB, $USER;
 

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Fonctions pour le module payment.
+ * Classes et fonctions pour le module block_apsolu_dashboard.
  *
- * @package    local_apsolu_payment
+ * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,6 +26,13 @@ namespace UniversiteRennes2\Apsolu;
 
 require_once($CFG->dirroot.'/user/selector/lib.php');
 
+/**
+ * Classe pour afficher le selecteur d'étudiants.
+ *
+ * @package    block_apsolu_dashboard
+ * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class blocks_apsolu_dashboard_students_selector extends \user_selector_base {
     /**
      * Candidate users

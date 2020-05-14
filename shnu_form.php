@@ -15,7 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    blocks_apsolu_dashboard
+ * Définition du formulaire pour extraire les sportifs de haut niveau universitaires.
+ *
+ * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,8 +28,14 @@ require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Form class to create or to edit a course.
+ *
+ * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_apsolu_dashboard_shnu_export_form extends moodleform {
+    /**
+     * Defines the form fields.
+     */
     protected function definition() {
         $mform = $this->_form;
         list($defaults, $institutions, $groups, $sexes) = $this->_customdata;
