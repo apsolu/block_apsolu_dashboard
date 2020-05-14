@@ -156,7 +156,7 @@ class block_apsolu_dashboard extends block_base {
             $startcourse = $course->customint7;
             $endcourse = $course->customint8;
 
-            if (time() >= $startcourse && time() <= (is_null($endcourse)?time():$endcourse) && $course->status === '0') {
+            if (time() >= $startcourse && time() <= (is_null($endcourse) ? time() : $endcourse) && $course->status === '0') {
                 $course->viewable = true;
             }
 
@@ -256,7 +256,7 @@ class block_apsolu_dashboard extends block_base {
 
     private function get_pre_next_rendez_vous() {
         global $DB, $USER;
-
+        // $this->currenttime = mktime(0, 0, 0, 1, 25);
         $sql = "SELECT sess.*, c.id AS courseid, c.fullname, apc.event, aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend, apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
             " FROM {apsolu_attendance_sessions} sess".
             " JOIN {course} c ON c.id = sess.courseid".
@@ -448,7 +448,6 @@ class block_apsolu_dashboard extends block_base {
 
         // Récupère les cours que l'utilisateur suit.
         list($data->courses, $data->count_courses) = $this->get_courses('student');
-
 
         // Récupère les présences de l'utilisateur.
         $data->attendances = $this->get_attendances();

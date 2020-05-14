@@ -183,7 +183,7 @@ if ($data = $mform->get_data()) {
         if ($data->sexes === 'M') {
             $sql .= " JOIN {user_info_data} ui3 ON u.id = ui3.userid AND ui3.fieldid = 2";
             $where[] = "ui3.data = 'M'";
-        } elseif ($data->sexes === 'F') {
+        } else if ($data->sexes === 'F') {
             $sql .= " JOIN {user_info_data} ui3 ON u.id = ui3.userid AND ui3.fieldid = 2";
             $where[] = "ui3.data = 'F'";
         }

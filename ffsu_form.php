@@ -29,8 +29,6 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class block_apsolu_dashboard_federation_export_form extends moodleform {
     protected function definition() {
-        global $CFG, $DB;
-
         $mform = $this->_form;
         list($defaults, $institutions, $groups, $medicals, $paids, $sexes) = $this->_customdata;
 

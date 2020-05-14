@@ -29,8 +29,6 @@ require_once($CFG->libdir . '/formslib.php');
  */
 class local_apsolu_courses_users_export_form extends moodleform {
     protected function definition() {
-        global $CFG, $DB;
-
         $mform = $this->_form;
         list($defaults, $courses, $institutions, $roles, $semesters, $lists, $paids, $force_manager) = $this->_customdata;
 

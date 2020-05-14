@@ -109,14 +109,14 @@ if (date('m') > 8) {
     $year = date('y');
     $default_semester = 1;
 } else {
-    $year = date('y')-1;
+    $year = date('y') - 1;
     $default_semester = 2;
 }
 
 $timestart_semester1 = mktime(0, 0, 0, 8, 1, $year);
-$timeend_semester1 = mktime(0, 0, 0, 1, 1, $year+1);
-$timestart_semester2 = mktime(0, 0, 0, 1, 1, $year+1);
-$timeend_semester2 = mktime(0, 0, 0, 7, 1, $year+1);
+$timeend_semester1 = mktime(0, 0, 0, 1, 1, $year + 1);
+$timestart_semester2 = mktime(0, 0, 0, 1, 1, $year + 1);
+$timeend_semester2 = mktime(0, 0, 0, 7, 1, $year + 1);
 
 // Load lists.
 $lists = array(
@@ -292,7 +292,7 @@ if ($data = $mform->get_data()) {
         if ($data->paids === '0') {
             $sql .= " LEFT JOIN {user_info_data} ui ON u.id = ui.userid AND ui.fieldid = 12";
             $where[] = "(ui.data = 0 OR ui.data IS NULL)";
-        } elseif ($data->paids === '1') {
+        } else if ($data->paids === '1') {
             $sql .= " JOIN {user_info_data} ui ON u.id = ui.userid AND ui.fieldid = 12 AND ui.data = 1";
         }
     }

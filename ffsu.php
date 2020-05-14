@@ -197,7 +197,7 @@ if ($data = $mform->get_data()) {
         if ($data->medicals === '0') {
             $sql .= " LEFT JOIN {user_info_data} ui1 ON u.id = ui1.userid AND ui1.fieldid = 13";
             $where[] = "(ui1.data = 0 OR ui1.data IS NULL)";
-        } elseif ($data->medicals === '1') {
+        } else if ($data->medicals === '1') {
             $sql .= " JOIN {user_info_data} ui1 ON u.id = ui1.userid AND ui1.fieldid = 13 AND ui1.data = 1";
         }
     }
@@ -207,7 +207,7 @@ if ($data = $mform->get_data()) {
         if ($data->paids === '0') {
             $sql .= " LEFT JOIN {user_info_data} ui2 ON u.id = ui2.userid AND ui2.fieldid = 9";
             $where[] = "(ui2.data = 0 OR ui2.data IS NULL)";
-        } elseif ($data->paids === '1') {
+        } else if ($data->paids === '1') {
             $sql .= " JOIN {user_info_data} ui2 ON u.id = ui2.userid AND ui2.fieldid = 9 AND ui2.data = 1";
         }
     }
@@ -217,7 +217,7 @@ if ($data = $mform->get_data()) {
         if ($data->sexes === 'M') {
             $sql .= " JOIN {user_info_data} ui3 ON u.id = ui3.userid AND ui3.fieldid = 2";
             $where[] = "ui3.data = 'M'";
-        } elseif ($data->sexes === 'F') {
+        } else if ($data->sexes === 'F') {
             $sql .= " JOIN {user_info_data} ui3 ON u.id = ui3.userid AND ui3.fieldid = 2";
             $where[] = "ui3.data = 'F'";
         }
