@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Gère l'affichage du bloc Mon espace SIUAPS.
+ * Gère l'affichage du bloc Mon espace.
  *
  * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
