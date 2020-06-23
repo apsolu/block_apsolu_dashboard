@@ -417,9 +417,6 @@ if ($data = $mform->get_data()) {
 } else {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('mystudents', 'local_apsolu'));
-    if (isset($CFG->is_siuaps_rennes) === true && $is_manager) {
-        echo '<p class="text-right"><a class="btn btn-primary" href="'.$CFG->wwwroot.'/blocks/apsolu_dashboard/stats.php">Télécharger le gros fichier</a></p>';
-    }
     $mform->display();
     echo $OUTPUT->render_from_template('block_apsolu_dashboard/departments', (object) ['departments' => $departmentslist]);
     echo $OUTPUT->footer();
