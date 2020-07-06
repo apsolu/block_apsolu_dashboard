@@ -36,6 +36,15 @@ class block_apsolu_dashboard extends block_base {
     }
 
     /**
+     * Default return is false - header will be shown
+     *
+     * @return boolean
+     */
+    public function hide_header() {
+        return true;
+    }
+
+    /**
      * Retourne une session formatée correctement pour l'affichage.
      *
      * @return stdClass the content
