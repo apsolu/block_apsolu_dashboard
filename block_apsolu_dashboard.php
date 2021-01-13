@@ -476,6 +476,9 @@ class block_apsolu_dashboard extends block_base {
                 $data->shnu = ($shnu !== false);
             }
 
+            // Vérifie que la plateforme utilise les éléments de notation.
+            $data->grading = count($DB->get_records('apsolu_grade_items'));
+
             // Vérifie si des inscriptions sont en attente.
             $sql = "SELECT ue.id, ue.userid".
                 " FROM {user_enrolments} ue".

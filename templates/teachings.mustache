@@ -8,8 +8,11 @@
 		{{/shnu}}
 
 		<li class="list-inline-item"><a id="apsolu-dashboard-search-ffsu" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/ffsu.php">{{#str}}my_ffsu, block_apsolu_dashboard{{/str}}</a></li>
-		<li class="list-inline-item"><a id="apsolu-dashboard-search-grades" class="btn btn-default" href="{{wwwroot}}/local/apsolu/grades/index.php">{{#str}}grades{{/str}}</a></li>
     {{/is_siuaps_rennes}}
+
+    {{#grading}}
+	<li class="list-inline-item"><a id="apsolu-dashboard-search-grades" class="btn btn-default" href="{{wwwroot}}/local/apsolu/grades/grade/index.php">{{#str}}grades{{/str}}</a></li>
+    {{/grading}}
 
     {{#pendingenrolments}}
 		<li class="list-inline-item"><a id="apsolu-dashboard-search-pendingenrolments" class="btn btn-warning" href="{{wwwroot}}/blocks/apsolu_dashboard/pendingenrolments.php">{{#str}}pending_enrolments, block_apsolu_dashboard{{/str}} ({{pendingenrolments}})</a></li>
