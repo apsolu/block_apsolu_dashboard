@@ -322,7 +322,7 @@ if ($data = $mform->get_data()) {
 
         $data->found_users = get_string('students_found', 'block_apsolu_dashboard', $data->count_users);
 
-        $PAGE->requires->js_call_amd('block_apsolu_dashboard/extractions', 'initialise');
+        $PAGE->requires->js_call_amd('block_apsolu_dashboard/select_all_checkboxes', 'initialise');
 
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('mystudents', 'local_apsolu'));
