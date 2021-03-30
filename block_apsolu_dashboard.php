@@ -25,8 +25,17 @@
 use UniversiteRennes2\Apsolu\Payment;
 use local_apsolu\core\attendance as Attendance;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/enrol/select/lib.php');
 
+/**
+ * Classe principale du module block_apsolu_dashboard.
+ *
+ * @package    block_apsolu_dashboard
+ * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class block_apsolu_dashboard extends block_base {
     /**
      * Initialise le bloc.
@@ -45,9 +54,67 @@ class block_apsolu_dashboard extends block_base {
     }
 
     /**
+     * Retourne une liste de rendez-vous formaté correctement pour l'affichage.
+     *
+     * @param string $sql    Requête permettant de récupérer les pré rendez-vous ou les rendez-vous.
+     * @param array  $params Paramètres nécessaires à l'exécution de la requête SQL.
+     *
+     * @return array Liste de rendez-vous.
+     */
+    private function format_rendez_vous($sql, $params) {
+        global $DB;
+
+        $sessions = array();
+        foreach ($DB->get_recordset_sql($sql, $params) as $session) {
+            $duration = 0;
+
+            $endtime = explode(':', $session->endtime);
+            $starttime = explode(':', $session->starttime);
+
+            if (isset($endtime[1], $starttime[1]) === true) {
+                $duration = ($endtime[0] * 60 * 60 + $endtime[1] * 60) - ($starttime[0] * 60 * 60 + $starttime[1] * 60);
+            }
+
+            if ($duration <= 0) {
+                $duration = 60 * 60;
+            }
+
+            if ($session->sessiontime + $duration < $this->currenttime) {
+                // N'affiche pas ce rendez-vous si la session du cours est déjà terminée.
+                continue;
+            }
+
+            // Vérifie que l'inscription au cours a débuté.
+            $session->started = ($session->timestart <= time());
+
+            if (isset($this->courses_contacts[$session->courseid]) === false) {
+                $this->courses_contacts[$session->courseid] = new stdClass();
+                $this->courses_contacts[$session->courseid]->teachers = array();
+                $this->courses_contacts[$session->courseid]->count_teachers = 0;
+            }
+
+            $session->teachers = $this->courses_contacts[$session->courseid]->teachers;
+            $session->count_teachers = $this->courses_contacts[$session->courseid]->count_teachers;
+
+            $location = strip_tags($session->location);
+            if (isset($this->locations[$location]) === true) {
+                $session->latitude = $this->locations[$location]->latitude;
+                $session->longitude = $this->locations[$location]->longitude;
+                $session->marker_pix = $this->marker_pix;
+            }
+
+            $sessions[] = $session;
+        }
+
+        return $sessions;
+    }
+
+    /**
      * Retourne une session formatée correctement pour l'affichage.
      *
-     * @return stdClass the content
+     * @param stdClass $session Mets en forme une session.
+     *
+     * @return stdClass Retourne une session formatée pour le rendu HTML.
      */
     private function format_session($session) {
         global $CFG;
@@ -57,14 +124,13 @@ class block_apsolu_dashboard extends block_base {
 
         if ($today > $session->sessiontime) {
             $formatdate = '%FT%T%z|'.get_string('today', 'calendar').' '.get_string('strftimetime');
-            list($start, $startstr) = explode('|', userdate($session->sessiontime, $formatdate));
         } else if ($tomorrow > $session->sessiontime) {
             $formatdate = '%FT%T%z|'.get_string('tomorrow', 'calendar').' '.get_string('strftimetime');
-            list($start, $startstr) = explode('|', userdate($session->sessiontime, $formatdate));
         } else {
             $formatdate = '%FT%T%z|'.get_string('strftimedayshort').' '.get_string('strftimetime');
-            list($start, $startstr) = explode('|', userdate($session->sessiontime, $formatdate));
         }
+
+        list($start, $startstr) = explode('|', userdate($session->sessiontime, $formatdate));
 
         $endstr = $session->endtime;
         $end = str_replace('T'.$session->starttime, 'T'.$session->endtime, $start);
@@ -104,8 +170,10 @@ class block_apsolu_dashboard extends block_base {
         return $session;
     }
 
-    /*
+    /**
      * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes cours".
+     *
+     * @param int|null $courseid Identifiant du cours.
      *
      * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours)
      */
@@ -125,8 +193,10 @@ class block_apsolu_dashboard extends block_base {
         return array_values($attendances);
     }
 
-    /*
+    /**
      * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes cours".
+     *
+     * @param string $archetype Nom de l'archétype du rôle.
      *
      * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours)
      */
@@ -165,7 +235,7 @@ class block_apsolu_dashboard extends block_base {
             $startcourse = $course->customint7;
             $endcourse = $course->customint8;
 
-            if (time() >= $startcourse && time() <= (is_null($endcourse)?time():$endcourse) && $course->status === '0') {
+            if (time() >= $startcourse && time() <= (is_null($endcourse) ? time() : $endcourse) && $course->status === '0') {
                 $course->viewable = true;
             }
 
@@ -183,7 +253,7 @@ class block_apsolu_dashboard extends block_base {
         return array(array_values($courses), $count_courses);
     }
 
-    /*
+    /**
      * Retourne la liste des cours où l'utilisateur enseigne.
      *
      * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours, liste_des_autres_cours[], nombre de cours 'autres')
@@ -223,6 +293,11 @@ class block_apsolu_dashboard extends block_base {
         return array(array_values($mains), $count_mains, array_values($others), $count_others);
     }
 
+    /**
+     * Définit la liste des contacts par cours.
+     *
+     * @return void
+     */
     private function set_contacts() {
         global $DB;
 
@@ -254,6 +329,11 @@ class block_apsolu_dashboard extends block_base {
         }
     }
 
+    /**
+     * Définit la liste des lieux de pratique par cours.
+     *
+     * @return void
+     */
     private function set_locations() {
         global $DB;
 
@@ -263,8 +343,13 @@ class block_apsolu_dashboard extends block_base {
         }
     }
 
+    /**
+     * Retourne les sessions de pré-rentrée.
+     *
+     * @return array Un tableau de sessions de cours.
+     */
     private function get_pre_next_rendez_vous() {
-        global $DB, $USER;
+        global $USER;
 
         $sql = "SELECT sess.*, c.id AS courseid, c.fullname, apc.event, aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend, apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
             " FROM {apsolu_attendance_sessions} sess".
@@ -286,48 +371,16 @@ class block_apsolu_dashboard extends block_base {
             " ORDER BY sess.sessiontime, c.fullname";
         $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime);
 
-        $sessions = array();
-        foreach ($DB->get_recordset_sql($sql, $params) as $session) {
-            $duration = 0;
-
-            $endtime = explode(':', $session->endtime);
-            $starttime = explode(':', $session->starttime);
-
-            if (isset($endtime[1], $starttime[1]) === true) {
-                $duration = ($endtime[0] * 60 * 60 + $endtime[1] * 60) - ($starttime[0] * 60 * 60 + $starttime[1] * 60);
-            }
-
-            if ($duration <= 0) {
-                $duration = 60 * 60;
-            }
-
-            if ($session->sessiontime + $duration < $this->currenttime) {
-                // N'affiche pas ce cours dans le bloc si la première session du cours est déjà terminée.
-                continue;
-            }
-
-            if (isset($this->courses_contacts[$session->courseid]) === false) {
-                $this->courses_contacts[$session->courseid] = array();
-            }
-
-            $session->teachers = $this->courses_contacts[$session->courseid]->teachers;
-            $session->count_teachers = $this->courses_contacts[$session->courseid]->count_teachers;
-
-            $location = strip_tags($session->location);
-            if (isset($this->locations[$location]) === true) {
-                $session->latitude = $this->locations[$location]->latitude;
-                $session->longitude = $this->locations[$location]->longitude;
-                $session->marker_pix = $this->marker_pix;
-            }
-
-            $sessions[] = $session;
-        }
-
-        return $sessions;
+        return $this->format_rendez_vous($sql, $params);
     }
 
+    /**
+     * Retourne les sessions de rentrée.
+     *
+     * @return array Un tableau de sessions de cours.
+     */
     private function get_next_rendez_vous() {
-        global $DB, $USER;
+        global $USER;
 
         $sql = "SELECT sess.*, c.id AS courseid, c.fullname, apc.event, aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend, apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
             " FROM {apsolu_attendance_sessions} sess".
@@ -344,34 +397,11 @@ class block_apsolu_dashboard extends block_base {
             " AND ue.userid = :userid".
             " AND (ue.timeend = 0 OR ue.timeend > :currenttime)". // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
             " AND (sess.sessiontime BETWEEN ue.timestart AND ue.timeend OR ue.timeend = 0)". // Seulement les sessions correspondantes à la période d'inscription au cours.
-            " AND sess.sessiontime BETWEEN :today AND :maxtime".
+            " AND sess.sessiontime <= :maxtime".
             " ORDER BY sess.sessiontime, c.fullname";
-        $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'today' => $this->currenttime, 'maxtime' => $this->maxtime);
+        $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime);
 
-        $sessions = array();
-        foreach ($DB->get_recordset_sql($sql, $params) as $session) {
-            $session->started = ($session->timestart <= time());
-
-            if (isset($this->courses_contacts[$session->courseid]) === false) {
-                $this->courses_contacts[$session->courseid] = new stdClass();
-                $this->courses_contacts[$session->courseid]->teachers = '';
-                $this->courses_contacts[$session->courseid]->count_teachers = 0;
-            }
-
-            $session->teachers = $this->courses_contacts[$session->courseid]->teachers;
-            $session->count_teachers = $this->courses_contacts[$session->courseid]->count_teachers;
-
-            $location = strip_tags($session->location);
-            if (isset($this->locations[$location]) === true) {
-                $session->latitude = $this->locations[$location]->latitude;
-                $session->longitude = $this->locations[$location]->longitude;
-                $session->marker_pix = $this->marker_pix;
-            }
-
-            $sessions[] = $session;
-        }
-
-        return $sessions;
+        return $this->format_rendez_vous($sql, $params);
     }
 
     /**
@@ -429,7 +459,7 @@ class block_apsolu_dashboard extends block_base {
         if (isset($CFG->is_siuaps_rennes) === true) {
             $sesame = $DB->get_record('user_info_data', array('userid' => $USER->id, 'fieldid' => 11)); // TODO: rendre plus flexible.
             if ($sesame !== false && $sesame->data === '1') {
-                require_once $CFG->dirroot.'/enrol/select/locallib.php';
+                require_once($CFG->dirroot.'/enrol/select/locallib.php');
 
                 $roles = role_fix_names($DB->get_records('role'));
 
@@ -458,7 +488,6 @@ class block_apsolu_dashboard extends block_base {
         // Récupère les cours que l'utilisateur suit.
         list($data->courses, $data->count_courses) = $this->get_courses('student');
 
-
         // Récupère les présences de l'utilisateur.
         $data->attendances = $this->get_attendances();
         $data->count_attendances = count($data->attendances);
@@ -471,8 +500,8 @@ class block_apsolu_dashboard extends block_base {
             // TODO: rendre plus flexible.
             $data->shnu = false;
             if (isset($CFG->is_siuaps_rennes) === true) {
-                // $shnu = $DB->get_record('role_assignments', array('contextid' => 16964, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 320. // 2017-2018
-                $shnu = $DB->get_record('role_assignments', array('contextid' => 29119, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 423. // 2019-2020
+                // TODO: $shnu = $DB->get_record('role_assignments', array('contextid' => 16964, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 320. // 2017-2018.
+                $shnu = $DB->get_record('role_assignments', array('contextid' => 29119, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 423. // 2019-2020.
                 $data->shnu = ($shnu !== false);
             }
 
@@ -528,7 +557,7 @@ class block_apsolu_dashboard extends block_base {
                     }
                 }
 
-                if( $gift === false) {
+                if ($gift === false) {
                     unset($data->images[Payment::GIFT]);
                 }
 
@@ -544,7 +573,7 @@ class block_apsolu_dashboard extends block_base {
             $data->collaborative = $DB->get_record_sql($sql, array('userid' => $USER->id));
         }
 
-        // Display templates
+        // Display templates.
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
 
         $PAGE->requires->css(new moodle_url($CFG->wwwroot.'/enrol/select/styles/ol.css'));
