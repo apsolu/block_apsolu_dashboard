@@ -79,6 +79,11 @@ class block_apsolu_dashboard extends block_base {
                 $duration = 60 * 60;
             }
 
+            if (userdate($session->sessiontime, '%H:%M') !== $session->starttime) {
+                // Recalcule l'heure de fin du cours si ce n'est plus l'heure par défaut.
+                $session->endtime = userdate($session->sessiontime + $duration, '%H:%M');
+            }
+
             if ($session->sessiontime + $duration < $this->currenttime) {
                 // N'affiche pas ce rendez-vous si la session du cours est déjà terminée.
                 continue;
