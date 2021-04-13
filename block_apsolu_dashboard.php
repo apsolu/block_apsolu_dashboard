@@ -56,6 +56,11 @@ class block_apsolu_dashboard extends block_base {
     /**
      * Retourne une liste de rendez-vous formaté correctement pour l'affichage.
      *
+     * - recalcule l'heure de fin d'une session modifiée
+     * - supprime les rendez-vous déjà terminés
+     * - ajoute les informations sur les enseignants
+     * - ajoute les informations sur les lieux de pratique
+     *
      * @param string $sql    Requête permettant de récupérer les pré rendez-vous ou les rendez-vous.
      * @param array  $params Paramètres nécessaires à l'exécution de la requête SQL.
      *
