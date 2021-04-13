@@ -127,9 +127,12 @@ class block_apsolu_dashboard extends block_base {
         $today = mktime(23, 59, 59);
         $tomorrow = $today + 24 * 60 * 60;
 
+        $session->soon = false;
         if ($today > $session->sessiontime) {
+            $session->soon = true;
             $formatdate = '%FT%T%z|'.get_string('today', 'calendar').' '.get_string('strftimetime');
         } else if ($tomorrow > $session->sessiontime) {
+            $session->soon = true;
             $formatdate = '%FT%T%z|'.get_string('tomorrow', 'calendar').' '.get_string('strftimetime');
         } else {
             $formatdate = '%FT%T%z|'.get_string('strftimedayshort').' '.get_string('strftimetime');
