@@ -319,6 +319,7 @@ if ($data = $mform->get_data()) {
             $data->users[] = $user;
             $data->count_users++;
         }
+        $recordset->close();
 
         $data->found_users = get_string('students_found', 'block_apsolu_dashboard', $data->count_users);
 
@@ -411,6 +412,7 @@ if ($data = $mform->get_data()) {
 
             $line++;
         }
+        $recordset->close();
 
         $workbook->close();
     }

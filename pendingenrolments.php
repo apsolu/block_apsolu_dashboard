@@ -62,7 +62,8 @@ $sql = "SELECT ue.status, ue.enrolid, e.courseid, COUNT(ue.id) AS total, MAX(ue.
     " AND ra.userid = :userid".
     " GROUP BY e.id, ue.status".
     " ORDER BY e.id, ue.status";
-foreach ($DB->get_recordset_sql($sql, array('userid' => $USER->id)) as $record) {
+$recordset = $DB->get_recordset_sql($sql, array('userid' => $USER->id));
+foreach ($recordset as $record) {
     if (isset($enrols[$record->enrolid]) === false) {
         continue;
     }
@@ -86,6 +87,7 @@ foreach ($DB->get_recordset_sql($sql, array('userid' => $USER->id)) as $record) 
         }
     }
 }
+$recordset->close();
 
 foreach ($enrols as $enrolid => $enrol) {
     if (empty($enrol->name) === true) {

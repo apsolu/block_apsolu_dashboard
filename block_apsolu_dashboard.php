@@ -70,7 +70,8 @@ class block_apsolu_dashboard extends block_base {
         global $DB;
 
         $sessions = array();
-        foreach ($DB->get_recordset_sql($sql, $params) as $session) {
+        $recordset = $DB->get_recordset_sql($sql, $params);
+        foreach ($recordset as $session) {
             $duration = 0;
 
             $endtime = explode(':', $session->endtime);
@@ -115,6 +116,7 @@ class block_apsolu_dashboard extends block_base {
 
             $sessions[] = $session;
         }
+        $recordset->close();
 
         return $sessions;
     }
@@ -235,7 +237,8 @@ class block_apsolu_dashboard extends block_base {
             " ORDER BY apc.numweekday IS NULL ASC, apc.starttime IS NULL ASC, e.customint7, c.fullname";
         $parameters = array('userid' => $USER->id, 'archetype' => $archetype);
 
-        foreach ($DB->get_recordset_sql($sql, $parameters) as $course) {
+        $recordset = $DB->get_recordset_sql($sql, $parameters);
+        foreach ($recordset as $course) {
             if (isset($courses[$course->id]) === false) {
                 $course->viewable = false;
                 $course->enrolments = array();
@@ -262,6 +265,7 @@ class block_apsolu_dashboard extends block_base {
                 $courses[$course->id]->count_enrolments++;
             }
         }
+        $recordset->close();
 
         return array(array_values($courses), $count_courses);
     }
@@ -292,7 +296,8 @@ class block_apsolu_dashboard extends block_base {
             " ORDER BY c.visible DESC, apc.numweekday, apc.starttime, c.fullname";
         $parameters = array('userid' => $USER->id);
 
-        foreach ($DB->get_recordset_sql($sql, $parameters) as $course) {
+        $recordset = $DB->get_recordset_sql($sql, $parameters);
+        foreach ($recordset as $course) {
             // Différencie les cours apsolu et les 'autres' cours (meta-cours, etc).
             if ($course->apsolucourse === null) {
                 $others[$course->id] = $course;
@@ -302,6 +307,7 @@ class block_apsolu_dashboard extends block_base {
                 $count_mains++;
             }
         }
+        $recordset->close();
 
         return array(array_values($mains), $count_mains, array_values($others), $count_others);
     }
