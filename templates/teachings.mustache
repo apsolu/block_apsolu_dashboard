@@ -1,24 +1,24 @@
 <div id="teachings" class="tab-pane fade in">
   <ul class="list-inline">
-		<li class="list-inline-item"><a id="apsolu-dashboard-search-students" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/extractions.php">{{#str}}my_students, block_apsolu_dashboard{{/str}}</a></li>
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-students" class="btn btn-default btn-secondary" href="{{wwwroot}}/blocks/apsolu_dashboard/extractions.php">{{#str}}my_students, block_apsolu_dashboard{{/str}}</a></li>
 
     {{#is_siuaps_rennes}}
 		{{#shnu}}
-		<li class="list-inline-item"><a id="apsolu-dashboard-search-shnu" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/shnu.php">{{#str}}my_shnu, block_apsolu_dashboard{{/str}}</a></li>
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-shnu" class="btn btn-default btn-secondary" href="{{wwwroot}}/blocks/apsolu_dashboard/shnu.php">{{#str}}my_shnu, block_apsolu_dashboard{{/str}}</a></li>
 		{{/shnu}}
 
-		<li class="list-inline-item"><a id="apsolu-dashboard-search-ffsu" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/ffsu.php">{{#str}}my_ffsu, block_apsolu_dashboard{{/str}}</a></li>
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-ffsu" class="btn btn-default btn-secondary" href="{{wwwroot}}/blocks/apsolu_dashboard/ffsu.php">{{#str}}my_ffsu, block_apsolu_dashboard{{/str}}</a></li>
     {{/is_siuaps_rennes}}
 
     {{#grading}}
-	<li class="list-inline-item"><a id="apsolu-dashboard-search-grades" class="btn btn-default" href="{{wwwroot}}/local/apsolu/grades/grade/index.php">{{#str}}grades{{/str}}</a></li>
+	<li class="list-inline-item"><a id="apsolu-dashboard-search-grades" class="btn btn-default btn-secondary" href="{{wwwroot}}/local/apsolu/grades/grade/index.php">{{#str}}grades{{/str}}</a></li>
     {{/grading}}
 
     {{#pendingenrolments}}
 		<li class="list-inline-item"><a id="apsolu-dashboard-search-pendingenrolments" class="btn btn-warning" href="{{wwwroot}}/blocks/apsolu_dashboard/pendingenrolments.php">{{#str}}pending_enrolments, block_apsolu_dashboard{{/str}} ({{pendingenrolments}})</a></li>
     {{/pendingenrolments}}
     {{^pendingenrolments}}
-		<li class="list-inline-item"><a id="apsolu-dashboard-search-pendingenrolments" class="btn btn-default" href="{{wwwroot}}/blocks/apsolu_dashboard/pendingenrolments.php">{{#str}}pending_enrolments, block_apsolu_dashboard{{/str}}</a></li>
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-pendingenrolments" class="btn btn-default btn-secondary" href="{{wwwroot}}/blocks/apsolu_dashboard/pendingenrolments.php">{{#str}}pending_enrolments, block_apsolu_dashboard{{/str}}</a></li>
     {{/pendingenrolments}}
   </ul>
 
@@ -44,8 +44,8 @@
           <p class="pull-left"><a {{^visible}}class="text-muted" {{/visible}}href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
           {{#enrolid}}
           <ul class="list-inline pull-right">
-            <li class="list-inline-item"><a class="btn btn-default" href="{{wwwroot}}/enrol/select/manage.php?enrolid={{enrolid}}">{{#str}}enrol_users, block_apsolu_dashboard{{/str}}</a></li>
-            <li class="list-inline-item"><a class="btn btn-default" href="{{wwwroot}}/enrol/select/export.php?enrolid={{enrolid}}&format=xls">{{#str}}export, block_apsolu_dashboard{{/str}}</a></li>
+            <li class="list-inline-item"><a class="btn btn-default btn-secondary" href="{{wwwroot}}/enrol/select/manage.php?enrolid={{enrolid}}">{{#str}}enrol_users, block_apsolu_dashboard{{/str}}</a></li>
+            <li class="list-inline-item"><a class="btn btn-default btn-secondary" href="{{wwwroot}}/enrol/select/export.php?enrolid={{enrolid}}&format=xls">{{#str}}export, block_apsolu_dashboard{{/str}}</a></li>
           </ul>
           {{/enrolid}}
         </li>
