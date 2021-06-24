@@ -592,6 +592,13 @@ class block_apsolu_dashboard extends block_base {
             $data->collaborative = $DB->get_record_sql($sql, array('userid' => $USER->id));
         }
 
+        // Gestion de l'onglet "Gestion des étapes".
+        $data->manageetape = false;
+        // Affiche le lien si le module apsolu_auth existe. Cache le lien aux gestionnaires et administrateurs du site.
+        if (is_dir($CFG->dirroot.'/local/apsolu_auth') === true && has_capability('moodle/site:configview', context_system::instance()) === false) {
+            $data->manageetape = has_capability('local/apsolu_auth:manageetape', context_system::instance());
+        }
+
         // Display templates.
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
 

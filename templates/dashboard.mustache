@@ -36,6 +36,11 @@
     <a class="nav-link" href="{{wwwroot}}/course/view.php?id=284">Mon espace collaboratif</a>
   </li>
   {{/collaborative}}
+  {{#manageetape}}
+  <li class="nav-item">
+    <a class="nav-link" href="{{wwwroot}}/local/apsolu_auth/etapes/index.php">{{#str}}etape_management, local_apsolu_auth{{/str}}</a>
+  </li>
+  {{/manageetape}}
 </ul>
 
 {{! Liste des contenus }}
