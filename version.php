@@ -27,8 +27,13 @@ defined('MOODLE_INTERNAL') || die();
 // The current plugin version (Date: YYYYMMDDXX).
 $plugin->version   = 2018040500;
 
-// Requires this Moodle version.
-$plugin->requires  = 2015111000;
+// Requires Moodle 3.11.0.
+$plugin->requires  = 2021051700;
 
 // Full name of the plugin (used for diagnostics).
 $plugin->component = 'block_apsolu_dashboard';
+
+// Dependencies on another plugin.
+$plugin->dependencies = array(
+    'local_apsolu' => '2021072300',
+);
