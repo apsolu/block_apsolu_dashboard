@@ -228,7 +228,7 @@ class block_apsolu_dashboard extends block_base {
             " WHERE ra.userid = :userid".
             " AND r.archetype = :archetype".
             " AND c.visible = 1".
-            " ORDER BY apc.numweekday IS NULL ASC, apc.starttime IS NULL ASC, e.customint7, c.fullname";
+            " ORDER BY c.fullname, e.customint7";
         $parameters = array('userid' => $USER->id, 'archetype' => $archetype);
 
         $recordset = $DB->get_recordset_sql($sql, $parameters);
