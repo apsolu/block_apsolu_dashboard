@@ -7,19 +7,19 @@
   {{#count_courses}}
   <ul class="list-unstyled">
     {{#courses}}
-    <li class="well mb-1">
+    <li class="bg-light card mb-2 p-2">
       {{^viewable}}
-      <p>{{fullname}}</p>
+      <p class="card-header">{{fullname}}</p>
       {{/viewable}}
 
       {{#viewable}}
-      <p><a href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
+      <p class="card-header"><a href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
       {{/viewable}}
 
       {{#count_enrolments}}
-      <ul>
+      <ul class="card-body">
         {{#enrolments}}
-        <li>{{.}}</li>
+        <li>{{{.}}}</li>
         {{/enrolments}}
       </ul>
       {{/count_enrolments}}
