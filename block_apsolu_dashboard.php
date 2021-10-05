@@ -255,7 +255,15 @@ class block_apsolu_dashboard extends block_base {
                 $parameters->endcourse = userdate($endcourse, get_string('strftimedate'));
                 $parameters->role = strtolower($roles[$course->roleid]->localname);
 
-                $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolement_type', 'block_apsolu_dashboard', $parameters);
+                if (in_array($course->status, array(enrol_select_plugin::MAIN, enrol_select_plugin::WAIT), $strict = true) === true) {
+                    $parameters->status = enrol_select_plugin::get_enrolment_list_name($course->status);
+                }
+
+                if (isset($parameters->status) === false) {
+                    $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolment_role', 'block_apsolu_dashboard', $parameters);
+                } else {
+                    $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolment_role_and_status', 'block_apsolu_dashboard', $parameters);
+                }
                 $courses[$course->id]->count_enrolments++;
             }
         }
