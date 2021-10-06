@@ -384,8 +384,8 @@ class block_apsolu_dashboard extends block_base {
                 continue;
             }
 
-            // Vérifie que l'inscription au cours a débuté.
-            $session->started = ($session->timestart <= time());
+            // Vérifie que l'inscription au cours est acceptée et a débuté.
+            $session->started = ($session->status === enrol_select_plugin::ACCEPTED && $session->timestart <= time());
 
             if (isset($this->courses_contacts[$session->courseid]) === false) {
                 $this->courses_contacts[$session->courseid] = new stdClass();
