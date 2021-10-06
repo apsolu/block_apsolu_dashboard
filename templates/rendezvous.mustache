@@ -1,44 +1,12 @@
 <div id="home" class="tab-pane fade in active">
-    {{^count_sessions}} {{^pre_count_sessions}}
-    <div class="post alert alert-info">{{#str}}no_upcoming_events, block_apsolu_dashboard{{/str}}</div>
-    {{/pre_count_sessions}} {{/count_sessions}}
+    {{^count_sessions}}
+        <div class="post alert alert-info">{{#str}}no_upcoming_events, block_apsolu_dashboard{{/str}}</div>
+    {{/count_sessions}}
 
-    {{#pre_count_sessions}}
-        <h3 class="block-apsolu-attendance-h3">{{#str}}pre-sessions, block_apsolu_dashboard{{/str}}</h3>
+    {{#count_sessions}}
         {{#isonwaitlist}}
             {{#str}}pre-sessions_notice, block_apsolu_dashboard{{/str}}
         {{/isonwaitlist}}
-
-        <div class="well">
-            {{#pre_sessions}}
-            <div class="bg-light card mb-2 p-2">
-                <div class="row">
-                    <div class="col">
-                        <p>{{ label }}{{#enrolment_list}} (<em class="text-danger">{{enrolment_list}}</em>){{/enrolment_list}}</p>
-                    </div>
-                    {{#count_teachers}}
-                    <div class="col">
-                        {{> block_apsolu_dashboard/rendezvous_contacts }}
-                    </div>
-                    {{/count_teachers}}
-                </div>
-                <div class="row">
-                    <div class="col">
-                        {{> block_apsolu_dashboard/rendezvous_location }}
-                    </div>
-                    <div class="col">
-                        {{> block_apsolu_dashboard/rendezvous_datetime }}
-                    </div>
-                </div>
-            </div>
-            {{/pre_sessions}}
-        </div>
-    {{/pre_count_sessions}}
-
-    {{#count_sessions}}
-        {{#pre_count_sessions}}
-            <h3 class="block-apsolu-attendance-h3 mt-3">{{#str}}sessions, block_apsolu_dashboard{{/str}}</h3>
-        {{/pre_count_sessions}}
 
         {{#count_enrolment_errors}}
         <div class="alert alert-danger" id="block-apsolu-attendance-unallowed-enrolments">
@@ -59,7 +27,7 @@
                 <div class="row">
                     <div class="col">
                         {{#started}}<p>{{{ link }}}</p>{{/started}}
-                        {{^started}}<p>{{ label }}</p>{{/started}}
+                        {{^started}}<p>{{ label }}{{#enrolment_list}} (<em class="text-danger">{{ enrolment_list }}</em>){{/enrolment_list}}</p>{{/started}}
                     </div>
                     {{#count_teachers}}
                     <div class="col">

@@ -27,8 +27,6 @@ use local_apsolu\core\attendance as Attendance;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/enrol/select/lib.php');
-
 /**
  * Classe principale du module block_apsolu_dashboard.
  *
@@ -37,6 +35,18 @@ require_once($CFG->dirroot.'/enrol/select/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_apsolu_dashboard extends block_base {
+    /**
+     * Initialise la classe block_apsolu_dashboard.
+     *
+     * @return void
+     */
+    public function __construct() {
+        parent::__construct();
+
+        $this->currenttime = time();
+        $this->maxtime = $this->currenttime + (45 * DAYSECS); // Affiche les rendez-vous des 45 prochains jours.
+    }
+
     /**
      * Initialise le bloc.
      */
@@ -51,74 +61,6 @@ class block_apsolu_dashboard extends block_base {
      */
     public function hide_header() {
         return true;
-    }
-
-    /**
-     * Retourne une liste de rendez-vous formaté correctement pour l'affichage.
-     *
-     * - recalcule l'heure de fin d'une session modifiée
-     * - supprime les rendez-vous déjà terminés
-     * - ajoute les informations sur les enseignants
-     * - ajoute les informations sur les lieux de pratique
-     *
-     * @param string $sql    Requête permettant de récupérer les pré rendez-vous ou les rendez-vous.
-     * @param array  $params Paramètres nécessaires à l'exécution de la requête SQL.
-     *
-     * @return array Liste de rendez-vous.
-     */
-    private function format_rendez_vous($sql, $params) {
-        global $DB;
-
-        $sessions = array();
-        $recordset = $DB->get_recordset_sql($sql, $params);
-        foreach ($recordset as $session) {
-            $duration = 0;
-
-            $endtime = explode(':', $session->endtime);
-            $starttime = explode(':', $session->starttime);
-
-            if (isset($endtime[1], $starttime[1]) === true) {
-                $duration = ($endtime[0] * 60 * 60 + $endtime[1] * 60) - ($starttime[0] * 60 * 60 + $starttime[1] * 60);
-            }
-
-            if ($duration <= 0) {
-                $duration = 60 * 60;
-            }
-
-            if (userdate($session->sessiontime, '%H:%M') !== $session->starttime) {
-                // Recalcule l'heure de fin du cours si ce n'est plus l'heure par défaut.
-                $session->endtime = userdate($session->sessiontime + $duration, '%H:%M');
-            }
-
-            if ($session->sessiontime + $duration < $this->currenttime) {
-                // N'affiche pas ce rendez-vous si la session du cours est déjà terminée.
-                continue;
-            }
-
-            // Vérifie que l'inscription au cours a débuté.
-            $session->started = ($session->timestart <= time());
-
-            if (isset($this->courses_contacts[$session->courseid]) === false) {
-                $this->courses_contacts[$session->courseid] = new stdClass();
-                $this->courses_contacts[$session->courseid]->teachers = array();
-                $this->courses_contacts[$session->courseid]->count_teachers = 0;
-            }
-
-            $session->teachers = $this->courses_contacts[$session->courseid]->teachers;
-            $session->count_teachers = $this->courses_contacts[$session->courseid]->count_teachers;
-
-            $location = strip_tags($session->location);
-            if (isset($this->locations[$location]) === true) {
-                $session->latitude = $this->locations[$location]->latitude;
-                $session->longitude = $this->locations[$location]->longitude;
-                $session->marker_pix = $this->marker_pix;
-            }
-
-            $sessions[] = $session;
-        }
-        $recordset->close();
-
-        return $sessions;
     }
 
     /**
@@ -365,14 +307,24 @@ class block_apsolu_dashboard extends block_base {
     }
 
     /**
-     * Retourne les sessions de pré-rentrée.
+     * Retourne une liste de rendez-vous à venir formatés correctement pour l'affichage.
      *
-     * @return array Un tableau de sessions de cours.
+     * - affiche la 1ère session pour les inscriptions sur liste principale (seulement si la session est à venir)
+     * - ajoute les informations sur les enseignants
+     * - ajoute les informations sur les lieux de pratique
+     * - ignore les rendez-vous déjà terminés
+     * - ignore les rendez-vous sur liste complémentaire (sauf pour Rennes)
+     * - recalcule l'heure de fin d'une session modifiée
+     *
+     * @return array Liste de rendez-vous.
      */
-    private function get_pre_next_rendez_vous() {
-        global $USER;
+    public function get_rendez_vous() {
+        global $CFG, $DB, $USER;
 
-        $sql = "SELECT sess.*, c.id AS courseid, c.fullname, apc.event, aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend, apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
+        $lists = array();
+        $sessions = array();
+
+        $sql = "SELECT sess.sessiontime, sess.courseid, sess.locationid, c.fullname, apc.event, aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend, apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
             " FROM {apsolu_attendance_sessions} sess".
             " JOIN {course} c ON c.id = sess.courseid".
             " JOIN {course_categories} cc ON cc.id = c.category".
@@ -383,38 +335,7 @@ class block_apsolu_dashboard extends block_base {
             " JOIN {user_enrolments} ue ON e.id = ue.enrolid".
             " WHERE c.visible = 1".
             " AND e.status = 0". // Only active enrolments.
-            " AND ue.status IN (2,3)". // Only active user enrolments.
-            " AND ue.userid = :userid".
-            " AND (ue.timeend = 0 OR ue.timeend > :currenttime)". // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
-            " AND sess.sessiontime BETWEEN ue.timestart AND ue.timeend". // Seulement les sessions correspondantes à la période d'inscription au cours.
-            " AND sess.sessiontime <= :maxtime". // Seulement les sessions à venir dans les 45 prochains jours.
-            " GROUP BY c.id". // Ne retourne que la première session (ORDER BY sess.sessiontime) de chaque cours.
-            " ORDER BY sess.sessiontime, c.fullname";
-        $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime);
-
-        return $this->format_rendez_vous($sql, $params);
-    }
-
-    /**
-     * Retourne les sessions de rentrée.
-     *
-     * @return array Un tableau de sessions de cours.
-     */
-    private function get_next_rendez_vous() {
-        global $USER;
-
-        $sql = "SELECT sess.*, c.id AS courseid, c.fullname, apc.event, aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend, apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
-            " FROM {apsolu_attendance_sessions} sess".
-            " JOIN {course} c ON c.id = sess.courseid".
-            " JOIN {course_categories} cc ON cc.id = c.category".
-            " JOIN {apsolu_courses} apc ON apc.id = c.id".
-            " JOIN {apsolu_skills} aps ON aps.id = apc.skillid".
-            " JOIN {apsolu_locations} apl ON apl.id = sess.locationid".
-            " JOIN {enrol} e ON c.id = e.courseid".
-            " JOIN {user_enrolments} ue ON e.id = ue.enrolid".
-            " WHERE c.visible = 1".
-            " AND e.status = 0". // Only active enrolments.
-            " AND ue.status = 0". // Only active user enrolments.
+            " AND ue.status IN (0, 2, 3)". // Seulement les inscriptions acceptées, sur liste principale ou sur liste complémentaire.
             " AND ue.userid = :userid".
             " AND (ue.timeend = 0 OR ue.timeend > :currenttime)". // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
             " AND (sess.sessiontime BETWEEN ue.timestart AND ue.timeend OR ue.timeend = 0)". // Seulement les sessions correspondantes à la période d'inscription au cours.
@@ -422,7 +343,71 @@ class block_apsolu_dashboard extends block_base {
             " ORDER BY sess.sessiontime, c.fullname";
         $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime);
 
-        return $this->format_rendez_vous($sql, $params);
+        $recordset = $DB->get_recordset_sql($sql, $params);
+        foreach ($recordset as $session) {
+            // Traite les inscriptions sur liste principale et sur liste complémentaire.
+            if (in_array($session->status, array(enrol_select_plugin::MAIN, enrol_select_plugin::WAIT), $strict = true) === true) {
+                if (isset($CFG->is_siuaps_rennes) === false && $session->status === enrol_select_plugin::WAIT) {
+                    // Seul le SIUAPS de Rennes souhaite afficher les rendez-vous pour une personne sur liste complémentaire.
+                    continue;
+                }
+
+                if (isset($lists[$session->courseid]) === true) {
+                    // On affiche que la première session pour une personne sur liste principale ou sur liste complémentaire.
+                    continue;
+                }
+
+                // Variable permettant de savoir si nous avons déjà traité la première session d'un cours.
+                $lists[$session->courseid] = true;
+            }
+
+            $duration = 0;
+
+            $endtime = explode(':', $session->endtime);
+            $starttime = explode(':', $session->starttime);
+
+            if (isset($endtime[1], $starttime[1]) === true) {
+                $duration = ($endtime[0] * 60 * 60 + $endtime[1] * 60) - ($starttime[0] * 60 * 60 + $starttime[1] * 60);
+            }
+
+            if ($duration <= 0) {
+                $duration = 60 * 60;
+            }
+
+            if (userdate($session->sessiontime, '%H:%M') !== $session->starttime) {
+                // Recalcule l'heure de fin du cours si ce n'est plus l'heure par défaut.
+                $session->endtime = userdate($session->sessiontime + $duration, '%H:%M');
+            }
+
+            if ($session->sessiontime + $duration < $this->currenttime) {
+                // N'affiche pas ce rendez-vous si la session du cours est déjà terminée.
+                continue;
+            }
+
+            // Vérifie que l'inscription au cours a débuté.
+            $session->started = ($session->timestart <= time());
+
+            if (isset($this->courses_contacts[$session->courseid]) === false) {
+                $this->courses_contacts[$session->courseid] = new stdClass();
+                $this->courses_contacts[$session->courseid]->teachers = array();
+                $this->courses_contacts[$session->courseid]->count_teachers = 0;
+            }
+
+            $session->teachers = $this->courses_contacts[$session->courseid]->teachers;
+            $session->count_teachers = $this->courses_contacts[$session->courseid]->count_teachers;
+
+            $location = strip_tags($session->location);
+            if (isset($this->locations[$location]) === true) {
+                $session->latitude = $this->locations[$location]->latitude;
+                $session->longitude = $this->locations[$location]->longitude;
+                $session->marker_pix = $this->marker_pix;
+            }
+
+            $sessions[] = $session;
+        }
+        $recordset->close();
+
+        return $sessions;
     }
 
     /**
@@ -437,22 +422,20 @@ class block_apsolu_dashboard extends block_base {
             return $this->content;
         }
 
+        require_once($CFG->dirroot.'/enrol/select/lib.php');
+
         $this->content = new stdClass;
         $this->content->text = '';
 
         $this->set_contacts();
         $this->set_locations();
 
-        $this->currenttime = time();
-        $this->maxtime = $this->currenttime + 1.5 * 30 * 24 * 60 * 60; // Affiche les rendez-vous des 45 prochains jours.
         $this->marker_pix = $OUTPUT->pix_icon('a/marker', $alt = '', 'enrol_select', array('class' => 'apsolu-location-markers-img', 'width' => '15px', 'height' => '20px'));
 
         // Template data.
         $data = new stdClass();
         $data->wwwroot = $CFG->wwwroot;
         $data->is_siuaps_rennes = isset($CFG->is_siuaps_rennes);
-        $data->pre_sessions = array();
-        $data->pre_count_sessions = 0;
         $data->isonwaitlist = false;
         $data->sessions = array();
         $data->count_sessions = 0;
@@ -460,20 +443,14 @@ class block_apsolu_dashboard extends block_base {
         $data->count_enrolment_errors = 0;
         $data->marker_pix = $this->marker_pix;
 
-        // Pre-rendez-vous à venir.
-        foreach ($this->get_pre_next_rendez_vous() as $session) {
-            $data->pre_sessions[] = $this->format_session($session);
-            $data->pre_count_sessions++;
-
-            if ($session->status === enrol_select_plugin::WAIT && isset($CFG->is_siuaps_rennes) === true) {
-                $data->isonwaitlist = true;
-            }
-        }
-
-        // Rendez-vous à venir.
-        foreach ($this->get_next_rendez_vous() as $session) {
+        // Rendez-vous à venir (utilisateurs inscrits sur la liste des acceptés).
+        foreach ($this->get_rendez_vous() as $session) {
             $data->sessions[] = $this->format_session($session);
             $data->count_sessions++;
+
+            if (isset($CFG->is_siuaps_rennes) === true && $session->status === enrol_select_plugin::WAIT) {
+                $data->isonwaitlist = true;
+            }
         }
 
         // Vérifie si l'étudiant peut s'inscrire à ce cours, afin d'afficher un avertissement à l'étudiant.
