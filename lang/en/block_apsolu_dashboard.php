@@ -75,3 +75,4 @@ $string['contact_your_teacher'] = 'Contacter votre enseignant :';
 
 $string['enrol_users'] = 'Gérer les inscriptions';
 $string['export'] = 'Exporter la liste des inscrits';
+$string['with_enrolment_role'] = 'En inscription <strong>{$a->role}</strong>.';

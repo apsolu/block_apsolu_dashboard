@@ -147,7 +147,7 @@ class block_apsolu_dashboard extends block_base {
     /**
      * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes cours".
      *
-     * @param string $archetype Nom de l'archétype du rôle.
+     * @param string $archetype Nom de l'archétype du rôle. TODO: à remplacer par une permission Moodle.
      *
      * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours)
      */
@@ -191,23 +191,23 @@ class block_apsolu_dashboard extends block_base {
                 $course->viewable = true;
             }
 
-            if ($course->apsolucourse !== null) {
-                $parameters = new stdClass();
-                $parameters->startcourse = userdate($startcourse, get_string('strftimedate'));
-                $parameters->endcourse = userdate($endcourse, get_string('strftimedate'));
-                $parameters->role = strtolower($roles[$course->roleid]->localname);
+            $parameters = new stdClass();
+            $parameters->startcourse = userdate($startcourse, get_string('strftimedate'));
+            $parameters->endcourse = userdate($endcourse, get_string('strftimedate'));
+            $parameters->role = strtolower($roles[$course->roleid]->localname);
 
-                if (in_array($course->status, array(enrol_select_plugin::MAIN, enrol_select_plugin::WAIT), $strict = true) === true) {
-                    $parameters->status = enrol_select_plugin::get_enrolment_list_name($course->status);
-                }
-
-                if (isset($parameters->status) === false) {
-                    $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolment_role', 'block_apsolu_dashboard', $parameters);
-                } else {
-                    $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolment_role_and_status', 'block_apsolu_dashboard', $parameters);
-                }
-                $courses[$course->id]->count_enrolments++;
+            if (in_array($course->status, array(enrol_select_plugin::MAIN, enrol_select_plugin::WAIT), $strict = true) === true) {
+                $parameters->status = enrol_select_plugin::get_enrolment_list_name($course->status);
             }
+
+            if (empty($startcourse) === true || empty($endcourse) === true) {
+                $courses[$course->id]->enrolments[] = get_string('with_enrolment_role', 'block_apsolu_dashboard', $parameters);
+            } elseif (isset($parameters->status) === false) {
+                $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolment_role', 'block_apsolu_dashboard', $parameters);
+            } else {
+                $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolment_role_and_status', 'block_apsolu_dashboard', $parameters);
+            }
+            $courses[$course->id]->count_enrolments++;
         }
         $recordset->close();
 
