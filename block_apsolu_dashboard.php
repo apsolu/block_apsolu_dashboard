@@ -169,7 +169,12 @@ class block_apsolu_dashboard extends block_base {
 
         $roles = role_fix_names($DB->get_records('role', array(), 'sortorder'));
 
-        $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, ra.roleid, apc.id AS apsolucourse, ue.status".
+        $sql = "SELECT ac.id, act.name".
+            " FROM {apsolu_calendars} ac".
+            " JOIN {apsolu_calendars_types} act ON act.id = ac.typeid";
+        $calendartypes = $DB->get_records_sql($sql);
+
+        $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, e.enrol, e.customchar1 AS calendarid, ra.roleid, apc.id AS apsolucourse, ue.status".
             " FROM {course} c".
             " LEFT JOIN {apsolu_courses} apc ON apc.id = c.id".
             " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
@@ -179,13 +184,15 @@ class block_apsolu_dashboard extends block_base {
             " JOIN {user_enrolments} ue ON e.id = ue.enrolid AND ue.userid = ra.userid".
             " WHERE ra.userid = :userid".
             " AND r.archetype = :archetype".
-            " AND c.visible = 1".
-            " ORDER BY c.fullname, e.customint7";
+            " AND c.visible = 1". // Cours visible.
+            " AND e.status = 0". // Méthode d'inscription activée.
+            " ORDER BY c.fullname, e.customint7 DESC";
         $parameters = array('userid' => $USER->id, 'archetype' => $archetype);
 
         $recordset = $DB->get_recordset_sql($sql, $parameters);
         foreach ($recordset as $course) {
             if (isset($courses[$course->id]) === false) {
+                $course->{'listname'.$course->status} = enrol_select_plugin::get_enrolment_list_name($course->status);
                 $course->viewable = false;
                 $course->enrolments = array();
                 $course->count_enrolments = 0;
@@ -197,29 +204,71 @@ class block_apsolu_dashboard extends block_base {
             $startcourse = $course->customint7;
             $endcourse = $course->customint8;
 
-            if (time() >= $startcourse && time() <= (is_null($endcourse) ? time() : $endcourse) && $course->status === '0') {
-                $course->viewable = true;
+            if (time() >= $startcourse && time() <= (is_null($endcourse) ? time() : $endcourse)) {
+                $course->viewable = ($course->status === enrol_select_plugin::ACCEPTED);
+
+                // On force la conservation les données de l'inscription en cours pour trier les cours par statut.
+                $courses[$course->id]->status = $course->status;
+                $courses[$course->id]->customint7 = $startcourse;
+                $courses[$course->id]->{'listname'.$course->status} = enrol_select_plugin::get_enrolment_list_name($course->status);
             }
 
-            $parameters = new stdClass();
-            $parameters->startcourse = userdate($startcourse, get_string('strftimedate'));
-            $parameters->endcourse = userdate($endcourse, get_string('strftimedate'));
-            $parameters->role = strtolower($roles[$course->roleid]->localname);
+            $enrolment = new stdClass();
+            $enrolment->role = $roles[$course->roleid]->localname;
 
-            if (in_array($course->status, array(enrol_select_plugin::MAIN, enrol_select_plugin::WAIT), $strict = true) === true) {
-                $parameters->status = enrol_select_plugin::get_enrolment_list_name($course->status);
+            $enrolment->calendar = '';
+            if ($course->enrol === 'select' && isset($calendartypes[$course->calendarid]) === true) {
+                $enrolment->calendar = $calendartypes[$course->calendarid]->name;
             }
 
-            if (empty($startcourse) === true || empty($endcourse) === true) {
-                $courses[$course->id]->enrolments[] = get_string('with_enrolment_role', 'block_apsolu_dashboard', $parameters);
-            } elseif (isset($parameters->status) === false) {
-                $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolment_role', 'block_apsolu_dashboard', $parameters);
-            } else {
-                $courses[$course->id]->enrolments[] = get_string('from_date_to_date_with_enrolment_role_and_status', 'block_apsolu_dashboard', $parameters);
+            $listname = enrol_select_plugin::get_enrolment_list_name($course->status);
+            switch ($course->status) {
+                case enrol_select_plugin::ACCEPTED:
+                    $enrolment->enrolment_accepted = $listname;
+                    break;
+                case enrol_select_plugin::MAIN:
+                    $enrolment->enrolment_main = $listname;
+                    break;
+                case enrol_select_plugin::WAIT:
+                    $enrolment->enrolment_wait = $listname;
+                    break;
+                case enrol_select_plugin::DELETED:
+                    $enrolment->enrolment_deleted = $listname;
             }
+
+            $courses[$course->id]->enrolments[] = $enrolment;
             $courses[$course->id]->count_enrolments++;
         }
         $recordset->close();
+
+        // Tri les cours par statut, date de début du cours, nom du cours.
+        uasort($courses, function($a, $b) {
+            if ($a->status !== $b->status) {
+                if ($a->status > $b->status) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+
+            if ($a->customint7 !== $b->customint7) {
+                if ($a->customint7 < $b->customint7) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+
+            if ($a->fullname !== $b->fullname) {
+                if ($a->fullname > $b->fullname) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+
+            return 0;
+        });
 
         return array(array_values($courses), $count_courses);
     }
