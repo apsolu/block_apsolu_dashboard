@@ -104,9 +104,19 @@ class block_apsolu_dashboard extends block_base {
             $session->label = $session->activity.' '.$session->event.' - '.$session->skill;
         }
 
-        $session->enrolment_list = '';
-        if (in_array($session->status, array(enrol_select_plugin::MAIN, enrol_select_plugin::WAIT), $strict = true) === true) {
-            $session->enrolment_list = enrol_select_plugin::get_enrolment_list_name($session->status);
+        $listname = enrol_select_plugin::get_enrolment_list_name($session->status);
+        switch ($session->status) {
+            case enrol_select_plugin::ACCEPTED:
+                $session->enrolment_accepted = $listname;
+                break;
+            case enrol_select_plugin::MAIN:
+                $session->enrolment_main = $listname;
+                break;
+            case enrol_select_plugin::WAIT:
+                $session->enrolment_wait = $listname;
+                break;
+            case enrol_select_plugin::DELETED:
+                $session->enrolment_deleted = $listname;
         }
 
         $session->link = html_writer::link($CFG->wwwroot.'/course/view.php?id='.$session->courseid, $session->label);
