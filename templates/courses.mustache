@@ -7,7 +7,7 @@
   {{#count_courses}}
   <ul class="list-unstyled">
     {{#courses}}
-    <li class="bg-light {{#listname0}}border-success{{/listname0}}{{#listname2}}border-success{{/listname2}}{{#listname3}}border-warning{{/listname3}}{{#listname4}}border-danger{{/listname4}} card mb-2 p-2">
+    <li class="{{#listname0}}bg-light{{/listname0}}{{#listname2}}bg-light{{/listname2}}{{#listname3}}bg-secondary{{/listname3}}{{#listname4}}bg-secondary{{/listname4}} card mb-2 p-2">
       {{^viewable}}
       <p class="card-header{{#listname3}} text-muted{{/listname3}}{{#listname4}} text-muted{{/listname4}}">{{fullname}}</p>
       {{/viewable}}
