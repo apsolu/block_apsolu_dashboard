@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Script pour afficher les inscriptions en attente de validation.
+ *
  * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -48,7 +50,7 @@ $sql = "SELECT DISTINCT e.*, c.fullname".
 $enrols = $DB->get_records_sql($sql, array($USER->id));
 
 if (count($enrols) === 0) {
-    print_error('accessdenied', 'block_apsolu_dashboard');
+    throw new moodle_exception('accessdenied', 'admin');
 }
 
 // Récupère les utilisateurs inscrits au cours.
@@ -82,7 +84,7 @@ foreach ($recordset as $record) {
     if ($enrols[$record->enrolid]->lastenrolment < $record->lastenrolment) {
         $enrols[$record->enrolid]->lastenrolment = $record->lastenrolment;
         if (in_array($record->status, array(enrol_select_plugin::MAIN, enrol_select_plugin::WAIT), $strict = true) === true) {
-            // Afficher uniquement un warning si la nouvelle inscription concerne une inscription en liste principale ou complémentaire.
+            // Affiche un warning si la nouvelle inscription concerne une inscription en liste principale ou complémentaire.
             $enrols[$record->enrolid]->warninglastenrolment = ($USER->lastlogin <= $record->lastenrolment);
         }
     }

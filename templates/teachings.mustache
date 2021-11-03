@@ -1,3 +1,57 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_apsolu_dashboard/teachings
+
+    Template Moodle pour afficher l'onglet d'enseignements sur la tableau de bord.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * wwwroot
+    * is_siuaps_rennes
+    * shnu
+    * pendingenrolments
+    * count_main_teachings
+    * main_teachings
+        * fullname
+        * visible
+        * enrolid
+    * count_other_teachings
+    * other_teachings
+        * fullname
+        * visible
+
+    Example context (json):
+    {
+        "wwwroot": "https://apsolu.fr",
+        "is_siuaps_rennes": false,
+        "shnu": false,
+        "pendingenrolments": [],
+        "count_main_teachings": 0,
+        "main_teachings": [],
+        "count_other_teachings": 0,
+        "other_teachings": []
+    }
+}}
 <div id="teachings" class="tab-pane fade in">
   <ul class="list-inline">
 		<li class="list-inline-item"><a id="apsolu-dashboard-search-students" class="btn btn-default btn-secondary" href="{{wwwroot}}/blocks/apsolu_dashboard/extractions.php">{{#str}}my_students, block_apsolu_dashboard{{/str}}</a></li>

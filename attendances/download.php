@@ -15,6 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Script permettant à un étudiant de télécharger ses présences auf ormat pdf.
+ *
+ * Note : ce script n'est pas encore affiché sur la tableau de bord des étudiants.
+ *
  * @package    block_apsolu_dashboard
  * @copyright  2019 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -48,9 +52,17 @@ if (empty($courses) === true) {
         if (empty($course->sessions) === true) {
             $html .= get_string('no_sessions', 'local_apsolu');
         } else {
-            $html .= '<table><thead><tr><th><b>'.get_string('date').'</b></th><th><b>'.get_string('status').'</b></th><th><b>'.get_string('courseduration').'</b></th></tr></thead><tbody>';
+            $html .= '<table><thead><tr>'.
+                '<th><b>'.get_string('date').'</b></th>'.
+                '<th><b>'.get_string('status').'</b></th>'.
+                '<th><b>'.get_string('courseduration').'</b></th>'.
+                '</tr></thead><tbody>';
             foreach ($course->sessions as $session) {
-                $html .= '<tr><td>'.userdate($session->sessiontime, get_string('strftimedaydatetime')).'</td><td>'.$session->status.'</td><td>'.format_time($session->duration).'</td></tr>';
+                $html .= '<tr>'.
+                    '<td>'.userdate($session->sessiontime, get_string('strftimedaydatetime')).'</td>'.
+                    '<td>'.$session->status.'</td>'.
+                    '<td>'.format_time($session->duration).'</td>'.
+                    '</tr>';
             }
             $html .= '</tbody></table>';
         }

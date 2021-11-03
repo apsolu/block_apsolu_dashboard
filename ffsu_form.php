@@ -15,7 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    blocks_apsolu_dashboard
+ * Classe le formulaire permettant d'extraire les étudiants inscrits à la FFSU.
+ *
+ * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,12 +27,19 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * Form class to create or to edit a course.
+ * Classe le formulaire permettant d'extraire les étudiants inscrits à la FFSU.
+ *
+ * @package    block_apsolu_dashboard
+ * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_apsolu_dashboard_federation_export_form extends moodleform {
+    /**
+     * Définit les champs du formulaire.
+     *
+     * @return void
+     */
     protected function definition() {
-        global $CFG, $DB;
-
         $mform = $this->_form;
         list($defaults, $institutions, $groups, $medicals, $paids, $sexes) = $this->_customdata;
 
@@ -60,7 +69,9 @@ class block_apsolu_dashboard_federation_export_form extends moodleform {
         $mform->setType('sexes', PARAM_TEXT);
         $mform->addRule('sexes', get_string('required'), 'required', null, 'client');
 
-        $select = $mform->addElement('select', 'medicals', get_string('medical_certificate', 'local_apsolu'), $medicals, array('size' => 4));
+        $attributes = array('size' => 4);
+        $label = get_string('medical_certificate', 'local_apsolu');
+        $select = $mform->addElement('select', 'medicals', $label, $medicals, $attributes);
         $mform->setType('medicals', PARAM_TEXT);
         $mform->addRule('medicals', get_string('required'), 'required', null, 'client');
 
@@ -71,7 +82,6 @@ class block_apsolu_dashboard_federation_export_form extends moodleform {
         // Submit buttons.
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('show'));
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('export', 'local_apsolu'));
-        // $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('notify', 'local_apsolu'), $attributes);
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 

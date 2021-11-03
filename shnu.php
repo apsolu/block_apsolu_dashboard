@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Permet d'extraire la liste des sportifs de haut niveau universitaires.
+ *
  * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -39,13 +41,13 @@ $PAGE->navbar->add(get_string('mystudents', 'local_apsolu'));
 require_login();
 
 // Load courses.
-$is_manager = $DB->get_record('role_assignments', array('contextid' => 1, 'roleid' => 1, 'userid' => $USER->id));
+$ismanager = $DB->get_record('role_assignments', array('contextid' => 1, 'roleid' => 1, 'userid' => $USER->id));
 
-if (!$is_manager) {
-    $is_manager = is_siteadmin();
+if (!$ismanager) {
+    $ismanager = is_siteadmin();
 }
 
-if (!$is_manager) {
+if (!$ismanager) {
     // Teachers.
     $sql = "SELECT DISTINCT c.*".
         " FROM {course} c".
@@ -56,7 +58,7 @@ if (!$is_manager) {
     $records = $DB->get_records_sql($sql, array('userid' => $USER->id, 'courseid' => SHNUID));
 
     if (count($records) === 0) {
-        print_error('usernotavailable');
+        throw new moodle_exception('usernotavailable');
     }
 }
 
@@ -183,7 +185,7 @@ if ($data = $mform->get_data()) {
         if ($data->sexes === 'M') {
             $sql .= " JOIN {user_info_data} ui3 ON u.id = ui3.userid AND ui3.fieldid = 2";
             $where[] = "ui3.data = 'M'";
-        } elseif ($data->sexes === 'F') {
+        } else if ($data->sexes === 'F') {
             $sql .= " JOIN {user_info_data} ui3 ON u.id = ui3.userid AND ui3.fieldid = 2";
             $where[] = "ui3.data = 'F'";
         }
@@ -197,7 +199,7 @@ if ($data = $mform->get_data()) {
     $sql .= " ORDER BY u.lastname, u.firstname, u.institution";
 
     if ($data->submitbutton === get_string('display', 'local_apsolu')) {
-        // TODO: display
+        // TODO: display.
         $data = new stdClass();
         $data->users = array();
         $data->count_users = 0;
@@ -223,7 +225,7 @@ if ($data = $mform->get_data()) {
         echo $OUTPUT->footer();
 
     } else {
-        // TODO: export csv
+        // TODO: export csv.
 
         // Creating a workbook.
         $workbook = new MoodleExcelWorkbook("-");

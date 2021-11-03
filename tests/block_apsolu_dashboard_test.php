@@ -24,8 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../../moodleblock.class.php');
-require_once(__DIR__.'/../block_apsolu_dashboard.php');
+global $CFG;
+
+require_once($CFG->dirroot.'/blocks/moodleblock.class.php');
+require_once($CFG->dirroot.'/blocks/apsolu_dashboard/block_apsolu_dashboard.php');
+require_once($CFG->dirroot.'/course/lib.php');
 
 /**
  * Classe PHPUnit permettant de tester la classe block_apsolu_dashboard.
@@ -130,13 +133,13 @@ class block_apsolu_dashboard_test extends advanced_testcase {
         $countrendezvous = count($block->get_rendez_vous());
         $this->assertSame($countsessions - 1, $countrendezvous);
 
-        // Teste une inscription sur liste principale. La première session est déjà passée. On ne doit pas voir de rendez-vous à venir.
+        // Teste une inscription sur liste principale. La 1ère session est déjà passée. Aucun rendez-vous à venir.
         $plugin->enrol_user($instance, $USER->id, $roleid, $timestart, $timeend, enrol_select_plugin::MAIN);
 
         $countrendezvous = count($block->get_rendez_vous());
         $this->assertSame(0, $countrendezvous);
 
-        // Teste une inscription sur liste complémentaire. La première session est déjà passée. On ne doit pas voir de rendez-vous à venir.
+        // Teste une inscription sur liste complémentaire. La 1ère session est déjà passée. Aucun rendez-vous à venir.
         $plugin->enrol_user($instance, $USER->id, $roleid, $timestart, $timeend, enrol_select_plugin::WAIT);
 
         $countrendezvous = count($block->get_rendez_vous());

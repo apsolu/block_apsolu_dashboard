@@ -15,7 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    blocks_apsolu_dashboard
+ * Classe pour le formulaire permettant d'extraire les étudiants inscrits aux cours.
+ *
+ * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,14 +27,21 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * Form class to create or to edit a course.
+ * Classe pour le formulaire permettant d'extraire les étudiants inscrits aux cours.
+ *
+ * @package    block_apsolu_dashboard
+ * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_apsolu_courses_users_export_form extends moodleform {
+    /**
+     * Définit les champs du formulaire.
+     *
+     * @return void
+     */
     protected function definition() {
-        global $CFG, $DB;
-
         $mform = $this->_form;
-        list($defaults, $courses, $institutions, $roles, $semesters, $lists, $paids, $force_manager) = $this->_customdata;
+        list($defaults, $courses, $institutions, $roles, $semesters, $lists, $paids, $forcemanager) = $this->_customdata;
 
         // Family names.
         $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), array('size' => '48'));
@@ -68,7 +77,8 @@ class local_apsolu_courses_users_export_form extends moodleform {
         $select->setMultiple(true);
 
         // Semesters.
-        $select = $mform->addElement('select', 'semesters', get_string('semesters', 'local_apsolu'), $semesters, array('size' => 4));
+        $attributes = array('size' => 4);
+        $select = $mform->addElement('select', 'semesters', get_string('semesters', 'local_apsolu'), $semesters, $attributes);
         $mform->setType('semesters', PARAM_TEXT);
         $mform->addRule('semesters', get_string('required'), 'required', null, 'client');
 
@@ -86,11 +96,10 @@ class local_apsolu_courses_users_export_form extends moodleform {
         // Submit buttons.
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('display', 'local_apsolu'));
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('export', 'local_apsolu'));
-        // $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('notify', 'local_apsolu'), $attributes);
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
-        if ($force_manager) {
+        if ($forcemanager) {
             $mform->addElement('hidden', 'manager', '1');
             $mform->setType('manager', PARAM_INT);
         }

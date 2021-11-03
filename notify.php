@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Script envoyer des notifications aux étudiants.
+ *
  * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -39,13 +41,13 @@ require_login();
 
 // Load courses.
 $courses = array('*' => get_string('all'));
-$is_manager = $DB->get_record('role_assignments', array('contextid' => 1, 'roleid' => 1, 'userid' => $USER->id));
+$ismanager = $DB->get_record('role_assignments', array('contextid' => 1, 'roleid' => 1, 'userid' => $USER->id));
 
-if (!$is_manager) {
-    $is_manager = is_siteadmin();
+if (!$ismanager) {
+    $ismanager = is_siteadmin();
 }
 
-if (!$is_manager) {
+if (!$ismanager) {
     // Check if is teacher.
     $sql = "SELECT DISTINCT c.*".
         " FROM {enrol} e".
@@ -59,7 +61,7 @@ if (!$is_manager) {
     $records = $DB->get_records_sql($sql, array($USER->id));
 
     if (count($records) === 0) {
-        print_error('usernotavailable');
+        throw new moodle_exception('usernotavailable');
     }
 }
 
@@ -73,7 +75,7 @@ foreach ($_POST['users'] as $userid) {
 }
 
 if ($users === array()) {
-    print_error('usernotavailable');
+    throw new moodle_exception('usernotavailable');
 }
 
 if (!isset($users[$USER->id])) {

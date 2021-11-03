@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Permet d'extraire la liste des étudiants inscrits à un cours.
+ *
  * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +28,7 @@ require_once($CFG->dirroot.'/blocks/apsolu_dashboard/locallib.php');
 require_once($CFG->dirroot.'/blocks/apsolu_dashboard/extractions_form.php');
 require_once($CFG->libdir.'/excellib.class.php');
 
-$force_manager = optional_param('manager', null, PARAM_INT);
+$forcemanager = optional_param('manager', null, PARAM_INT);
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
@@ -41,17 +43,17 @@ require_login();
 // Load courses.
 $courses = array('*' => get_string('all'));
 
-if ($force_manager) {
-    $is_manager = $DB->get_record('role_assignments', array('contextid' => 1, 'roleid' => 1, 'userid' => $USER->id));
+if ($forcemanager) {
+    $ismanager = $DB->get_record('role_assignments', array('contextid' => 1, 'roleid' => 1, 'userid' => $USER->id));
 
-    if (!$is_manager) {
-        $is_manager = is_siteadmin();
+    if (!$ismanager) {
+        $ismanager = is_siteadmin();
     }
 } else {
-    $is_manager = false;
+    $ismanager = false;
 }
 
-if ($is_manager) {
+if ($ismanager) {
     // Managers.
     $sql = "SELECT c.id, c.fullname".
         " FROM {course} c".
@@ -74,7 +76,7 @@ if ($is_manager) {
 }
 
 if (count($records) === 0) {
-    print_error('usernotavailable');
+    throw new moodle_exception('usernotavailable');
 }
 
 foreach ($records as $record) {
@@ -107,16 +109,16 @@ $semesters = array(
 
 if (date('m') > 8) {
     $year = date('y');
-    $default_semester = 1;
+    $defaultsemester = 1;
 } else {
-    $year = date('y')-1;
-    $default_semester = 2;
+    $year = date('y') - 1;
+    $defaultsemester = 2;
 }
 
-$timestart_semester1 = mktime(0, 0, 0, 8, 1, $year);
-$timeend_semester1 = mktime(0, 0, 0, 1, 1, $year+1);
-$timestart_semester2 = mktime(0, 0, 0, 1, 1, $year+1);
-$timeend_semester2 = mktime(0, 0, 0, 7, 1, $year+1);
+$timestartsemester1 = mktime(0, 0, 0, 8, 1, $year);
+$timeendsemester1 = mktime(0, 0, 0, 1, 1, $year + 1);
+$timestartsemester2 = mktime(0, 0, 0, 1, 1, $year + 1);
+$timeendsemester2 = mktime(0, 0, 0, 7, 1, $year + 1);
 
 // Load lists.
 $lists = array(
@@ -144,8 +146,8 @@ foreach ($DB->get_records_sql('SELECT DISTINCT department FROM {user} ORDER BY d
 }
 
 // Build form.
-$defaults = (object) ['institutions' => '*', 'roles' => '*', 'semesters' => $default_semester, 'lists' => '0', 'paids' => '*'];
-$customdata = array($defaults, $courses, $institutions, $roles, $semesters, $lists, $paids, $force_manager);
+$defaults = (object) ['institutions' => '*', 'roles' => '*', 'semesters' => $defaultsemester, 'lists' => '0', 'paids' => '*'];
+$customdata = array($defaults, $courses, $institutions, $roles, $semesters, $lists, $paids, $forcemanager);
 $mform = new local_apsolu_courses_users_export_form(null, $customdata);
 
 if ($data = $mform->get_data()) {
@@ -162,7 +164,7 @@ if ($data = $mform->get_data()) {
         " JOIN {role_assignments} ra1 ON ctx.id = ra1.contextid AND ra1.userid = u.id AND ra1.itemid = e.id".
         " JOIN {role} r ON r.id = ra1.roleid";
 
-    if (!$is_manager) {
+    if (!$ismanager) {
         // Teachers.
         $sql .= " JOIN {role_assignments} ra2 ON ctx.id = ra2.contextid AND ra2.roleid = 3 AND ra2.userid = :owner";
         $conditions['owner'] = $USER->id;
@@ -262,14 +264,14 @@ if ($data = $mform->get_data()) {
         switch ($data->semesters) {
             case '2':
                 $where[] = '((ue.timestart = 0 OR ue.timestart >= :timestart) AND (ue.timeend = 0 OR ue.timeend <= :timeend))';
-                $conditions['timestart'] = $timestart_semester2;
-                $conditions['timeend'] = $timeend_semester2;
+                $conditions['timestart'] = $timestartsemester2;
+                $conditions['timeend'] = $timeendsemester2;
                 break;
             case '1':
             default:
                 $where[] = '((ue.timestart = 0 OR ue.timestart >= :timestart) AND (ue.timeend = 0 OR ue.timeend <= :timeend))';
-                $conditions['timestart'] = $timestart_semester1;
-                $conditions['timeend'] = $timeend_semester1;
+                $conditions['timestart'] = $timestartsemester1;
+                $conditions['timeend'] = $timeendsemester1;
         }
     }
 
@@ -292,7 +294,7 @@ if ($data = $mform->get_data()) {
         if ($data->paids === '0') {
             $sql .= " LEFT JOIN {user_info_data} ui ON u.id = ui.userid AND ui.fieldid = 12";
             $where[] = "(ui.data = 0 OR ui.data IS NULL)";
-        } elseif ($data->paids === '1') {
+        } else if ($data->paids === '1') {
             $sql .= " JOIN {user_info_data} ui ON u.id = ui.userid AND ui.fieldid = 12 AND ui.data = 1";
         }
     }
@@ -305,7 +307,7 @@ if ($data = $mform->get_data()) {
     $sql .= " ORDER BY u.lastname, u.firstname, u.institution";
 
     if ($data->submitbutton === get_string('display', 'local_apsolu')) {
-        // TODO: display
+        // TODO: display.
         $data = new stdClass();
         $data->users = array();
         $data->count_users = 0;
@@ -333,7 +335,7 @@ if ($data = $mform->get_data()) {
         echo $OUTPUT->footer();
 
     } else {
-        // TODO: export csv
+        // TODO: export csv.
 
         // Creating a workbook.
         $workbook = new MoodleExcelWorkbook("-");

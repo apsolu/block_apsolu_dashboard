@@ -165,7 +165,7 @@ class block_apsolu_dashboard extends block_base {
         global $DB, $USER;
 
         $courses = array();
-        $count_courses = 0;
+        $countcourses = 0;
 
         $roles = role_fix_names($DB->get_records('role', array(), 'sortorder'));
 
@@ -174,7 +174,8 @@ class block_apsolu_dashboard extends block_base {
             " JOIN {apsolu_calendars_types} act ON act.id = ac.typeid";
         $calendartypes = $DB->get_records_sql($sql);
 
-        $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, e.enrol, e.customchar1 AS calendarid, ra.roleid, apc.id AS apsolucourse, ue.status".
+        $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, e.enrol, e.customchar1 AS calendarid,".
+            " ra.roleid, apc.id AS apsolucourse, ue.status".
             " FROM {course} c".
             " LEFT JOIN {apsolu_courses} apc ON apc.id = c.id".
             " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
@@ -198,7 +199,7 @@ class block_apsolu_dashboard extends block_base {
                 $course->count_enrolments = 0;
                 $courses[$course->id] = $course;
 
-                $count_courses++;
+                $countcourses++;
             }
 
             $startcourse = $course->customint7;
@@ -270,22 +271,23 @@ class block_apsolu_dashboard extends block_base {
             return 0;
         });
 
-        return array(array_values($courses), $count_courses);
+        return array(array_values($courses), $countcourses);
     }
 
     /**
      * Retourne la liste des cours où l'utilisateur enseigne.
      *
-     * @return array Retourne un tuple de données array(liste_des_cours[], nombre de cours, liste_des_autres_cours[], nombre de cours 'autres')
+     * @return array Retourne un tuple de données :
+     *      array(liste_des_cours[], nombre de cours, liste_des_autres_cours[], nombre de cours 'autres')
      */
     private function get_teachings() {
         global $DB, $USER;
 
         $mains = array();
-        $count_mains = 0;
+        $countmains = 0;
 
         $others = array();
-        $count_others = 0;
+        $countothers = 0;
 
         $sql = "SELECT c.id, c.fullname, c.visible, e.id AS enrolid, ra.roleid, apc.id AS apsolucourse".
             " FROM {course} c".
@@ -304,15 +306,15 @@ class block_apsolu_dashboard extends block_base {
             // Différencie les cours apsolu et les 'autres' cours (meta-cours, etc).
             if ($course->apsolucourse === null) {
                 $others[$course->id] = $course;
-                $count_others++;
+                $countothers++;
             } else {
                 $mains[$course->id] = $course;
-                $count_mains++;
+                $countmains++;
             }
         }
         $recordset->close();
 
-        return array(array_values($mains), $count_mains, array_values($others), $count_others);
+        return array(array_values($mains), $countmains, array_values($others), $countothers);
     }
 
     /**
@@ -383,7 +385,9 @@ class block_apsolu_dashboard extends block_base {
         $lists = array();
         $sessions = array();
 
-        $sql = "SELECT sess.sessiontime, sess.courseid, sess.locationid, c.fullname, apc.event, aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend, apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
+        $sql = "SELECT sess.sessiontime, sess.courseid, sess.locationid, c.fullname, apc.event,".
+            " aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend,".
+            " apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
             " FROM {apsolu_attendance_sessions} sess".
             " JOIN {course} c ON c.id = sess.courseid".
             " JOIN {course_categories} cc ON cc.id = c.category".
@@ -393,12 +397,16 @@ class block_apsolu_dashboard extends block_base {
             " JOIN {enrol} e ON c.id = e.courseid".
             " JOIN {user_enrolments} ue ON e.id = ue.enrolid".
             " WHERE c.visible = 1".
-            " AND e.status = 0". // Only active enrolments.
-            " AND ue.status IN (0, 2, 3)". // Seulement les inscriptions acceptées, sur liste principale ou sur liste complémentaire.
-            " AND ue.userid = :userid".
-            " AND (ue.timeend = 0 OR ue.timeend > :currenttime)". // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
-            " AND (sess.sessiontime BETWEEN ue.timestart AND ue.timeend OR ue.timeend = 0)". // Seulement les sessions correspondantes à la période d'inscription au cours.
+            // Seulement les méthodes d'inscription actives.
+            " AND e.status = 0".
+            // Seulement les inscriptions acceptées, sur liste principale ou sur liste complémentaire.
+            " AND ue.status IN (0, 2, 3)".
+            // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
+            " AND (ue.timeend = 0 OR ue.timeend > :currenttime)".
+            // Seulement les sessions correspondantes à la période d'inscription au cours.
+            " AND (sess.sessiontime BETWEEN ue.timestart AND ue.timeend OR ue.timeend = 0)".
             " AND sess.sessiontime <= :maxtime".
+            " AND ue.userid = :userid".
             " ORDER BY sess.sessiontime, c.fullname";
         $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime);
 
@@ -475,7 +483,7 @@ class block_apsolu_dashboard extends block_base {
      * @return stdClass the content
      */
     public function get_content() {
-        global $CFG, $DB, $OUTPUT, $PAGE, $USER;
+        global $CFG, $DB, $OUTPUT, $USER;
 
         if ($this->content !== null) {
             return $this->content;
@@ -489,7 +497,8 @@ class block_apsolu_dashboard extends block_base {
         $this->set_contacts();
         $this->set_locations();
 
-        $this->marker_pix = $OUTPUT->pix_icon('a/marker', $alt = '', 'enrol_select', array('class' => 'apsolu-location-markers-img', 'width' => '15px', 'height' => '20px'));
+        $attributes = array('class' => 'apsolu-location-markers-img', 'width' => '15px', 'height' => '20px');
+        $this->marker_pix = $OUTPUT->pix_icon('a/marker', $alt = '', 'enrol_select', $attributes);
 
         // Template data.
         $data = new stdClass();
@@ -514,7 +523,8 @@ class block_apsolu_dashboard extends block_base {
 
         // Vérifie si l'étudiant peut s'inscrire à ce cours, afin d'afficher un avertissement à l'étudiant.
         if (isset($CFG->is_siuaps_rennes) === true) {
-            $sesame = $DB->get_record('user_info_data', array('userid' => $USER->id, 'fieldid' => 11)); // TODO: rendre plus flexible.
+            // TODO: rendre plus flexible.
+            $sesame = $DB->get_record('user_info_data', array('userid' => $USER->id, 'fieldid' => 11));
             if ($sesame !== false && $sesame->data === '1') {
                 require_once($CFG->dirroot.'/enrol/select/locallib.php');
 
@@ -530,7 +540,8 @@ class block_apsolu_dashboard extends block_base {
                        " WHERE cm.userid = :userid".
                        " AND ac.roleid = :roleid".
                        " AND esc.enrolid = :enrolid";
-                    $allow = $DB->get_records_sql($sql, array('userid' => $USER->id, 'roleid' => $enrolment->roleid, 'enrolid' => $enrolment->enrolid));
+                    $params = array('userid' => $USER->id, 'roleid' => $enrolment->roleid, 'enrolid' => $enrolment->enrolid);
+                    $allow = $DB->get_records_sql($sql, $params);
                     if (count($allow) === 0) {
                         $params = new stdClass();
                         $params->rolename = $roles[$enrolment->roleid]->name;
@@ -550,15 +561,16 @@ class block_apsolu_dashboard extends block_base {
         $data->count_attendances = count($data->attendances);
 
         // Récupère les cours où l'utilisateur enseigne.
-        list($data->main_teachings, $data->count_main_teachings, $data->other_teachings, $data->count_other_teachings) = $this->get_teachings();
+        list($data->main_teachings, $data->count_main_teachings,
+            $data->other_teachings, $data->count_other_teachings) = $this->get_teachings();
         $data->count_teachings = $data->count_main_teachings + $data->count_other_teachings;
 
         if ($data->count_teachings > 0) {
             // TODO: rendre plus flexible.
             $data->shnu = false;
             if (isset($CFG->is_siuaps_rennes) === true) {
-                // TODO: $shnu = $DB->get_record('role_assignments', array('contextid' => 16964, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 320. // 2017-2018.
-                $shnu = $DB->get_record('role_assignments', array('contextid' => 29119, 'roleid' => 3, 'userid' => $USER->id)); // Courseid 423. // 2019-2020.
+                // Note: courseid 320 (2017-2018) ; courseid 423 (2019-2020).
+                $shnu = $DB->get_record('role_assignments', array('contextid' => 29119, 'roleid' => 3, 'userid' => $USER->id));
                 $data->shnu = ($shnu !== false);
             }
 
@@ -578,13 +590,14 @@ class block_apsolu_dashboard extends block_base {
                 " AND ue.timecreated >= :lastlogin".
                 " AND ra.userid = :teacherid".
                 " AND ue.userid != :userid";
-            $data->pendingenrolments = count($DB->get_records_sql($sql, array('teacherid' => $USER->id, 'userid' => $USER->id, 'lastlogin' => $USER->lastlogin)));
+            $params = array('teacherid' => $USER->id, 'userid' => $USER->id, 'lastlogin' => $USER->lastlogin);
+            $data->pendingenrolments = count($DB->get_records_sql($sql, $params));
         }
 
         // Gestion de l'onglet "mes paiements".
-        $payments_startdate = get_config('local_apsolu', 'payments_startdate');
-        $payments_enddate = get_config('local_apsolu', 'payments_enddate');
-        $data->payments_open = (time() > $payments_startdate && time() < $payments_enddate);
+        $paymentsstartdate = get_config('local_apsolu', 'payments_startdate');
+        $paymentsenddate = get_config('local_apsolu', 'payments_enddate');
+        $data->payments_open = (time() > $paymentsstartdate && time() < $paymentsenddate);
         $data->count_cards = 0;
 
         if ($data->payments_open === true) {
@@ -626,22 +639,27 @@ class block_apsolu_dashboard extends block_base {
         // Gestion de l'onglet collaboratif.
         $data->collaborative = false;
         if (isset($CFG->is_siuaps_rennes) === true) {
-            $sql = "SELECT ue.userid FROM {user_enrolments} ue JOIN {enrol} e ON e.id = ue.enrolid WHERE e.courseid = 284 AND ue.userid = :userid";
+            $sql = "SELECT ue.userid".
+                " FROM {user_enrolments} ue".
+                " JOIN {enrol} e ON e.id = ue.enrolid".
+                " WHERE e.courseid = 284".
+                " AND ue.userid = :userid";
             $data->collaborative = $DB->get_record_sql($sql, array('userid' => $USER->id));
         }
 
         // Gestion de l'onglet "Gestion des étapes".
         $data->manageetape = false;
         // Affiche le lien si le module apsolu_auth existe. Cache le lien aux gestionnaires et administrateurs du site.
-        if (is_dir($CFG->dirroot.'/local/apsolu_auth') === true && has_capability('moodle/site:configview', context_system::instance()) === false) {
+        $authmoduleexists = is_dir($CFG->dirroot.'/local/apsolu_auth');
+        if ($authmoduleexists === true && has_capability('moodle/site:configview', context_system::instance()) === false) {
             $data->manageetape = has_capability('local/apsolu_auth:manageetape', context_system::instance());
         }
 
         // Display templates.
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
 
-        $PAGE->requires->css(new moodle_url($CFG->wwwroot.'/enrol/select/styles/ol.css'));
-        $PAGE->requires->js_call_amd('enrol_select/select_mapping', 'initialise');
+        $this->page->requires->css(new moodle_url($CFG->wwwroot.'/enrol/select/styles/ol.css'));
+        $this->page->requires->js_call_amd('enrol_select/select_mapping', 'initialise');
 
         return $this->content;
     }

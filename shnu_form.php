@@ -15,7 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    blocks_apsolu_dashboard
+ * Classe pour le formulaire permettant d'extraire les sportifs de haut niveau universitaires.
+ *
+ * @package    block_apsolu_dashboard
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,9 +27,18 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * Form class to create or to edit a course.
+ * Classe pour le formulaire permettant d'extraire les sportifs de haut niveau universitaires.
+ *
+ * @package    block_apsolu_dashboard
+ * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_apsolu_dashboard_shnu_export_form extends moodleform {
+    /**
+     * Définit les champs du formulaire.
+     *
+     * @return void
+     */
     protected function definition() {
         global $CFG, $DB;
 
@@ -63,7 +74,6 @@ class block_apsolu_dashboard_shnu_export_form extends moodleform {
         // Submit buttons.
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('display', 'local_apsolu'));
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('export', 'local_apsolu'));
-        // $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('notify', 'local_apsolu'), $attributes);
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
