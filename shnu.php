@@ -38,6 +38,9 @@ $PAGE->set_title(get_string('mystudents', 'local_apsolu'));
 // Navigation.
 $PAGE->navbar->add(get_string('mystudents', 'local_apsolu'));
 
+// Javascript.
+$PAGE->requires->js_call_amd('block_apsolu_dashboard/select_all_checkboxes', 'initialise');
+
 require_login();
 
 // Load courses.
