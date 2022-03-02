@@ -23,7 +23,6 @@
  */
 
 $string['pluginname'] = 'APSOLU: Tableau de bord';
-$string['students_found'] = '{$a} étudiant(s) trouvé(s)';
 $string['title'] = 'APSOLU: Tableau de bord';
 
 $string['apsolu_dashboard:addinstance'] = 'Ajouter un bloc '.$string['pluginname'];
