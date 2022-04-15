@@ -26,6 +26,7 @@
     * none
 
     Context variables required for this template:
+    * address
     * location
     * latitude
     * longitude
@@ -39,10 +40,30 @@
         "marker_pix": ""
     }
 }}
-<p class="mb-0">
-    <i class="icon fa fa-fw fa-globe navicon" aria-hidden="true" tabindex="-1"></i>
-    {{{ location }}}
-    {{#latitude}}
-        <a target="_blank" href="https://www.openstreetmap.org/?mlat={{latitude}}&mlon={{longitude}}#map=15/{{latitude}}/{{longitude}}" class="apsolu-location-markers-a" data-longitude="{{ longitude }}" data-latitude="{{ latitude }}">{{{ marker_pix }}}</a>
-    {{/latitude}}
-</p>
+
+<table>
+  <tr>
+    <td>
+        {{#latitude}}
+            <a target="_blank" href="https://www.openstreetmap.org/?mlat={{latitude}}&mlon={{longitude}}#map=15/{{latitude}}/{{longitude}}" class="apsolu-location-markers-a" data-longitude="{{ longitude }}" data-latitude="{{ latitude }}">
+                {{{ marker_pix }}}
+            </a>
+        {{/latitude}}
+    </td>
+    <td>
+        <b>{{{ location }}}</b>
+    </td>
+  </tr>
+  <tr>
+    <td>
+        {{!
+            <i class="icon fa fa-fw fa-globe navicon" aria-hidden="true" tabindex="-1"></i>
+        }}
+    </td>
+    <td>
+    {{address}}
+    </td>
+  </tr>
+</table>
+
+

@@ -465,6 +465,7 @@ class block_apsolu_dashboard extends block_base {
 
             $location = strip_tags($session->location);
             if (isset($this->locations[$location]) === true) {
+                $session->address = $this-> locations[$location]->address;
                 $session->latitude = $this->locations[$location]->latitude;
                 $session->longitude = $this->locations[$location]->longitude;
                 $session->marker_pix = $this->marker_pix;
