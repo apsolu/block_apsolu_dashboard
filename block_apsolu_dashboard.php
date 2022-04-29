@@ -638,14 +638,14 @@ class block_apsolu_dashboard extends block_base {
         }
 
         // Gestion de l'onglet collaboratif.
-        $data->collaborative = false;
-        if (isset($CFG->is_siuaps_rennes) === true) {
-            $sql = "SELECT ue.userid".
+        $data->collaborative = get_config('local_apsolu', 'collaborative_course');
+        if ($data->collaborative !== '' && $data->collaborative !== false) {
+            $sql = "SELECT ue.id, ue.userid, e.courseid".
                 " FROM {user_enrolments} ue".
                 " JOIN {enrol} e ON e.id = ue.enrolid".
-                " WHERE e.courseid = 284".
+                " WHERE e.courseid = :courseid".
                 " AND ue.userid = :userid";
-            $data->collaborative = $DB->get_record_sql($sql, array('userid' => $USER->id));
+            $data->collaborative = $DB->get_record_sql($sql, array('courseid' => $data->collaborative, 'userid' => $USER->id));
         }
 
         // Gestion de l'onglet "Gestion des étapes".
