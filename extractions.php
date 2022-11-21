@@ -101,11 +101,10 @@ foreach ($DB->get_records('role', array('archetype' => 'student')) as $role) {
 }
 
 // Load semesters.
-$semesters = array(
-    '*' => get_string('all'),
-    1 => get_string('semester1', 'local_apsolu'),
-    2 => get_string('semester2', 'local_apsolu'),
-);
+$semesters = array('*' => get_string('all'));
+foreach ($DB->get_records('apsolu_calendars_types', $conditions = null, $sort = 'name') as $record) {
+    $semesters[$record->id] = $record->name;
+}
 
 if (date('m') > 8) {
     $year = date('y');
@@ -114,11 +113,6 @@ if (date('m') > 8) {
     $year = date('y') - 1;
     $defaultsemester = 2;
 }
-
-$timestartsemester1 = mktime(0, 0, 0, 8, 1, $year);
-$timeendsemester1 = mktime(0, 0, 0, 1, 1, $year + 1);
-$timestartsemester2 = mktime(0, 0, 0, 1, 1, $year + 1);
-$timeendsemester2 = mktime(0, 0, 0, 7, 1, $year + 1);
 
 // Load lists.
 $lists = array(
@@ -158,6 +152,7 @@ if ($data = $mform->get_data()) {
         " FROM {user} u".
         " JOIN {user_enrolments} ue ON u.id = ue.userid".
         " JOIN {enrol} e ON e.id = ue.enrolid AND e.enrol = 'select' AND e.status = 0".
+        " JOIN {apsolu_calendars} cal ON cal.id = e.customchar1".
         " JOIN {course} c ON c.id = e.courseid".
         " JOIN {apsolu_courses} ac ON ac.id = c.id".
         " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
@@ -261,18 +256,8 @@ if ($data = $mform->get_data()) {
 
     // Semesters filter.
     if (isset($data->semesters) && $data->semesters !== '*') {
-        switch ($data->semesters) {
-            case '2':
-                $where[] = '((ue.timestart = 0 OR ue.timestart >= :timestart) AND (ue.timeend = 0 OR ue.timeend <= :timeend))';
-                $conditions['timestart'] = $timestartsemester2;
-                $conditions['timeend'] = $timeendsemester2;
-                break;
-            case '1':
-            default:
-                $where[] = '((ue.timestart = 0 OR ue.timestart >= :timestart) AND (ue.timeend = 0 OR ue.timeend <= :timeend))';
-                $conditions['timestart'] = $timestartsemester1;
-                $conditions['timeend'] = $timeendsemester1;
-        }
+        $where[] = 'cal.typeid = :typeid';
+        $conditions['typeid'] = $data->semesters;
     }
 
     // Lists filter.
