@@ -99,7 +99,21 @@
           {{#enrolid}}
           <ul class="list-inline pull-right">
             <li class="list-inline-item"><a class="btn btn-default btn-secondary" href="{{wwwroot}}/enrol/select/manage.php?enrolid={{enrolid}}">{{#str}}enrol_users, block_apsolu_dashboard{{/str}}</a></li>
-            <li class="list-inline-item"><a class="btn btn-default btn-secondary" href="{{wwwroot}}/enrol/select/export.php?enrolid={{enrolid}}&format=xls">{{#str}}export, block_apsolu_dashboard{{/str}}</a></li>
+            <li class="list-inline-item">
+                <div class="btn-group">
+                    <a class="btn btn-default btn-secondary" href="{{wwwroot}}/enrol/select/export.php?enrolid={{enrolid}}&format=xls">{{#str}}export, block_apsolu_dashboard{{/str}}</a>
+                    {{#has_many_enrolments}}
+                    <button type="button" class="btn btn-default btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu">
+                        {{#enrolments}}
+                        <a class="dropdown-item" href="{{wwwroot}}/enrol/select/export.php?enrolid={{id}}&format=xls">{{name}}</a>
+                        {{/enrolments}}
+                    </div>
+                    {{/has_many_enrolments}}
+                </div>
+            </li>
           </ul>
           {{/enrolid}}
         </li>

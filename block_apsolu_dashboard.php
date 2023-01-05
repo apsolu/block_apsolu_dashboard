@@ -289,7 +289,7 @@ class block_apsolu_dashboard extends block_base {
         $others = array();
         $countothers = 0;
 
-        $sql = "SELECT c.id, c.fullname, c.visible, e.id AS enrolid, ra.roleid, apc.id AS apsolucourse".
+        $sql = "SELECT c.id, c.fullname, c.visible, e.id AS enrolid, e.name AS enrolname, e.customint8 AS endcourse, ra.roleid, apc.id AS apsolucourse".
             " FROM {course} c".
             " LEFT JOIN {apsolu_courses} apc ON apc.id = c.id".
             " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
@@ -298,21 +298,50 @@ class block_apsolu_dashboard extends block_base {
             " LEFT JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND e.enrol = 'select'".
             " WHERE ra.userid = :userid".
             " AND r.archetype = 'editingteacher'".
-            " ORDER BY c.visible DESC, apc.numweekday, apc.starttime, c.fullname";
+            " ORDER BY c.visible DESC, apc.numweekday, apc.starttime, c.fullname, e.enrolstartdate";
         $parameters = array('userid' => $USER->id);
 
+        $courses = array();
         $recordset = $DB->get_recordset_sql($sql, $parameters);
         foreach ($recordset as $course) {
+            if (empty($course->enrolname) === true) {
+                $course->enrolname = get_string('pluginname', 'enrol_select');
+            }
+
+            $enrol = new stdClass();
+            $enrol->id = $course->enrolid;
+            $enrol->name = $course->enrolname;
+
+            if (isset($courses[$course->id]) === false) {
+                $course->enrolments = array();
+                unset($course->enrolname);
+
+                $courses[$course->id] = $course;
+            }
+
+            if (empty($course->endcourse) === false && $course->endcourse > time()) {
+                // Détermine une inscription active à placer sur le bouton principal de téléchargement des étudiants.
+                $courses[$course->id]->enrolid = $course->enrolid;
+            }
+
+            $courses[$course->id]->enrolments[] = $enrol;
+        }
+        $recordset->close();
+
+        foreach ($courses as $course) {
             // Différencie les cours apsolu et les 'autres' cours (meta-cours, etc).
             if ($course->apsolucourse === null) {
                 $others[$course->id] = $course;
                 $countothers++;
             } else {
+                // Détermine si le cours possède plusieurs méthodes d'inscription. Si ce n'est pas le cas, on ne propose pas de téléchargement par méthode d'inscription.
+                $course->has_many_enrolments = isset($course->enrolments[1]);
+
                 $mains[$course->id] = $course;
                 $countmains++;
             }
         }
-        $recordset->close();
+        unset($courses);
 
         return array(array_values($mains), $countmains, array_values($others), $countothers);
     }
