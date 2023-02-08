@@ -689,6 +689,7 @@ class block_apsolu_dashboard extends block_base {
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
 
         $this->page->requires->css(new moodle_url($CFG->wwwroot.'/enrol/select/styles/ol.css'));
+        $this->page->requires->js_call_amd('block_apsolu_dashboard/hashes_observer', 'initialise');
         $this->page->requires->js_call_amd('enrol_select/select_mapping', 'initialise');
 
         return $this->content;
