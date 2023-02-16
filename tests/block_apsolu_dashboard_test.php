@@ -22,6 +22,17 @@
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_apsolu_dashboard;
+
+use advanced_testcase;
+use block_apsolu_dashboard;
+use enrol_select_plugin;
+use local_apsolu\core\attendancesession;
+use local_apsolu\core\course;
+use local_apsolu\core\location;
+use local_apsolu\core\period;
+use local_apsolu\core\skill;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -37,12 +48,24 @@ require_once($CFG->dirroot.'/course/lib.php');
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_apsolu_dashboard_test extends advanced_testcase {
+    /**
+     * Initialise un environnement de test.
+     *
+     * @return void
+     */
     protected function setUp() : void {
         parent::setUp();
 
         $this->resetAfterTest();
     }
 
+    /**
+     * Teste la méthode init().
+     *
+     * @covers \block_apsolu_dashboard::init()
+     *
+     * @return void
+     */
     public function test_init() {
         $block = new block_apsolu_dashboard();
         $block->init();
@@ -50,10 +73,24 @@ class block_apsolu_dashboard_test extends advanced_testcase {
         $this->assertSame(get_string('title', 'block_apsolu_dashboard'), $block->title);
     }
 
+    /**
+     * Teste la méthode format_rendez_vous().
+     *
+     * @covers \block_apsolu_dashboard::format_rendez_vous()
+     *
+     * @return void
+     */
     public function test_format_rendez_vous() {
 
     }
 
+    /**
+     * Teste la méthode get_rendez_vous().
+     *
+     * @covers \block_apsolu_dashboard::get_rendez_vous()
+     *
+     * @return void
+     */
     public function test_get_rendez_vous() {
         global $CFG, $DB, $USER;
 
@@ -67,26 +104,26 @@ class block_apsolu_dashboard_test extends advanced_testcase {
 
         $weeks = array();
         for ($i = 0; $i < $countsessions; $i++) {
-            $weeks[] = strftime('%F', $lastmonday);
+            $weeks[] = userdate($lastmonday, '%F');
             $lastmonday += WEEKSECS;
         }
 
-        $period = new local_apsolu\core\period();
+        $period = new period();
         $data = (object) ['name' => 'period', 'generic_name' => 'period', 'weeks' => implode(',', $weeks)];
         $period->save($data);
 
         // Configure le niveau de pratique.
-        $skill = new local_apsolu\core\skill();
+        $skill = new skill();
         $skill->name = 'skill 1';
         $skill->save();
 
         // Configure le lieu de pratique.
-        $location = new local_apsolu\core\location();
+        $location = new location();
         $location->name = 'location 1';
         $location->save();
 
         // Configure le cours.
-        $course = new local_apsolu\core\course();
+        $course = new course();
         $data = advanced_testcase::getDataGenerator()->get_plugin_generator('local_apsolu')->get_course_data();
         $data->periodid = $period->id;
         $data->skillid = $skill->id;
@@ -96,7 +133,7 @@ class block_apsolu_dashboard_test extends advanced_testcase {
         $course->save($data);
 
         // Ajoute la session passée qui n'est pas automatiquement créée.
-        $session = new local_apsolu\core\attendancesession();
+        $session = new attendancesession();
         $session->name = 'session passée';
         list($year, $month, $day) = explode('-', $weeks[0]);
         $sessiontime = make_timestamp($year, $month, $day);

@@ -25,8 +25,6 @@
 use UniversiteRennes2\Apsolu\Payment;
 use local_apsolu\core\attendance as Attendance;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Classe principale du module block_apsolu_dashboard.
  *
@@ -126,7 +124,7 @@ class block_apsolu_dashboard extends block_base {
         $session->end = $end;
         $session->endstr = $endstr;
 
-        $session->defaultsessiontime = (strftime('%u%H:%M', $session->sessiontime) === $session->numweekday.$session->starttime);
+        $session->defaultsessiontime = (userdate($session->sessiontime, '%u%H:%M') === $session->numweekday.$session->starttime);
 
         return $session;
     }
@@ -169,26 +167,26 @@ class block_apsolu_dashboard extends block_base {
 
         $roles = role_fix_names($DB->get_records('role', array(), 'sortorder'));
 
-        $sql = "SELECT ac.id, act.name".
-            " FROM {apsolu_calendars} ac".
-            " JOIN {apsolu_calendars_types} act ON act.id = ac.typeid";
+        $sql = "SELECT ac.id, act.name
+                  FROM {apsolu_calendars} ac
+                  JOIN {apsolu_calendars_types} act ON act.id = ac.typeid";
         $calendartypes = $DB->get_records_sql($sql);
 
-        $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, e.enrol, e.customchar1 AS calendarid,".
-            " ra.roleid, apc.id AS apsolucourse, ue.status".
-            " FROM {course} c".
-            " LEFT JOIN {apsolu_courses} apc ON apc.id = c.id".
-            " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
-            " JOIN {role_assignments} ra ON ctx.id = ra.contextid".
-            " JOIN {role} r ON r.id = ra.roleid".
-            " JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND ra.itemid = e.id".
-            " JOIN {user_enrolments} ue ON e.id = ue.enrolid AND ue.userid = ra.userid".
-            " WHERE ra.userid = :userid".
-            " AND r.archetype = :archetype".
-            " AND c.visible = 1". // Cours visible.
-            " AND e.status = 0". // Méthode d'inscription activée.
-            " ORDER BY c.fullname, e.customint7 DESC";
-        $parameters = array('userid' => $USER->id, 'archetype' => $archetype);
+        $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, e.enrol, e.customchar1 AS calendarid,
+                       ra.roleid, apc.id AS apsolucourse, ue.status
+                  FROM {course} c
+             LEFT JOIN {apsolu_courses} apc ON apc.id = c.id
+                  JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50
+                  JOIN {role_assignments} ra ON ctx.id = ra.contextid
+                  JOIN {role} r ON r.id = ra.roleid
+                  JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND ra.itemid = e.id
+                  JOIN {user_enrolments} ue ON e.id = ue.enrolid AND ue.userid = ra.userid
+                 WHERE ra.userid = :userid
+                   AND r.archetype = :archetype
+                   AND c.visible = :visible
+                   AND e.status = :status
+              ORDER BY c.fullname, e.customint7 DESC";
+        $parameters = array('archetype' => $archetype, 'status' => ENROL_INSTANCE_ENABLED, 'userid' => $USER->id, 'visible' => 1);
 
         $recordset = $DB->get_recordset_sql($sql, $parameters);
         foreach ($recordset as $course) {
@@ -289,16 +287,17 @@ class block_apsolu_dashboard extends block_base {
         $others = array();
         $countothers = 0;
 
-        $sql = "SELECT c.id, c.fullname, c.visible, e.id AS enrolid, e.name AS enrolname, e.customint8 AS endcourse, ra.roleid, apc.id AS apsolucourse".
-            " FROM {course} c".
-            " LEFT JOIN {apsolu_courses} apc ON apc.id = c.id".
-            " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
-            " JOIN {role_assignments} ra ON ctx.id = ra.contextid".
-            " JOIN {role} r ON r.id = ra.roleid".
-            " LEFT JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND e.enrol = 'select'".
-            " WHERE ra.userid = :userid".
-            " AND r.archetype = 'editingteacher'".
-            " ORDER BY c.visible DESC, apc.numweekday, apc.starttime, c.fullname, e.enrolstartdate";
+        $sql = "SELECT c.id, c.fullname, c.visible, e.id AS enrolid, e.name AS enrolname, e.customint8 AS endcourse,
+                       ra.roleid, apc.id AS apsolucourse
+                  FROM {course} c
+             LEFT JOIN {apsolu_courses} apc ON apc.id = c.id
+                  JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50
+                  JOIN {role_assignments} ra ON ctx.id = ra.contextid
+                  JOIN {role} r ON r.id = ra.roleid
+             LEFT JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND e.enrol = 'select'
+                 WHERE ra.userid = :userid
+                   AND r.archetype = 'editingteacher'
+              ORDER BY c.visible DESC, apc.numweekday, apc.starttime, c.fullname, e.enrolstartdate";
         $parameters = array('userid' => $USER->id);
 
         $courses = array();
@@ -334,7 +333,8 @@ class block_apsolu_dashboard extends block_base {
                 $others[$course->id] = $course;
                 $countothers++;
             } else {
-                // Détermine si le cours possède plusieurs méthodes d'inscription. Si ce n'est pas le cas, on ne propose pas de téléchargement par méthode d'inscription.
+                // Détermine si le cours possède plusieurs méthodes d'inscription.
+                // Si ce n'est pas le cas, on ne propose pas de téléchargement par méthode d'inscription.
                 $course->has_many_enrolments = isset($course->enrolments[1]);
 
                 $mains[$course->id] = $course;
@@ -356,15 +356,15 @@ class block_apsolu_dashboard extends block_base {
 
         $this->courses_contacts = array();
 
-        $sql = "SELECT ra.id, ac.id AS courseid, u.firstname, u.lastname, u.email".
-            " FROM {role_assignments} ra".
-            " JOIN {context} ctx ON ctx.id = ra.contextid".
-            " JOIN {apsolu_courses} ac ON ac.id = ctx.instanceid".
-            " JOIN {user} u ON u.id = ra.userid".
-            " WHERE ctx.contextlevel = 50".
-            " AND ra.roleid = 3".
-            " AND u.deleted = 0".
-            " ORDER BY u.lastname, u.firstname";
+        $sql = "SELECT ra.id, ac.id AS courseid, u.firstname, u.lastname, u.email
+                  FROM {role_assignments} ra
+                  JOIN {context} ctx ON ctx.id = ra.contextid
+                  JOIN {apsolu_courses} ac ON ac.id = ctx.instanceid
+                  JOIN {user} u ON u.id = ra.userid
+                 WHERE ctx.contextlevel = 50
+                   AND ra.roleid = 3
+                   AND u.deleted = 0
+              ORDER BY u.lastname, u.firstname";
         $assignments = $DB->get_records_sql($sql);
         foreach ($assignments as $assignment) {
             if (isset($this->courses_contacts[$assignment->courseid]) === false) {
@@ -562,14 +562,14 @@ class block_apsolu_dashboard extends block_base {
 
                 $enrolments = UniversiteRennes2\Apsolu\get_real_user_activity_enrolments();
                 foreach ($enrolments as $enrolment) {
-                    $sql = "SELECT ac.id".
-                       " FROM {apsolu_colleges} ac".
-                       " JOIN {apsolu_colleges_members} acm ON ac.id = acm.collegeid".
-                       " JOIN {cohort_members} cm ON cm.cohortid = acm.cohortid".
-                       " JOIN {enrol_select_cohorts} esc ON cm.cohortid = esc.cohortid".
-                       " WHERE cm.userid = :userid".
-                       " AND ac.roleid = :roleid".
-                       " AND esc.enrolid = :enrolid";
+                    $sql = "SELECT ac.id
+                              FROM {apsolu_colleges} ac
+                              JOIN {apsolu_colleges_members} acm ON ac.id = acm.collegeid
+                              JOIN {cohort_members} cm ON cm.cohortid = acm.cohortid
+                              JOIN {enrol_select_cohorts} esc ON cm.cohortid = esc.cohortid
+                             WHERE cm.userid = :userid
+                               AND ac.roleid = :roleid
+                               AND esc.enrolid = :enrolid";
                     $params = array('userid' => $USER->id, 'roleid' => $enrolment->roleid, 'enrolid' => $enrolment->enrolid);
                     $allow = $DB->get_records_sql($sql, $params);
                     if (count($allow) === 0) {
@@ -608,19 +608,22 @@ class block_apsolu_dashboard extends block_base {
             $data->grading = count($DB->get_records('apsolu_grade_items'));
 
             // Vérifie si des inscriptions sont en attente.
-            $sql = "SELECT ue.id, ue.userid".
-                " FROM {user_enrolments} ue".
-                " JOIN {enrol} e ON e.id = ue.enrolid".
-                " JOIN {apsolu_courses} ac ON ac.id = e.courseid".
-                " JOIN {context} ctx ON e.courseid = ctx.instanceid AND ctx.contextlevel = 50".
-                " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
-                " WHERE e.enrol = 'select'".
-                " AND e.status = 0".
-                " AND ue.status IN (1, 2)". // Liste principale et liste complémentaire.
-                " AND ue.timecreated >= :lastlogin".
-                " AND ra.userid = :teacherid".
-                " AND ue.userid != :userid";
+            list($insql, $inparams) = $DB->get_in_or_equal([1, 2], SQL_PARAMS_NAMED); // Liste principale et liste complémentaire.
+
+            $sql = "SELECT ue.id, ue.userid
+                      FROM {user_enrolments} ue
+                      JOIN {enrol} e ON e.id = ue.enrolid
+                      JOIN {apsolu_courses} ac ON ac.id = e.courseid
+                      JOIN {context} ctx ON e.courseid = ctx.instanceid AND ctx.contextlevel = 50
+                      JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3
+                     WHERE e.enrol = 'select'
+                       AND e.status = 0
+                       AND ue.status $insql
+                       AND ue.timecreated >= :lastlogin
+                       AND ra.userid = :teacherid
+                       AND ue.userid != :userid";
             $params = array('teacherid' => $USER->id, 'userid' => $USER->id, 'lastlogin' => $USER->lastlogin);
+            $params = array_merge($params, $inparams);
             $data->pendingenrolments = count($DB->get_records_sql($sql, $params));
         }
 
@@ -669,11 +672,11 @@ class block_apsolu_dashboard extends block_base {
         // Gestion de l'onglet collaboratif.
         $data->collaborative = get_config('local_apsolu', 'collaborative_course');
         if ($data->collaborative !== '' && $data->collaborative !== false) {
-            $sql = "SELECT ue.id, ue.userid, e.courseid".
-                " FROM {user_enrolments} ue".
-                " JOIN {enrol} e ON e.id = ue.enrolid".
-                " WHERE e.courseid = :courseid".
-                " AND ue.userid = :userid";
+            $sql = "SELECT ue.id, ue.userid, e.courseid
+                      FROM {user_enrolments} ue
+                      JOIN {enrol} e ON e.id = ue.enrolid
+                     WHERE e.courseid = :courseid
+                       AND ue.userid = :userid";
             $data->collaborative = $DB->get_record_sql($sql, array('courseid' => $data->collaborative, 'userid' => $USER->id));
         }
 
