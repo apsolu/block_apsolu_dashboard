@@ -24,5 +24,9 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 # Set maximum line length.
-[*.js,*.php]
+[*.{css,js,php}]
 max_line_length = 132
+
+# Remove maximum line length for language files.
+[lang/**.php]
+max_line_length = off
