@@ -34,19 +34,19 @@ $string['no_upcoming_events'] = 'Aucun rendez-vous à venir';
 
 $string['pre-sessions'] = 'Séances de pré-rentrée';
 $string['pre-sessions_notice'] = '<div class="alert alert-info">'.
-    '<p><strong>Si vous n\'avez pu vous pré-inscrire que sur liste complémentaire :</strong></p>'.
-    '<p>Tout n\'est pas perdu ! 2 possiblités :</p>'.
+    '<p><strong>Si vous n’avez pu vous pré-inscrire que sur liste complémentaire :</strong></p>'.
+    '<p>Tout n’est pas perdu ! 2 possiblités :</p>'.
     '<ul>'.
-    '<li>Vous pouvez tenter de vous présenter au 1er cours (sans garantie d\'obtenir une place).</li>'.
-    '<li>Vous attendez ; l\'enseignant pourra vous notifier par mail si une place s\'est libérée et s\'il peut vous accueillir. N\'oubliez pas de consulter votre adresse mail universitaire !</li>'.
+    '<li>Vous pouvez tenter de vous présenter au 1er cours (sans garantie d’obtenir une place).</li>'.
+    '<li>Vous attendez ; l’enseignant pourra vous notifier par mail si une place s’est libérée et s’il peut vous accueillir. N’oubliez pas de consulter votre adresse mail universitaire !</li>'.
     '</ul>'.
     '</div>';
 $string['sessions'] = 'Séances hebdomadaires';
 
 $string['important'] = 'Important :';
-$string['unallowed_enrolment'] = 'D\'après votre contrat pédagogique, vous ne pouvez pas :';
+$string['unallowed_enrolment'] = 'D’après votre contrat pédagogique, vous ne pouvez pas :';
 $string['unallowed_enrolment_to'] = 'être inscrit en <strong>{$a->rolename}</strong> au cours <strong>{$a->coursename}</strong>';
-$string['unallowed_enrolment_contact'] = 'Merci de contacter votre enseignant pour plus d\'information.';
+$string['unallowed_enrolment_contact'] = 'Merci de contacter votre enseignant pour plus d’information.';
 
 $string['my_attendances'] = 'Mes présences';
 $string['my_courses'] = 'Mes cours';
@@ -54,13 +54,13 @@ $string['my_payments'] = 'Mes paiements';
 $string['my_rendez-vous'] = 'Mes rendez-vous';
 $string['my_teachings'] = 'Mes enseignements';
 $string['no_courses'] = 'Aucun cours';
-$string['enrolment_type'] = 'Type d\'inscription';
-$string['courses_signup'] = 'S\'inscrire à une activité';
+$string['enrolment_type'] = 'Type d’inscription';
+$string['courses_signup'] = 'S’inscrire à une activité';
 
 $string['my_students'] = 'Liste de mes étudiants';
 $string['my_ffsu'] = 'Liste FFSU';
 $string['my_shnu'] = 'Liste SHNU';
-$string['pending_enrolments'] = 'Inscription en attente d\'approbation';
+$string['pending_enrolments'] = 'Inscription en attente d’approbation';
 $string['last_enrolment'] = 'Date de la dernière inscription';
 $string['pay'] = 'Payer';
 $string['my_main_teachings'] = 'Mes créneaux';
