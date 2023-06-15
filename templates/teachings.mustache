@@ -60,9 +60,11 @@
 		{{#shnu}}
 		<li class="list-inline-item"><a id="apsolu-dashboard-search-shnu" class="btn btn-sm btn-default btn-secondary" href="{{wwwroot}}/blocks/apsolu_dashboard/shnu.php">{{#str}}my_shnu, block_apsolu_dashboard{{/str}}</a></li>
 		{{/shnu}}
-
-		<li class="list-inline-item"><a id="apsolu-dashboard-search-ffsu" class="btn btn-sm btn-default btn-secondary" href="{{wwwroot}}/blocks/apsolu_dashboard/ffsu.php">{{#str}}my_ffsu, block_apsolu_dashboard{{/str}}</a></li>
     {{/is_siuaps_rennes}}
+
+    {{#ffsu}}
+		<li class="list-inline-item"><a id="apsolu-dashboard-search-ffsu" class="btn btn-sm btn-default btn-secondary" href="{{wwwroot}}/local/apsolu/federation/listing/index.php">{{#str}}federation_list, local_apsolu{{/str}}</a></li>
+    {{/ffsu}}
 
     {{#grading}}
 	<li class="list-inline-item"><a id="apsolu-dashboard-search-grades" class="btn btn-sm btn-default btn-secondary" href="{{wwwroot}}/local/apsolu/grades/grade/index.php">{{#str}}grades{{/str}}</a></li>

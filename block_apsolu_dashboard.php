@@ -24,6 +24,7 @@
 
 use UniversiteRennes2\Apsolu\Payment;
 use local_apsolu\core\attendance as Attendance;
+use local_apsolu\core\course as Course;
 
 /**
  * Classe principale du module block_apsolu_dashboard.
@@ -602,6 +603,14 @@ class block_apsolu_dashboard extends block_base {
                 // Note: courseid 320 (2017-2018) ; courseid 423 (2019-2020).
                 $shnu = $DB->get_record('role_assignments', array('contextid' => 29119, 'roleid' => 3, 'userid' => $USER->id));
                 $data->shnu = ($shnu !== false);
+            }
+
+            // Détermine si l'utilisateur peut exporter la liste des inscrits FFSU.
+            $data->ffsu = false;
+            $federationcourseid = Course::get_federation_courseid();
+            if (empty($federationcourseid) === false) {
+                $coursecontext = context_course::instance($federationcourseid);
+                $data->ffsu = has_capability('moodle/course:update', $coursecontext);
             }
 
             // Vérifie que la plateforme utilise les éléments de notation.
