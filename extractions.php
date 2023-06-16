@@ -122,13 +122,6 @@ $lists = array(
     '4' => get_string('deleted_list', 'enrol_select'),
 );
 
-// Load paids.
-$paids = array(
-    '*' => get_string('all'),
-    '1' => get_string('yes'),
-    '0' => get_string('no'),
-);
-
 // Departments list.
 $departmentslist = array();
 foreach ($DB->get_records_sql('SELECT DISTINCT department FROM {user} ORDER BY department') as $record) {
@@ -139,8 +132,8 @@ foreach ($DB->get_records_sql('SELECT DISTINCT department FROM {user} ORDER BY d
 }
 
 // Build form.
-$defaults = (object) ['institutions' => '*', 'roles' => '*', 'semesters' => $defaultsemester, 'lists' => '0', 'paids' => '*'];
-$customdata = array($defaults, $courses, $institutions, $roles, $semesters, $lists, $paids, $forcemanager);
+$defaults = (object) ['institutions' => '*', 'roles' => '*', 'semesters' => $defaultsemester, 'lists' => '0'];
+$customdata = array($defaults, $courses, $institutions, $roles, $semesters, $lists, $forcemanager);
 $mform = new local_apsolu_courses_users_export_form(null, $customdata);
 
 if ($data = $mform->get_data()) {
@@ -273,16 +266,6 @@ if ($data = $mform->get_data()) {
         }
     }
 
-    // Paids filter.
-    if (isset($data->paids)) {
-        if ($data->paids === '0') {
-            $sql .= " LEFT JOIN {user_info_data} ui ON u.id = ui.userid AND ui.fieldid = 12";
-            $where[] = "(ui.data = 0 OR ui.data IS NULL)";
-        } else if ($data->paids === '1') {
-            $sql .= " JOIN {user_info_data} ui ON u.id = ui.userid AND ui.fieldid = 12 AND ui.data = 1";
-        }
-    }
-
     // Build final query.
     if (isset($where[0])) {
         $sql .= " WHERE ".implode(' AND ', $where);
@@ -299,7 +282,7 @@ if ($data = $mform->get_data()) {
 
         $recordset = $DB->get_recordset_sql($sql, $conditions);
         foreach ($recordset as $user) {
-            $user->list = $customdata[6][$user->listid];
+            $user->list = $customdata[5][$user->listid];
             $user->customfields = profile_user_record($user->id);
             $user->htmlpicture = $OUTPUT->user_picture($user, array('courseid' => $user->courseid));
             $data->users[] = $user;
@@ -358,7 +341,6 @@ if ($data = $mform->get_data()) {
         $headers[] = get_string('fields_apsolucycle', 'local_apsolu');
         $headers[] = get_string('role', 'local_apsolu');
         $headers[] = get_string('enrolments', 'enrol');
-        $headers[] = get_string('cardsport', 'block_apsolu_payment');
         $headers[] = get_string('list');
         if (!(isset($data->courses[0]) && $data->courses[0] !== '*' && !isset($data->courses[1]))) {
             $headers[] = get_string('course');
@@ -374,12 +356,6 @@ if ($data = $mform->get_data()) {
         foreach ($recordset as $user) {
             $user->customfields = profile_user_record($user->id);
 
-            if (isset($user->customfields->cardpaid) && $user->customfields->cardpaid === '1') {
-                $user->customfields->cardpaid = get_string('yes');
-            } else {
-                $user->customfields->cardpaid = get_string('no');
-            }
-
             $myxls->write_string($line, 0, $user->lastname, $excelformat);
             $myxls->write_string($line, 1, $user->firstname, $excelformat);
             $myxls->write_string($line, 2, $user->idnumber, $excelformat);
@@ -390,10 +366,9 @@ if ($data = $mform->get_data()) {
             $myxls->write_string($line, 7, $user->customfields->apsolucycle, $excelformat);
             $myxls->write_string($line, 8, $user->rolename, $excelformat);
             $myxls->write_string($line, 9, $user->enrol, $excelformat);
-            $myxls->write_string($line, 10, $user->customfields->apsolucardpaid, $excelformat);
-            $myxls->write_string($line, 11, $customdata[6][$user->listid], $excelformat);
+            $myxls->write_string($line, 10, $customdata[5][$user->listid], $excelformat);
             if (!(isset($data->courses[0]) && $data->courses[0] !== '*' && !isset($data->courses[1]))) {
-                $myxls->write_string($line, 12, $user->course, $excelformat);
+                $myxls->write_string($line, 11, $user->course, $excelformat);
             }
 
             $line++;

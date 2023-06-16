@@ -41,7 +41,7 @@ class local_apsolu_courses_users_export_form extends moodleform {
      */
     protected function definition() {
         $mform = $this->_form;
-        list($defaults, $courses, $institutions, $roles, $semesters, $lists, $paids, $forcemanager) = $this->_customdata;
+        list($defaults, $courses, $institutions, $roles, $semesters, $lists, $forcemanager) = $this->_customdata;
 
         // Family names.
         $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), array('size' => '48'));
@@ -87,11 +87,6 @@ class local_apsolu_courses_users_export_form extends moodleform {
         $mform->setType('lists', PARAM_TEXT);
         $mform->addRule('lists', get_string('required'), 'required', null, 'client');
         $select->setMultiple(true);
-
-        // Paids (yes or no).
-        $select = $mform->addElement('select', 'paids', get_string('paid', 'local_apsolu'), $paids, array('size' => 4));
-        $mform->setType('paids', PARAM_TEXT);
-        $mform->addRule('paids', get_string('required'), 'required', null, 'client');
 
         // Submit buttons.
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('display', 'local_apsolu'));
