@@ -266,18 +266,6 @@ if ($data = $mform->get_data()) {
         foreach ($recordset as $user) {
             $user->customfields = profile_user_record($user->id);
 
-            if (isset($user->customfields->apsolufederationpaid) && $user->customfields->apsolufederationpaid === '1') {
-                $user->customfields->apsolufederationpaid = get_string('yes');
-            } else {
-                $user->customfields->apsolufederationpaid = get_string('no');
-            }
-
-            if (isset($user->customfields->apsolumedicalcertificate) && $user->customfields->apsolumedicalcertificate === '1') {
-                $user->customfields->apsolumedicalcertificate = get_string('yes');
-            } else {
-                $user->customfields->apsolumedicalcertificate = get_string('no');
-            }
-
             $myxls->write_string($line, 0, $user->lastname, $excelformat);
             $myxls->write_string($line, 1, $user->firstname, $excelformat);
             $myxls->write_string($line, 2, $user->idnumber, $excelformat);
