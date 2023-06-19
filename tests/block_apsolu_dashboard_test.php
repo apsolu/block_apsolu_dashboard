@@ -102,6 +102,13 @@ class block_apsolu_dashboard_test extends advanced_testcase {
         $countsessions = 3;
         $lastmonday = strtotime('last Monday');
 
+        // Contrôle si le test est exécuté un lundi.
+        if (date('N') === '1') {
+            // Si on est lundi, 'last Monday' retourne le lundi de la semaine précédente.
+            // On ajoute 7 jours pour avoir la date du jour.
+            $lastmonday += WEEKSECS;
+        }
+
         $weeks = array();
         for ($i = 0; $i < $countsessions; $i++) {
             $weeks[] = userdate($lastmonday, '%F');
