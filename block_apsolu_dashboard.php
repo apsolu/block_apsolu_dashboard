@@ -561,7 +561,7 @@ class block_apsolu_dashboard extends block_base {
 
                 $roles = role_fix_names($DB->get_records('role'));
 
-                $enrolments = UniversiteRennes2\Apsolu\get_real_user_activity_enrolments();
+                $enrolments = enrol_select_get_real_user_activity_enrolments();
                 foreach ($enrolments as $enrolment) {
                     $sql = "SELECT ac.id
                               FROM {apsolu_colleges} ac
