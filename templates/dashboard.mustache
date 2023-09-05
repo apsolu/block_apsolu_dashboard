@@ -42,9 +42,11 @@
         "count_attendaces": 0,
         "count_teachings": 0,
         "payments_open": 0,
-        "collaborative": 0
+        "collaborative": 0,
+        "federation_warning": true
     }
 }}
+
 {{! Barre contenant le bouton d'inscription aux cours et éventuellement le bouton de paiement. }}
 <ul class="list-inline text-right">
   <li class="list-inline-item"><a class="btn btn-success" href="{{wwwroot}}/enrol/select/overview.php">{{#str}}courses_signup, block_apsolu_dashboard{{/str}}</a></li>
@@ -54,6 +56,10 @@
     {{/count_due_cards}}
   {{/count_cards}}
 </ul>
+
+{{#federation_warning}}
+    <div class="alert alert-danger">{{#str}}your_course_registration_is_not_yet_complete_you_must_request_your_license_number, block_apsolu_dashboard, {{wwwroot}}{{/str}}</div>
+{{/federation_warning}}
 
 {{! Liste des onglets }}
 <ul class="nav nav-tabs" role="tablist">

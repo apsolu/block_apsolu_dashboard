@@ -24,7 +24,7 @@
 
 use UniversiteRennes2\Apsolu\Payment;
 use local_apsolu\core\attendance as Attendance;
-use local_apsolu\core\course as Course;
+use local_apsolu\core\federation\course as FederationCourse;
 
 /**
  * Classe principale du module block_apsolu_dashboard.
@@ -522,6 +522,8 @@ class block_apsolu_dashboard extends block_base {
 
         require_once($CFG->dirroot.'/enrol/select/lib.php');
 
+        $federation = new FederationCourse();
+
         $this->content = new stdClass;
         $this->content->text = '';
 
@@ -541,6 +543,14 @@ class block_apsolu_dashboard extends block_base {
         $data->enrolment_errors = array();
         $data->count_enrolment_errors = 0;
         $data->marker_pix = $this->marker_pix;
+        $data->federation_warning = false;
+        if (empty($federation->get_courseid()) === false) {
+            // Détermine si l'utilisateur courant est inscrit à la FFSU et doit valider son adhésion.
+            $pendingadhesion = $DB->get_record('apsolu_federation_adhesions', array('userid' => $USER->id));
+            if ($pendingadhesion !== false) {
+                $data->federation_warning = empty($pendingadhesion->federationnumberrequestdate);
+            }
+        }
 
         // Rendez-vous à venir (utilisateurs inscrits sur la liste des acceptés).
         foreach ($this->get_rendez_vous() as $session) {
@@ -607,7 +617,7 @@ class block_apsolu_dashboard extends block_base {
 
             // Détermine si l'utilisateur peut exporter la liste des inscrits FFSU.
             $data->ffsu = false;
-            $federationcourseid = Course::get_federation_courseid();
+            $federationcourseid = $federation->get_courseid();
             if (empty($federationcourseid) === false) {
                 $coursecontext = context_course::instance($federationcourseid);
                 $data->ffsu = has_capability('moodle/course:update', $coursecontext);
