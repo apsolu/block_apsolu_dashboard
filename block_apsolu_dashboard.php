@@ -289,7 +289,7 @@ class block_apsolu_dashboard extends block_base {
         $countothers = 0;
 
         $sql = "SELECT c.id, c.fullname, c.visible, e.id AS enrolid, e.name AS enrolname, e.customint8 AS endcourse,
-                       ra.roleid, apc.id AS apsolucourse
+                       e.customint7 AS startcourse, ra.roleid, apc.id AS apsolucourse
                   FROM {course} c
              LEFT JOIN {apsolu_courses} apc ON apc.id = c.id
                   JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50
@@ -319,8 +319,10 @@ class block_apsolu_dashboard extends block_base {
                 $courses[$course->id] = $course;
             }
 
-            if (empty($course->endcourse) === false && $course->endcourse > time()) {
+            if ((empty($course->startcourse) === true || $course->startcourse <= time()) &&
+                (empty($course->endcourse) === true || $course->endcourse >= time())) {
                 // Détermine une inscription active à placer sur le bouton principal de téléchargement des étudiants.
+                // TODO: créer une fonction pour ça, car ces comparaisons sont certainement réutilisées ailleurs.
                 $courses[$course->id]->enrolid = $course->enrolid;
             }
 
