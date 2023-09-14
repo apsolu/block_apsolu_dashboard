@@ -73,4 +73,4 @@ $string['contact_your_teacher'] = 'Contacter votre enseignant :';
 $string['enrol_users'] = 'Gérer les inscriptions';
 $string['export'] = 'Exporter la liste des inscrits';
 
-$string['your_course_registration_is_not_yet_complete_you_must_request_your_license_number'] = 'Votre inscription à la FFSU n’est pas encore terminée. Vous devez désormais faire <a href="{$a}/local/apsolu/federation/adhesion/index.php">votre demande de numéro de licence</a>.';
+$string['your_course_registration_is_not_yet_complete_you_must_request_your_license_number'] = 'Votre inscription à la FFSU n’est pas encore terminée. Vous devez aller au bout de la démarche pour finaliser votre <a href="{$a}/local/apsolu/federation/adhesion/index.php">demande de licence FFSU</a>.';
