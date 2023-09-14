@@ -545,11 +545,27 @@ class block_apsolu_dashboard extends block_base {
         $data->enrolment_errors = array();
         $data->count_enrolment_errors = 0;
         $data->marker_pix = $this->marker_pix;
+        $data->federation = false;
         $data->federation_warning = false;
-        if (empty($federation->get_courseid()) === false) {
+        if (empty($federation->get_course()) === false) {
             // Détermine si l'utilisateur courant est inscrit à la FFSU et doit valider son adhésion.
             $pendingadhesion = $DB->get_record('apsolu_federation_adhesions', array('userid' => $USER->id));
-            if ($pendingadhesion !== false) {
+            if ($pendingadhesion === false) {
+                if (empty($federation->get_course()->visible) === false) {
+                    try {
+                        $conditions = array('enrol' => 'select', 'status' => 0, 'courseid' => $federation->get_courseid());
+                        $instance = $DB->get_record('enrol', $conditions, '*', MUST_EXIST);
+
+                        $conditions = array('enrolid' => $instance->id);
+                        $federationrole = $DB->get_record('enrol_select_roles', $conditions, '*', MUST_EXIST);
+
+                        $enrolselectplugin = new enrol_select_plugin();
+                        $data->federation = $enrolselectplugin->can_enrol($instance, $USER, $federationrole->roleid);
+                    } catch (Exception $exception) {
+                        debugging($exception->getMessage(), $level = DEBUG_DEVELOPER);
+                    }
+                }
+            } else {
                 $data->federation_warning = empty($pendingadhesion->federationnumberrequestdate);
             }
         }
