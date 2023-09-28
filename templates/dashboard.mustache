@@ -49,9 +49,10 @@
 
 {{! Barre contenant le bouton d'inscription aux cours et éventuellement le bouton de paiement. }}
 <ul class="list-inline text-right">
-  {{#federation}}
+  {{#federation_join}}
+  {{! Affiche le bouton d'adhésion à la FFSU }}
   <li class="list-inline-item"><a class="btn btn-info" href="{{wwwroot}}/local/apsolu/federation/adhesion/index.php">{{#str}}join_the_sports_association, local_apsolu{{/str}}</a></li>
-  {{/federation}}
+  {{/federation_join}}
 
   {{#federation_summary}}
   {{! Affiche le bouton d'accès au résumé de l'adhésion à la FFSU }}

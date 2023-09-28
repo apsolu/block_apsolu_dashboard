@@ -545,7 +545,7 @@ class block_apsolu_dashboard extends block_base {
         $data->enrolment_errors = array();
         $data->count_enrolment_errors = 0;
         $data->marker_pix = $this->marker_pix;
-        $data->federation = false;
+        $data->federation_join = false;
         $data->federation_warning = false;
         $data->federation_summary = false;
         if (empty($federation->get_course()) === false) {
@@ -561,7 +561,7 @@ class block_apsolu_dashboard extends block_base {
                         $federationrole = $DB->get_record('enrol_select_roles', $conditions, '*', MUST_EXIST);
 
                         $enrolselectplugin = new enrol_select_plugin();
-                        $data->federation = $enrolselectplugin->can_enrol($instance, $USER, $federationrole->roleid);
+                        $data->federation_join = $enrolselectplugin->can_enrol($instance, $USER, $federationrole->roleid);
                     } catch (Exception $exception) {
                         debugging($exception->getMessage(), $level = DEBUG_DEVELOPER);
                     }
