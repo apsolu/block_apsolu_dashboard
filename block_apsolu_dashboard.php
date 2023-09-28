@@ -547,6 +547,7 @@ class block_apsolu_dashboard extends block_base {
         $data->marker_pix = $this->marker_pix;
         $data->federation = false;
         $data->federation_warning = false;
+        $data->federation_summary = false;
         if (empty($federation->get_course()) === false) {
             // Détermine si l'utilisateur courant est inscrit à la FFSU et doit valider son adhésion.
             $pendingadhesion = $DB->get_record('apsolu_federation_adhesions', array('userid' => $USER->id));
@@ -567,6 +568,7 @@ class block_apsolu_dashboard extends block_base {
                 }
             } else {
                 $data->federation_warning = empty($pendingadhesion->federationnumberrequestdate);
+                $data->federation_summary = empty($pendingadhesion->federationnumber) === false;
             }
         }
 
