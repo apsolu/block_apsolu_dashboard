@@ -43,7 +43,7 @@ $PAGE->requires->js_call_amd('block_apsolu_dashboard/select_all_checkboxes', 'in
 require_login();
 
 // Load courses.
-$ismanager = $DB->get_record('role_assignments', array('contextid' => 1, 'roleid' => 1, 'userid' => $USER->id));
+$ismanager = $DB->get_record('role_assignments', ['contextid' => 1, 'roleid' => 1, 'userid' => $USER->id]);
 
 if (!$ismanager) {
     $ismanager = is_siteadmin();
@@ -57,7 +57,7 @@ if (!$ismanager) {
         " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
         " WHERE ra.userid = :userid".
         " AND c.id = :courseid";
-    $records = $DB->get_records_sql($sql, array('userid' => $USER->id, 'courseid' => SHNUID));
+    $records = $DB->get_records_sql($sql, ['userid' => $USER->id, 'courseid' => SHNUID]);
 
     if (count($records) === 0) {
         throw new moodle_exception('usernotavailable');
@@ -66,7 +66,7 @@ if (!$ismanager) {
 
 // Load institutions.
 $sql = "SELECT DISTINCT institution FROM {user} WHERE id > 2 AND deleted = 0 AND auth = 'shibboleth' ORDER BY institution";
-$institutions = array('*' => get_string('all'));
+$institutions = ['*' => get_string('all')];
 foreach ($DB->get_records_sql($sql) as $record) {
     if (!empty($record->institution)) {
         $institutions[$record->institution] = $record->institution;
@@ -74,27 +74,27 @@ foreach ($DB->get_records_sql($sql) as $record) {
 }
 
 // Load groups.
-$groups = array('*' => get_string('all'));
-foreach ($DB->get_records('groups', array('courseid' => SHNUID), 'name') as $group) {
+$groups = ['*' => get_string('all')];
+foreach ($DB->get_records('groups', ['courseid' => SHNUID], 'name') as $group) {
     $groups[$group->id] = $group->name;
 }
 
 // Load sexes.
-$sexes = array(
+$sexes = [
     '*' => get_string('all'),
     'M' => get_string('male', 'local_apsolu'),
     'F' => get_string('female', 'local_apsolu'),
-);
+];
 
 
 // Build form.
 $defaults = (object) ['institutions' => '*', 'groups' => '*', 'sexes' => '*'];
-$customdata = array($defaults, $institutions, $groups, $sexes);
+$customdata = [$defaults, $institutions, $groups, $sexes];
 $mform = new block_apsolu_dashboard_shnu_export_form(null, $customdata);
 
 if ($data = $mform->get_data()) {
     // Save data.
-    $conditions = array();
+    $conditions = [];
 
     $sql = "SELECT u.*".
         " FROM {user} u".
@@ -104,11 +104,11 @@ if ($data = $mform->get_data()) {
         " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
         " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND u.id = ra.userid AND ra.roleid = 5";
 
-    $where = array('u.deleted = 0');
+    $where = ['u.deleted = 0'];
 
     // Lastnames filter.
     if (isset($data->lastnames)) {
-        $lastnames = array();
+        $lastnames = [];
         foreach (explode(',', $data->lastnames) as $i => $lastname) {
             if (empty($lastname)) {
                 continue;
@@ -124,7 +124,7 @@ if ($data = $mform->get_data()) {
 
     // Institutions filter.
     if (isset($data->institutions[0]) && $data->institutions[0] !== '*') {
-        $institutions = array();
+        $institutions = [];
         foreach ($data->institutions as $i => $institution) {
             $institutions[] = ':institution'.$i;
             $conditions['institution'.$i] = $institution;
@@ -134,7 +134,7 @@ if ($data = $mform->get_data()) {
 
     // UFR filter.
     if (isset($data->ufrs)) {
-        $ufrs = array();
+        $ufrs = [];
         foreach (explode(',', $data->ufrs) as $i => $ufr) {
             if (empty($ufr)) {
                 continue;
@@ -151,7 +151,7 @@ if ($data = $mform->get_data()) {
 
     // Departments filter.
     if (isset($data->departments)) {
-        $departments = array();
+        $departments = [];
         foreach (explode(',', $data->departments) as $i => $department) {
             if (empty($department)) {
                 continue;
@@ -167,7 +167,7 @@ if ($data = $mform->get_data()) {
 
     // Groups filter.
     if (isset($data->groups[0]) && $data->groups[0] !== '*') {
-        $groups = array();
+        $groups = [];
         foreach ($data->groups as $group) {
             if (ctype_digit($group)) {
                 $groups[] = $group;
@@ -203,14 +203,14 @@ if ($data = $mform->get_data()) {
     if ($data->submitbutton === get_string('display', 'local_apsolu')) {
         // TODO: display.
         $data = new stdClass();
-        $data->users = array();
+        $data->users = [];
         $data->count_users = 0;
         $data->action = $CFG->wwwroot.'/blocks/apsolu_dashboard/notify.php';
 
         $recordset = $DB->get_recordset_sql($sql, $conditions);
         foreach ($recordset as $user) {
             $user->customfields = profile_user_record($user->id);
-            $user->htmlpicture = $OUTPUT->user_picture($user, array('courseid' => SHNUID));
+            $user->htmlpicture = $OUTPUT->user_picture($user, ['courseid' => SHNUID]);
             $data->users[] = $user;
             $data->count_users++;
         }
@@ -238,16 +238,16 @@ if ($data = $mform->get_data()) {
 
         if (class_exists('PHPExcel_Style_Border') === true) {
             // Jusqu'à Moodle 3.7.x.
-            $properties = array('border' => PHPExcel_Style_Border::BORDER_THIN);
+            $properties = ['border' => PHPExcel_Style_Border::BORDER_THIN];
         } else {
             // Depuis Moodle 3.8.x.
-            $properties = array('border' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $properties = ['border' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN];
         }
 
         $excelformat = new MoodleExcelFormat($properties);
 
         // Set headers.
-        $headers = array();
+        $headers = [];
         $headers[] = get_string('lastname');
         $headers[] = get_string('firstname');
         $headers[] = get_string('idnumber');

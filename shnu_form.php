@@ -43,29 +43,29 @@ class block_apsolu_dashboard_shnu_export_form extends moodleform {
         $mform = $this->_form;
         list($defaults, $institutions, $groups, $sexes) = $this->_customdata;
 
-        $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), array('size' => '48'));
+        $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), ['size' => '48']);
         $mform->setType('lastnames', PARAM_TEXT);
         $mform->addHelpButton('lastnames', 'studentname', 'local_apsolu');
 
-        $select = $mform->addElement('select', 'institutions', get_string('institution'), $institutions, array('size' => 6));
+        $select = $mform->addElement('select', 'institutions', get_string('institution'), $institutions, ['size' => 6]);
         $mform->setType('institutions', PARAM_TEXT);
         $mform->addRule('institutions', get_string('required'), 'required', null, 'client');
         $select->setMultiple(true);
 
-        $mform->addElement('text', 'ufrs', get_string('fields_apsoluufr', 'local_apsolu'), array('size' => '48'));
+        $mform->addElement('text', 'ufrs', get_string('fields_apsoluufr', 'local_apsolu'), ['size' => '48']);
         $mform->setType('ufrs', PARAM_TEXT);
         $mform->addHelpButton('ufrs', 'ufrs', 'local_apsolu');
 
-        $mform->addElement('text', 'departments', get_string('department'), array('size' => '48'));
+        $mform->addElement('text', 'departments', get_string('department'), ['size' => '48']);
         $mform->setType('departments', PARAM_TEXT);
         $mform->addHelpButton('departments', 'departments', 'local_apsolu');
 
-        $select = $mform->addElement('select', 'groups', get_string('group'), $groups, array('size' => 10));
+        $select = $mform->addElement('select', 'groups', get_string('group'), $groups, ['size' => 10]);
         $mform->setType('groups', PARAM_TEXT);
         $mform->addRule('groups', get_string('required'), 'required', null, 'client');
         $select->setMultiple(true);
 
-        $select = $mform->addElement('select', 'sexes', get_string('sex', 'local_apsolu'), $sexes, array('size' => 4));
+        $select = $mform->addElement('select', 'sexes', get_string('sex', 'local_apsolu'), $sexes, ['size' => 4]);
         $mform->setType('sexes', PARAM_TEXT);
         $mform->addRule('sexes', get_string('required'), 'required', null, 'client');
 
@@ -73,7 +73,7 @@ class block_apsolu_dashboard_shnu_export_form extends moodleform {
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('display', 'local_apsolu'));
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('export', 'local_apsolu'));
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
 
         // Set default values.
         $this->set_data($defaults);

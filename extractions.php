@@ -40,10 +40,10 @@ $PAGE->navbar->add(get_string('mystudents', 'local_apsolu'));
 require_login();
 
 // Load courses.
-$courses = array('*' => get_string('all'));
+$courses = ['*' => get_string('all')];
 
 if ($forcemanager) {
-    $ismanager = $DB->get_record('role_assignments', array('contextid' => 1, 'roleid' => 1, 'userid' => $USER->id));
+    $ismanager = $DB->get_record('role_assignments', ['contextid' => 1, 'roleid' => 1, 'userid' => $USER->id]);
 
     if (!$ismanager) {
         $ismanager = is_siteadmin();
@@ -71,7 +71,7 @@ if ($ismanager) {
         " AND e.enrol = 'select'".
         " AND e.status = 0".
         " ORDER BY c.fullname";
-    $records = $DB->get_records_sql($sql, array($USER->id));
+    $records = $DB->get_records_sql($sql, [$USER->id]);
 }
 
 if (count($records) === 0) {
@@ -84,7 +84,7 @@ foreach ($records as $record) {
 
 // Load institutions.
 $sql = "SELECT DISTINCT institution FROM {user} WHERE id > 2 AND deleted = 0 AND auth = 'shibboleth' ORDER BY institution";
-$institutions = array('*' => get_string('all'));
+$institutions = ['*' => get_string('all')];
 foreach ($DB->get_records_sql($sql) as $record) {
     if (!empty($record->institution)) {
         $institutions[$record->institution] = $record->institution;
@@ -92,15 +92,15 @@ foreach ($DB->get_records_sql($sql) as $record) {
 }
 
 // Load roles.
-$roles = array('*' => get_string('all'));
-foreach ($DB->get_records('role', array('archetype' => 'student')) as $role) {
+$roles = ['*' => get_string('all')];
+foreach ($DB->get_records('role', ['archetype' => 'student']) as $role) {
     if (!empty($role->name) !== false) {
         $roles[$role->id] = $role->name;
     }
 }
 
 // Load semesters.
-$semesters = array('*' => get_string('all'));
+$semesters = ['*' => get_string('all')];
 foreach ($DB->get_records('apsolu_calendars_types', $conditions = null, $sort = 'name') as $record) {
     $semesters[$record->id] = $record->name;
 }
@@ -114,16 +114,16 @@ if (date('m') > 8) {
 }
 
 // Load lists.
-$lists = array(
+$lists = [
     '*' => get_string('all'),
     '0' => get_string('accepted_list', 'enrol_select'),
     '2' => get_string('main_list', 'enrol_select'),
     '3' => get_string('wait_list', 'enrol_select'),
     '4' => get_string('deleted_list', 'enrol_select'),
-);
+];
 
 // Departments list.
-$departmentslist = array();
+$departmentslist = [];
 foreach ($DB->get_records_sql('SELECT DISTINCT department FROM {user} ORDER BY department') as $record) {
     if (empty($record->department) === true) {
         continue;
@@ -133,12 +133,12 @@ foreach ($DB->get_records_sql('SELECT DISTINCT department FROM {user} ORDER BY d
 
 // Build form.
 $defaults = (object) ['institutions' => '*', 'roles' => '*', 'semesters' => $defaultsemester, 'lists' => '0'];
-$customdata = array($defaults, $courses, $institutions, $roles, $semesters, $lists, $forcemanager);
+$customdata = [$defaults, $courses, $institutions, $roles, $semesters, $lists, $forcemanager];
 $mform = new local_apsolu_courses_users_export_form(null, $customdata);
 
 if ($data = $mform->get_data()) {
     // Save data.
-    $conditions = array();
+    $conditions = [];
 
     $sql = "SELECT u.*, r.name AS rolename, ue.status AS listid, c.id AS courseid, c.fullname AS course, e.name AS enrol".
         " FROM {user} u".
@@ -157,11 +157,11 @@ if ($data = $mform->get_data()) {
         $conditions['owner'] = $USER->id;
     }
 
-    $where = array('u.deleted = 0');
+    $where = ['u.deleted = 0'];
 
     // Lastnames filter.
     if (isset($data->lastnames)) {
-        $lastnames = array();
+        $lastnames = [];
         foreach (explode(',', $data->lastnames) as $i => $lastname) {
             if (empty($lastname)) {
                 continue;
@@ -177,7 +177,7 @@ if ($data = $mform->get_data()) {
 
     // Courses filter.
     if (isset($data->courses[0]) && $data->courses[0] !== '*') {
-        $courses = array();
+        $courses = [];
         foreach ($data->courses as $course) {
             if (ctype_digit($course)) {
                 $courses[] = $course;
@@ -191,7 +191,7 @@ if ($data = $mform->get_data()) {
 
     // Institutions filter.
     if (isset($data->institutions[0]) && $data->institutions[0] !== '*') {
-        $institutions = array();
+        $institutions = [];
         foreach ($data->institutions as $i => $institution) {
             $institutions[] = ':institution'.$i;
             $conditions['institution'.$i] = $institution;
@@ -201,7 +201,7 @@ if ($data = $mform->get_data()) {
 
     // UFR filter.
     if (isset($data->ufrs)) {
-        $ufrs = array();
+        $ufrs = [];
         foreach (explode(',', $data->ufrs) as $i => $ufr) {
             if (empty($ufr)) {
                 continue;
@@ -218,7 +218,7 @@ if ($data = $mform->get_data()) {
 
     // Departments filter.
     if (isset($data->departments)) {
-        $departments = array();
+        $departments = [];
         foreach (explode(',', $data->departments) as $i => $department) {
             if (empty($department)) {
                 continue;
@@ -234,7 +234,7 @@ if ($data = $mform->get_data()) {
 
     // Roles filter.
     if (isset($data->roles[0]) && $data->roles[0] !== '*') {
-        $roles = array();
+        $roles = [];
         foreach ($data->roles as $role) {
             if (ctype_digit($role)) {
                 $roles[] = $role;
@@ -254,7 +254,7 @@ if ($data = $mform->get_data()) {
 
     // Lists filter.
     if (isset($data->lists[0]) && $data->lists[0] !== '*') {
-        $lists = array();
+        $lists = [];
         foreach ($data->lists as $list) {
             if (ctype_digit($list)) {
                 $lists[] = $list;
@@ -276,7 +276,7 @@ if ($data = $mform->get_data()) {
     if ($data->submitbutton === get_string('display', 'local_apsolu')) {
         // TODO: display.
         $data = new stdClass();
-        $data->users = array();
+        $data->users = [];
         $data->count_users = 0;
         $data->action = $CFG->wwwroot.'/blocks/apsolu_dashboard/notify.php';
 
@@ -284,7 +284,7 @@ if ($data = $mform->get_data()) {
         foreach ($recordset as $user) {
             $user->list = $customdata[5][$user->listid];
             $user->customfields = profile_user_record($user->id);
-            $user->htmlpicture = $OUTPUT->user_picture($user, array('courseid' => $user->courseid));
+            $user->htmlpicture = $OUTPUT->user_picture($user, ['courseid' => $user->courseid]);
             $data->users[] = $user;
             $data->count_users++;
         }
@@ -321,16 +321,16 @@ if ($data = $mform->get_data()) {
 
         if (class_exists('PHPExcel_Style_Border') === true) {
             // Jusqu'à Moodle 3.7.x.
-            $properties = array('border' => PHPExcel_Style_Border::BORDER_THIN);
+            $properties = ['border' => PHPExcel_Style_Border::BORDER_THIN];
         } else {
             // Depuis Moodle 3.8.x.
-            $properties = array('border' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $properties = ['border' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN];
         }
 
         $excelformat = new MoodleExcelFormat($properties);
 
         // Set headers.
-        $headers = array();
+        $headers = [];
         $headers[] = get_string('lastname');
         $headers[] = get_string('firstname');
         $headers[] = get_string('idnumber');

@@ -147,7 +147,7 @@ class block_apsolu_dashboard extends block_base {
                 $attendances[$courseid] = new stdClass();
             }
 
-            return array($attendances[$courseid]);
+            return [$attendances[$courseid]];
         }
 
         return array_values($attendances);
@@ -163,10 +163,10 @@ class block_apsolu_dashboard extends block_base {
     private function get_courses($archetype = 'student') {
         global $DB, $USER;
 
-        $courses = array();
+        $courses = [];
         $countcourses = 0;
 
-        $roles = role_fix_names($DB->get_records('role', array(), 'sortorder'));
+        $roles = role_fix_names($DB->get_records('role', [], 'sortorder'));
 
         $sql = "SELECT ac.id, act.name
                   FROM {apsolu_calendars} ac
@@ -187,14 +187,14 @@ class block_apsolu_dashboard extends block_base {
                    AND c.visible = :visible
                    AND e.status = :status
               ORDER BY c.fullname, e.customint7 DESC";
-        $parameters = array('archetype' => $archetype, 'status' => ENROL_INSTANCE_ENABLED, 'userid' => $USER->id, 'visible' => 1);
+        $parameters = ['archetype' => $archetype, 'status' => ENROL_INSTANCE_ENABLED, 'userid' => $USER->id, 'visible' => 1];
 
         $recordset = $DB->get_recordset_sql($sql, $parameters);
         foreach ($recordset as $course) {
             if (isset($courses[$course->id]) === false) {
                 $course->{'listname'.$course->status} = enrol_select_plugin::get_enrolment_list_name($course->status);
                 $course->viewable = false;
-                $course->enrolments = array();
+                $course->enrolments = [];
                 $course->count_enrolments = 0;
                 $courses[$course->id] = $course;
 
@@ -270,7 +270,7 @@ class block_apsolu_dashboard extends block_base {
             return 0;
         });
 
-        return array(array_values($courses), $countcourses);
+        return [array_values($courses), $countcourses];
     }
 
     /**
@@ -282,10 +282,10 @@ class block_apsolu_dashboard extends block_base {
     private function get_teachings() {
         global $DB, $USER;
 
-        $mains = array();
+        $mains = [];
         $countmains = 0;
 
-        $others = array();
+        $others = [];
         $countothers = 0;
 
         $sql = "SELECT c.id, c.fullname, c.visible, e.id AS enrolid, e.name AS enrolname, e.customint8 AS endcourse,
@@ -299,9 +299,9 @@ class block_apsolu_dashboard extends block_base {
                  WHERE ra.userid = :userid
                    AND r.archetype = 'editingteacher'
               ORDER BY c.visible DESC, apc.numweekday, apc.starttime, c.fullname, e.enrolstartdate";
-        $parameters = array('userid' => $USER->id);
+        $parameters = ['userid' => $USER->id];
 
-        $courses = array();
+        $courses = [];
         $recordset = $DB->get_recordset_sql($sql, $parameters);
         foreach ($recordset as $course) {
             if (empty($course->enrolname) === true) {
@@ -313,7 +313,7 @@ class block_apsolu_dashboard extends block_base {
             $enrol->name = $course->enrolname;
 
             if (isset($courses[$course->id]) === false) {
-                $course->enrolments = array();
+                $course->enrolments = [];
                 unset($course->enrolname);
 
                 $courses[$course->id] = $course;
@@ -346,7 +346,7 @@ class block_apsolu_dashboard extends block_base {
         }
         unset($courses);
 
-        return array(array_values($mains), $countmains, array_values($others), $countothers);
+        return [array_values($mains), $countmains, array_values($others), $countothers];
     }
 
     /**
@@ -357,7 +357,7 @@ class block_apsolu_dashboard extends block_base {
     private function set_contacts() {
         global $DB;
 
-        $this->courses_contacts = array();
+        $this->courses_contacts = [];
 
         $sql = "SELECT ra.id, ac.id AS courseid, u.firstname, u.lastname, u.email
                   FROM {role_assignments} ra
@@ -372,7 +372,7 @@ class block_apsolu_dashboard extends block_base {
         foreach ($assignments as $assignment) {
             if (isset($this->courses_contacts[$assignment->courseid]) === false) {
                 $this->courses_contacts[$assignment->courseid] = new stdClass();
-                $this->courses_contacts[$assignment->courseid]->teachers = array();
+                $this->courses_contacts[$assignment->courseid]->teachers = [];
                 $this->courses_contacts[$assignment->courseid]->count_teachers = 0;
             }
 
@@ -393,7 +393,7 @@ class block_apsolu_dashboard extends block_base {
     private function set_locations() {
         global $DB;
 
-        $this->locations = array();
+        $this->locations = [];
         foreach ($DB->get_records('apsolu_locations') as $location) {
             $this->locations[$location->name] = $location;
         }
@@ -414,8 +414,8 @@ class block_apsolu_dashboard extends block_base {
     public function get_rendez_vous() {
         global $CFG, $DB, $USER;
 
-        $lists = array();
-        $sessions = array();
+        $lists = [];
+        $sessions = [];
 
         $sql = "SELECT sess.sessiontime, sess.courseid, sess.locationid, c.fullname, apc.event,".
             " aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend,".
@@ -440,12 +440,12 @@ class block_apsolu_dashboard extends block_base {
             " AND sess.sessiontime <= :maxtime".
             " AND ue.userid = :userid".
             " ORDER BY sess.sessiontime, c.fullname";
-        $params = array('userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime);
+        $params = ['userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime];
 
         $recordset = $DB->get_recordset_sql($sql, $params);
         foreach ($recordset as $session) {
             // Traite les inscriptions sur liste principale et sur liste complémentaire.
-            if (in_array($session->status, array(enrol_select_plugin::MAIN, enrol_select_plugin::WAIT), $strict = true) === true) {
+            if (in_array($session->status, [enrol_select_plugin::MAIN, enrol_select_plugin::WAIT], $strict = true) === true) {
                 if (isset($CFG->is_siuaps_rennes) === false && $session->status === enrol_select_plugin::WAIT) {
                     // Seul le SIUAPS de Rennes souhaite afficher les rendez-vous pour une personne sur liste complémentaire.
                     continue;
@@ -488,7 +488,7 @@ class block_apsolu_dashboard extends block_base {
 
             if (isset($this->courses_contacts[$session->courseid]) === false) {
                 $this->courses_contacts[$session->courseid] = new stdClass();
-                $this->courses_contacts[$session->courseid]->teachers = array();
+                $this->courses_contacts[$session->courseid]->teachers = [];
                 $this->courses_contacts[$session->courseid]->count_teachers = 0;
             }
 
@@ -532,7 +532,7 @@ class block_apsolu_dashboard extends block_base {
         $this->set_contacts();
         $this->set_locations();
 
-        $attributes = array('class' => 'apsolu-location-markers-img', 'width' => '15px', 'height' => '20px');
+        $attributes = ['class' => 'apsolu-location-markers-img', 'width' => '15px', 'height' => '20px'];
         $this->marker_pix = $OUTPUT->pix_icon('a/marker', $alt = '', 'enrol_select', $attributes);
 
         // Template data.
@@ -540,9 +540,9 @@ class block_apsolu_dashboard extends block_base {
         $data->wwwroot = $CFG->wwwroot;
         $data->is_siuaps_rennes = isset($CFG->is_siuaps_rennes);
         $data->isonwaitlist = false;
-        $data->sessions = array();
+        $data->sessions = [];
         $data->count_sessions = 0;
-        $data->enrolment_errors = array();
+        $data->enrolment_errors = [];
         $data->count_enrolment_errors = 0;
         $data->marker_pix = $this->marker_pix;
         $data->federation_join = false;
@@ -550,14 +550,14 @@ class block_apsolu_dashboard extends block_base {
         $data->federation_summary = false;
         if (empty($federation->get_course()) === false) {
             // Détermine si l'utilisateur courant est inscrit à la FFSU et doit valider son adhésion.
-            $pendingadhesion = $DB->get_record('apsolu_federation_adhesions', array('userid' => $USER->id));
+            $pendingadhesion = $DB->get_record('apsolu_federation_adhesions', ['userid' => $USER->id]);
             if ($pendingadhesion === false) {
                 if (empty($federation->get_course()->visible) === false) {
                     try {
-                        $conditions = array('enrol' => 'select', 'status' => 0, 'courseid' => $federation->get_courseid());
+                        $conditions = ['enrol' => 'select', 'status' => 0, 'courseid' => $federation->get_courseid()];
                         $instance = $DB->get_record('enrol', $conditions, '*', MUST_EXIST);
 
-                        $conditions = array('enrolid' => $instance->id);
+                        $conditions = ['enrolid' => $instance->id];
                         $federationrole = $DB->get_record('enrol_select_roles', $conditions, '*', MUST_EXIST);
 
                         $enrolselectplugin = new enrol_select_plugin();
@@ -585,7 +585,7 @@ class block_apsolu_dashboard extends block_base {
         // Vérifie si l'étudiant peut s'inscrire à ce cours, afin d'afficher un avertissement à l'étudiant.
         if (isset($CFG->is_siuaps_rennes) === true) {
             // TODO: rendre plus flexible.
-            $sesame = $DB->get_record('user_info_data', array('userid' => $USER->id, 'fieldid' => 11));
+            $sesame = $DB->get_record('user_info_data', ['userid' => $USER->id, 'fieldid' => 11]);
             if ($sesame !== false && $sesame->data === '1') {
                 require_once($CFG->dirroot.'/enrol/select/locallib.php');
 
@@ -601,7 +601,7 @@ class block_apsolu_dashboard extends block_base {
                              WHERE cm.userid = :userid
                                AND ac.roleid = :roleid
                                AND esc.enrolid = :enrolid";
-                    $params = array('userid' => $USER->id, 'roleid' => $enrolment->roleid, 'enrolid' => $enrolment->enrolid);
+                    $params = ['userid' => $USER->id, 'roleid' => $enrolment->roleid, 'enrolid' => $enrolment->enrolid];
                     $allow = $DB->get_records_sql($sql, $params);
                     if (count($allow) === 0) {
                         $params = new stdClass();
@@ -631,7 +631,7 @@ class block_apsolu_dashboard extends block_base {
             $data->shnu = false;
             if (isset($CFG->is_siuaps_rennes) === true) {
                 // Note: courseid 320 (2017-2018) ; courseid 423 (2019-2020).
-                $shnu = $DB->get_record('role_assignments', array('contextid' => 29119, 'roleid' => 3, 'userid' => $USER->id));
+                $shnu = $DB->get_record('role_assignments', ['contextid' => 29119, 'roleid' => 3, 'userid' => $USER->id]);
                 $data->shnu = ($shnu !== false);
             }
 
@@ -661,7 +661,7 @@ class block_apsolu_dashboard extends block_base {
                        AND ue.timecreated >= :lastlogin
                        AND ra.userid = :teacherid
                        AND ue.userid != :userid";
-            $params = array('teacherid' => $USER->id, 'userid' => $USER->id, 'lastlogin' => $USER->lastlogin);
+            $params = ['teacherid' => $USER->id, 'userid' => $USER->id, 'lastlogin' => $USER->lastlogin];
             $params = array_merge($params, $inparams);
             $data->pendingenrolments = count($DB->get_records_sql($sql, $params));
         }
@@ -716,7 +716,7 @@ class block_apsolu_dashboard extends block_base {
                       JOIN {enrol} e ON e.id = ue.enrolid
                      WHERE e.courseid = :courseid
                        AND ue.userid = :userid";
-            $data->collaborative = $DB->get_record_sql($sql, array('courseid' => $data->collaborative, 'userid' => $USER->id));
+            $data->collaborative = $DB->get_record_sql($sql, ['courseid' => $data->collaborative, 'userid' => $USER->id]);
         }
 
         // Gestion de l'onglet "Gestion des étapes".

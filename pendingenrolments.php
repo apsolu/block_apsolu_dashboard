@@ -47,7 +47,7 @@ $sql = "SELECT DISTINCT e.*, c.fullname".
     " AND e.enrol = 'select'".
     " AND e.status = 0".
     " ORDER BY cc.name, ac.numweekday, ac.starttime";
-$enrols = $DB->get_records_sql($sql, array($USER->id));
+$enrols = $DB->get_records_sql($sql, [$USER->id]);
 
 if (count($enrols) === 0) {
     throw new moodle_exception('accessdenied', 'admin');
@@ -64,14 +64,14 @@ $sql = "SELECT ue.status, ue.enrolid, e.courseid, COUNT(ue.id) AS total, MAX(ue.
     " AND ra.userid = :userid".
     " GROUP BY e.id, ue.status".
     " ORDER BY e.id, ue.status";
-$recordset = $DB->get_recordset_sql($sql, array('userid' => $USER->id));
+$recordset = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
 foreach ($recordset as $record) {
     if (isset($enrols[$record->enrolid]) === false) {
         continue;
     }
 
     if (isset($enrols[$record->enrolid]->enrolments) === false) {
-        $enrols[$record->enrolid]->enrolments = array();
+        $enrols[$record->enrolid]->enrolments = [];
         foreach (enrol_select_plugin::$states as $state => $label) {
             $enrols[$record->enrolid]->enrolments[$state] = 0;
         }
@@ -83,7 +83,7 @@ foreach ($recordset as $record) {
     $enrols[$record->enrolid]->enrolments[$record->status] = $record->total;
     if ($enrols[$record->enrolid]->lastenrolment < $record->lastenrolment) {
         $enrols[$record->enrolid]->lastenrolment = $record->lastenrolment;
-        if (in_array($record->status, array(enrol_select_plugin::MAIN, enrol_select_plugin::WAIT), $strict = true) === true) {
+        if (in_array($record->status, [enrol_select_plugin::MAIN, enrol_select_plugin::WAIT], $strict = true) === true) {
             // Affiche un warning si la nouvelle inscription concerne une inscription en liste principale ou complémentaire.
             $enrols[$record->enrolid]->warninglastenrolment = ($USER->lastlogin <= $record->lastenrolment);
         }
@@ -110,7 +110,7 @@ foreach ($enrols as $enrolid => $enrol) {
     $enrol->enrolments = array_values($enrol->enrolments);
 }
 
-$enrolmentstypes = array();
+$enrolmentstypes = [];
 foreach (enrol_select_plugin::$states as $state => $label) {
     $enrolmentstypes[] = enrol_select_plugin::get_enrolment_list_name($state);
 }

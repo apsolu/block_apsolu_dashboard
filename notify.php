@@ -26,7 +26,7 @@ require_once(__DIR__.'/../../config.php');
 require_once($CFG->dirroot.'/blocks/apsolu_dashboard/notify_form.php');
 
 if (!isset($_POST['users'])) {
-    $_POST['users'] = array();
+    $_POST['users'] = [];
 }
 
 $PAGE->set_context(context_system::instance());
@@ -40,8 +40,8 @@ $PAGE->navbar->add(get_string('mystudents', 'local_apsolu'));
 require_login();
 
 // Load courses.
-$courses = array('*' => get_string('all'));
-$ismanager = $DB->get_record('role_assignments', array('contextid' => 1, 'roleid' => 1, 'userid' => $USER->id));
+$courses = ['*' => get_string('all')];
+$ismanager = $DB->get_record('role_assignments', ['contextid' => 1, 'roleid' => 1, 'userid' => $USER->id]);
 
 if (!$ismanager) {
     $ismanager = is_siteadmin();
@@ -58,23 +58,23 @@ if (!$ismanager) {
         " WHERE ra.userid = ?".
         " AND e.enrol = 'select'".
         " AND e.status = 0";
-    $records = $DB->get_records_sql($sql, array($USER->id));
+    $records = $DB->get_records_sql($sql, [$USER->id]);
 
     if (count($records) === 0) {
         throw new moodle_exception('usernotavailable');
     }
 }
 
-$users = array();
+$users = [];
 foreach ($_POST['users'] as $userid) {
-    $user = $DB->get_record('user', array('id' => $userid, 'deleted' => 0));
+    $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0]);
 
     if ($user) {
         $users[$user->id] = $user;
     }
 }
 
-if ($users === array()) {
+if ($users === []) {
     throw new moodle_exception('usernotavailable');
 }
 
@@ -82,7 +82,7 @@ if (!isset($users[$USER->id])) {
     $users[$USER->id] = $USER;
 }
 
-$mform = new block_apsolu_dashboard_notify_form(null, array($users));
+$mform = new block_apsolu_dashboard_notify_form(null, [$users]);
 
 if ($mform->is_cancelled()) {
     redirect($return);

@@ -67,12 +67,12 @@ class block_apsolu_dashboard_notify_form extends moodleform {
         $mform->addElement('text', 'subject', 'Sujet');
         $mform->setType('subject', PARAM_TEXT);
 
-        $mform->addElement('textarea', 'message', 'Envoyer un mesage', array('rows' => '15', 'cols' => '50'));
+        $mform->addElement('textarea', 'message', 'Envoyer un mesage', ['rows' => '15', 'cols' => '50']);
         $mform->setType('message', PARAM_TEXT);
 
         // Submit buttons.
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('notify', 'local_apsolu'));
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
     }
 }

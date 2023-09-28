@@ -109,7 +109,7 @@ class block_apsolu_dashboard_test extends advanced_testcase {
             $lastmonday += WEEKSECS;
         }
 
-        $weeks = array();
+        $weeks = [];
         for ($i = 0; $i < $countsessions; $i++) {
             $weeks[] = userdate($lastmonday, '%F');
             $lastmonday += WEEKSECS;
@@ -161,7 +161,7 @@ class block_apsolu_dashboard_test extends advanced_testcase {
 
         $instanceid = $plugin->add_instance($course, $plugin->get_instance_defaults());
 
-        $instance = $DB->get_record('enrol', array('id' => $instanceid));
+        $instance = $DB->get_record('enrol', ['id' => $instanceid]);
 
         $roleid = '5';
         $timestart = 0;
@@ -169,7 +169,7 @@ class block_apsolu_dashboard_test extends advanced_testcase {
         $USER = advanced_testcase::getDataGenerator()->create_user();
 
         // Contrôle qu'il y a bien 3 sessions pour ce cours.
-        $this->assertSame($countsessions, $DB->count_records('apsolu_attendance_sessions', array('courseid' => $course->id)));
+        $this->assertSame($countsessions, $DB->count_records('apsolu_attendance_sessions', ['courseid' => $course->id]));
 
         // Teste une inscription sur la liste des acceptés. On ne doit pas voir que les 2 sessions à venir.
         $plugin->enrol_user($instance, $USER->id, $roleid, $timestart, $timeend, enrol_select_plugin::ACCEPTED);

@@ -34,6 +34,6 @@ $plugin->requires  = 2021051700;
 $plugin->component = 'block_apsolu_dashboard';
 
 // Dependencies on another plugin.
-$plugin->dependencies = array(
+$plugin->dependencies = [
     'local_apsolu' => '2021072300',
-);
+];
