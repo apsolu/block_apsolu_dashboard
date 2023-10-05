@@ -204,7 +204,7 @@ class block_apsolu_dashboard extends block_base {
             $startcourse = $course->customint7;
             $endcourse = $course->customint8;
 
-            if (time() >= $startcourse && time() <= (is_null($endcourse) ? time() : $endcourse)) {
+            if ((time() >= $startcourse || empty($startcourse)) && (time() <= $endcourse || empty($endcourse))) {
                 $course->viewable = ($course->status === enrol_select_plugin::ACCEPTED);
 
                 // On force la conservation les données de l'inscription en cours pour trier les cours par statut.
