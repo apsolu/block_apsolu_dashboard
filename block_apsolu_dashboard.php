@@ -567,8 +567,9 @@ class block_apsolu_dashboard extends block_base {
                     }
                 }
             } else {
-                $data->federation_warning = empty($pendingadhesion->federationnumberrequestdate);
-                $data->federation_summary = empty($pendingadhesion->federationnumber) === false;
+                $data->federation_warning = (empty($pendingadhesion->federationnumberrequestdate) === true &&
+                    empty($pendingadhesion->federationnumber) === true);
+                $data->federation_summary = (empty($pendingadhesion->federationnumber) === false);
             }
         }
 
