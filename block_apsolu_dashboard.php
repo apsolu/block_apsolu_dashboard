@@ -732,7 +732,10 @@ class block_apsolu_dashboard extends block_base {
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
 
         $this->page->requires->css(new moodle_url($CFG->wwwroot.'/enrol/select/styles/ol.css'));
+
+        $activeTab = get_user_preferences('block_apsolu_dahsboard_active_tab', $default = 'rendez-vous');
         $this->page->requires->js_call_amd('block_apsolu_dashboard/hashes_observer', 'initialise');
+        $this->page->requires->js_call_amd('block_apsolu_dashboard/set_active_tab', 'initialise', [$activeTab, $USER->id]);
         $this->page->requires->js_call_amd('enrol_select/select_mapping', 'initialise');
 
         return $this->content;
