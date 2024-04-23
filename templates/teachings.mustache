@@ -52,7 +52,7 @@
         "other_teachings": []
     }
 }}
-<div id="teachings" class="tab-pane fade in">
+
   <ul class="list-inline">
 		<li class="list-inline-item"><a id="apsolu-dashboard-search-students" class="btn btn-sm btn-default btn-secondary" href="{{wwwroot}}/blocks/apsolu_dashboard/extractions.php">{{#str}}my_students, block_apsolu_dashboard{{/str}}</a></li>
 
@@ -80,10 +80,10 @@
 
   <ul class="mb-2 nav nav-tabs" role="tablist">
     <li class="nav-item">
-      <a role="tab" aria-controls="main-teachings" aria-selected="false" class="nav-link active" data-toggle="tab" href="#main-teachings">{{#str}}my_main_teachings, block_apsolu_dashboard{{/str}}</a>
+      <a role="tab" aria-controls="main-teachings" aria-selected="false" class="nav-link active" data-toggle="tab" href="#main-teachings" id="main-teachings-tab">{{#str}}my_main_teachings, block_apsolu_dashboard{{/str}}</a>
     </li>
     <li class="nav-item">
-      <a role="tab" aria-controls="other-teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#other-teachings">{{#str}}my_other_teachings, block_apsolu_dashboard{{/str}}</a>
+      <a role="tab" aria-controls="other-teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#other-teachings" id="other-teachings-tab">{{#str}}my_other_teachings, block_apsolu_dashboard{{/str}}</a>
     </li>
   </ul>
 
@@ -139,4 +139,3 @@
       {{/count_other_teachings}}
     </div>
   </div>
-</div>

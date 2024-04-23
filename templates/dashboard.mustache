@@ -74,24 +74,24 @@
 {{! Liste des onglets }}
 <ul id="block-apsolu-dashboard-nav-tabs" class="nav nav-tabs" role="tablist">
   <li class="nav-item">
-    <a role="tab" aria-controls="courses" aria-selected="false" class="nav-link" data-toggle="tab" href="#courses">{{#str}}my_courses, block_apsolu_dashboard{{/str}}</a>
+    <a role="tab" aria-controls="courses" aria-selected="false" class="nav-link" data-toggle="tab" href="#courses" id="courses-tab">{{#str}}my_courses, block_apsolu_dashboard{{/str}}</a>
   </li>
   <li class="nav-item">
-    <a role="tab" aria-controls="rendez-vous" aria-selected="true" class="nav-link active" data-toggle="tab" href="#rendez-vous">{{#str}}my_rendez-vous, block_apsolu_dashboard{{/str}}</a>
+    <a role="tab" aria-controls="rendez-vous" aria-selected="true" class="nav-link active" data-toggle="tab" href="#rendez-vous" id="rendez-vous-tab">{{#str}}my_rendez-vous, block_apsolu_dashboard{{/str}}</a>
   </li>
   {{#count_attendances}}
   <li class="nav-item sr-only">
-    <a role="tab" aria-controls="attendances" aria-selected="true" class="nav-link" data-toggle="tab" href="#attendances">{{#str}}my_attendances, block_apsolu_dashboard{{/str}}</a>
+    <a role="tab" aria-controls="attendances" aria-selected="true" class="nav-link" data-toggle="tab" href="#attendances" id="attendances-tab">{{#str}}my_attendances, block_apsolu_dashboard{{/str}}</a>
   </li>
   {{/count_attendances}}
   {{#count_teachings}}
   <li class="nav-item">
-    <a role="tab" aria-controls="teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#teachings">{{#str}}my_teachings, block_apsolu_dashboard{{/str}}</a>
+    <a role="tab" aria-controls="teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#teachings" id="teachings-tab">{{#str}}my_teachings, block_apsolu_dashboard{{/str}}</a>
   </li>
   {{/count_teachings}}
   {{#payments_open}}
   <li class="nav-item">
-    <a role="tab" aria-controls="payments" aria-selected="true" class="nav-link" data-toggle="tab" href="#payments">{{#str}}my_payments, block_apsolu_dashboard{{/str}}</a>
+    <a role="tab" aria-controls="payments" aria-selected="true" class="nav-link" data-toggle="tab" href="#payments" id="payments-tab">{{#str}}my_payments, block_apsolu_dashboard{{/str}}</a>
   </li>
   {{/payments_open}}
   {{#collaborative}}

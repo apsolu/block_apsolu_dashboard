@@ -3,7 +3,6 @@
 
 variables:
   ALLOW_FAILURE_PHPCPD: "true"  # Problème de code dupliqué.
-  ALLOW_FAILURE_MUSTACHE: "true"  # Problème d'id dupliqués.
 
   ENABLE_BEHAT: "false"  # Non implémenté.
 
