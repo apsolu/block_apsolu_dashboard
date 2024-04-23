@@ -43,37 +43,37 @@
     }
 }}
 
-  {{! Liste des cours de l'utilisateur. }}
-  {{^count_courses}}
-  <p class="alert alert-info">{{#str}}no_courses, block_apsolu_dashboard{{/str}}</p>
-  {{/count_courses}}
+{{! Liste des cours de l'utilisateur. }}
+{{^count_courses}}
+    <p class="alert alert-info">{{#str}}no_courses, block_apsolu_dashboard{{/str}}</p>
+{{/count_courses}}
 
-  {{#count_courses}}
-  <ul class="list-unstyled">
+{{#count_courses}}
+<ul class="list-unstyled">
     {{#courses}}
     <li class="{{#listname0}}bg-light{{/listname0}}{{#listname2}}bg-light{{/listname2}}{{#listname3}}bg-secondary{{/listname3}}{{#listname4}}bg-secondary{{/listname4}} card mb-2 p-2">
-      {{^viewable}}
-      <p class="card-header{{#listname3}} text-muted{{/listname3}}{{#listname4}} text-muted{{/listname4}}">{{fullname}}</p>
-      {{/viewable}}
+        {{^viewable}}
+        <p class="card-header{{#listname3}} text-muted{{/listname3}}{{#listname4}} text-muted{{/listname4}}">{{fullname}}</p>
+        {{/viewable}}
 
-      {{#viewable}}
-      <p class="card-header"><a href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
-      {{/viewable}}
+        {{#viewable}}
+        <p class="card-header"><a href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
+        {{/viewable}}
 
-      {{#count_enrolments}}
-      <ul class="card-body">
-        {{#enrolments}}
-        <li>
-            {{#str}}enrolment, local_apsolu{{/str}} <strong>{{ role }}</strong>{{#calendar}} - {{#str}}calendar, calendar{{/str}} <strong>{{ calendar }}</strong>{{/calendar}}
-            <!-- {{#enrolment_accepted}}<span class="badge badge-success">{{ enrolment_accepted }}</span>{{/enrolment_accepted}} -->
-            {{#enrolment_main}}<span class="badge badge-success">{{ enrolment_main }}</span>{{/enrolment_main}}
-            {{#enrolment_wait}}<span class="badge badge-warning">{{ enrolment_wait }}</span>{{/enrolment_wait}}
-            {{#enrolment_deleted}}<span class="badge badge-danger">{{ enrolment_deleted }}</span>{{/enrolment_deleted}}
-        </li>
-        {{/enrolments}}
-      </ul>
-      {{/count_enrolments}}
+        {{#count_enrolments}}
+        <ul class="card-body">
+            {{#enrolments}}
+            <li>
+                    {{#str}}enrolment, local_apsolu{{/str}} <strong>{{ role }}</strong>{{#calendar}} - {{#str}}calendar, calendar{{/str}} <strong>{{ calendar }}</strong>{{/calendar}}
+                    <!-- {{#enrolment_accepted}}<span class="badge badge-success">{{ enrolment_accepted }}</span>{{/enrolment_accepted}} -->
+                    {{#enrolment_main}}<span class="badge badge-success">{{ enrolment_main }}</span>{{/enrolment_main}}
+                    {{#enrolment_wait}}<span class="badge badge-warning">{{ enrolment_wait }}</span>{{/enrolment_wait}}
+                    {{#enrolment_deleted}}<span class="badge badge-danger">{{ enrolment_deleted }}</span>{{/enrolment_deleted}}
+            </li>
+            {{/enrolments}}
+        </ul>
+        {{/count_enrolments}}
     </li>
     {{/courses}}
-  </ul>
-  {{/count_courses}}
+</ul>
+{{/count_courses}}

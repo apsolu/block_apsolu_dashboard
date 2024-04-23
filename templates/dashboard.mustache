@@ -49,86 +49,86 @@
 
 {{! Barre contenant le bouton d'inscription aux cours et éventuellement le bouton de paiement. }}
 <ul class="list-inline text-right">
-  {{#federation_join}}
-  {{! Affiche le bouton d'adhésion à la FFSU }}
-  <li class="list-inline-item"><a class="btn btn-info" href="{{wwwroot}}/local/apsolu/federation/adhesion/index.php">{{#str}}join_the_sports_association, local_apsolu{{/str}}</a></li>
-  {{/federation_join}}
+    {{#federation_join}}
+    {{! Affiche le bouton d'adhésion à la FFSU }}
+    <li class="list-inline-item"><a class="btn btn-info" href="{{wwwroot}}/local/apsolu/federation/adhesion/index.php">{{#str}}join_the_sports_association, local_apsolu{{/str}}</a></li>
+    {{/federation_join}}
 
-  {{#federation_summary}}
-  {{! Affiche le bouton d'accès au résumé de l'adhésion à la FFSU }}
-  <li class="list-inline-item"><a class="btn btn-info" href="{{wwwroot}}/local/apsolu/federation/adhesion/index.php">{{#str}}my_membership_of_the_sports_association, local_apsolu{{/str}}</a></li>
-  {{/federation_summary}}
+    {{#federation_summary}}
+    {{! Affiche le bouton d'accès au résumé de l'adhésion à la FFSU }}
+    <li class="list-inline-item"><a class="btn btn-info" href="{{wwwroot}}/local/apsolu/federation/adhesion/index.php">{{#str}}my_membership_of_the_sports_association, local_apsolu{{/str}}</a></li>
+    {{/federation_summary}}
 
-  <li class="list-inline-item"><a class="btn btn-success" href="{{wwwroot}}/enrol/select/overview.php">{{#str}}courses_signup, block_apsolu_dashboard{{/str}}</a></li>
-  {{#count_cards}}
-    {{#count_due_cards}}
-	  <li class="list-inline-item"><a class="btn btn-success" href="{{wwwroot}}/local/apsolu/payment/index.php">{{#str}}pay, block_apsolu_dashboard{{/str}}</a></li>
-    {{/count_due_cards}}
-  {{/count_cards}}
+    <li class="list-inline-item"><a class="btn btn-success" href="{{wwwroot}}/enrol/select/overview.php">{{#str}}courses_signup, block_apsolu_dashboard{{/str}}</a></li>
+    {{#count_cards}}
+        {{#count_due_cards}}
+        <li class="list-inline-item"><a class="btn btn-success" href="{{wwwroot}}/local/apsolu/payment/index.php">{{#str}}pay, block_apsolu_dashboard{{/str}}</a></li>
+        {{/count_due_cards}}
+    {{/count_cards}}
 </ul>
 
 {{#federation_warning}}
-    <div class="alert alert-danger">{{#str}}your_course_registration_is_not_yet_complete_you_must_request_your_license_number, block_apsolu_dashboard, {{wwwroot}}{{/str}}</div>
+        <div class="alert alert-danger">{{#str}}your_course_registration_is_not_yet_complete_you_must_request_your_license_number, block_apsolu_dashboard, {{wwwroot}}{{/str}}</div>
 {{/federation_warning}}
 
 {{! Liste des onglets }}
 <ul id="block-apsolu-dashboard-nav-tabs" class="nav nav-tabs" role="tablist">
-  <li class="nav-item">
-    <a role="tab" aria-controls="courses" aria-selected="false" class="nav-link" data-toggle="tab" href="#courses" id="courses-tab">{{#str}}my_courses, block_apsolu_dashboard{{/str}}</a>
-  </li>
-  <li class="nav-item">
-    <a role="tab" aria-controls="rendez-vous" aria-selected="true" class="nav-link active" data-toggle="tab" href="#rendez-vous" id="rendez-vous-tab">{{#str}}my_rendez-vous, block_apsolu_dashboard{{/str}}</a>
-  </li>
-  {{#count_attendances}}
-  <li class="nav-item sr-only">
-    <a role="tab" aria-controls="attendances" aria-selected="true" class="nav-link" data-toggle="tab" href="#attendances" id="attendances-tab">{{#str}}my_attendances, block_apsolu_dashboard{{/str}}</a>
-  </li>
-  {{/count_attendances}}
-  {{#count_teachings}}
-  <li class="nav-item">
-    <a role="tab" aria-controls="teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#teachings" id="teachings-tab">{{#str}}my_teachings, block_apsolu_dashboard{{/str}}</a>
-  </li>
-  {{/count_teachings}}
-  {{#payments_open}}
-  <li class="nav-item">
-    <a role="tab" aria-controls="payments" aria-selected="true" class="nav-link" data-toggle="tab" href="#payments" id="payments-tab">{{#str}}my_payments, block_apsolu_dashboard{{/str}}</a>
-  </li>
-  {{/payments_open}}
-  {{#collaborative}}
-  <li class="nav-item">
-    <a class="nav-link" href="{{wwwroot}}/course/view.php?id={{ courseid }}">{{#str}}my_collaborative_course, local_apsolu{{/str}}</a>
-  </li>
-  {{/collaborative}}
-  {{#manageetape}}
-  <li class="nav-item">
-    <a class="nav-link" href="{{wwwroot}}/local/apsolu_auth/etapes/index.php">{{#str}}etape_management, local_apsolu_auth{{/str}}</a>
-  </li>
-  {{/manageetape}}
+    <li class="nav-item">
+        <a role="tab" aria-controls="courses" aria-selected="false" class="nav-link" data-toggle="tab" href="#courses" id="courses-tab">{{#str}}my_courses, block_apsolu_dashboard{{/str}}</a>
+    </li>
+    <li class="nav-item">
+        <a role="tab" aria-controls="rendez-vous" aria-selected="true" class="nav-link active" data-toggle="tab" href="#rendez-vous" id="rendez-vous-tab">{{#str}}my_rendez-vous, block_apsolu_dashboard{{/str}}</a>
+    </li>
+    {{#count_attendances}}
+    <li class="nav-item sr-only">
+        <a role="tab" aria-controls="attendances" aria-selected="true" class="nav-link" data-toggle="tab" href="#attendances" id="attendances-tab">{{#str}}my_attendances, block_apsolu_dashboard{{/str}}</a>
+    </li>
+    {{/count_attendances}}
+    {{#count_teachings}}
+    <li class="nav-item">
+        <a role="tab" aria-controls="teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#teachings" id="teachings-tab">{{#str}}my_teachings, block_apsolu_dashboard{{/str}}</a>
+    </li>
+    {{/count_teachings}}
+    {{#payments_open}}
+    <li class="nav-item">
+        <a role="tab" aria-controls="payments" aria-selected="true" class="nav-link" data-toggle="tab" href="#payments" id="payments-tab">{{#str}}my_payments, block_apsolu_dashboard{{/str}}</a>
+    </li>
+    {{/payments_open}}
+    {{#collaborative}}
+    <li class="nav-item">
+        <a class="nav-link" href="{{wwwroot}}/course/view.php?id={{ courseid }}">{{#str}}my_collaborative_course, local_apsolu{{/str}}</a>
+    </li>
+    {{/collaborative}}
+    {{#manageetape}}
+    <li class="nav-item">
+        <a class="nav-link" href="{{wwwroot}}/local/apsolu_auth/etapes/index.php">{{#str}}etape_management, local_apsolu_auth{{/str}}</a>
+    </li>
+    {{/manageetape}}
 </ul>
 
 {{! Liste des contenus }}
 <div id="apsolu-dashboard-tab-content" class="tab-content">
-  <div id="courses" class="tab-pane fade" role="tabpanel" aria-labelledby="courses-tab">
-    {{> block_apsolu_dashboard/courses }}
-  </div>
-  <div id="rendez-vous" class="tab-pane show active" role="tabpanel" aria-labelledby="rendez-vous-tab">
-    {{> block_apsolu_dashboard/rendezvous }}
-  </div>
-  {{#count_attendances}}
-  <div id="attendances" class="tab-pane fade sr-only" role="tabpanel" aria-labelledby="attendances-tab">
-    {{> block_apsolu_dashboard/attendances }}
-  </div>
-  {{/count_attendances}}
-  {{#count_teachings}}
-  <div id="teachings" class="tab-pane fade" role="tabpanel" aria-labelledby="teachings-tab">
-    {{> block_apsolu_dashboard/teachings }}
-  </div>
-  {{/count_teachings}}
-  {{#payments_open}}
-  <div id="payments" class="tab-pane fade" role="tabpanel" aria-labelledby="payments-tab">
-    {{> block_apsolu_dashboard/payments }}
-  </div>
-  {{/payments_open}}
+    <div id="courses" class="tab-pane fade" role="tabpanel" aria-labelledby="courses-tab">
+        {{> block_apsolu_dashboard/courses }}
+    </div>
+    <div id="rendez-vous" class="tab-pane show active" role="tabpanel" aria-labelledby="rendez-vous-tab">
+        {{> block_apsolu_dashboard/rendezvous }}
+    </div>
+    {{#count_attendances}}
+    <div id="attendances" class="tab-pane fade sr-only" role="tabpanel" aria-labelledby="attendances-tab">
+        {{> block_apsolu_dashboard/attendances }}
+    </div>
+    {{/count_attendances}}
+    {{#count_teachings}}
+    <div id="teachings" class="tab-pane fade" role="tabpanel" aria-labelledby="teachings-tab">
+        {{> block_apsolu_dashboard/teachings }}
+    </div>
+    {{/count_teachings}}
+    {{#payments_open}}
+    <div id="payments" class="tab-pane fade" role="tabpanel" aria-labelledby="payments-tab">
+        {{> block_apsolu_dashboard/payments }}
+    </div>
+    {{/payments_open}}
 </div>
 
 <div id="apsolu-location-map"></div>
