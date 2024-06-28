@@ -33,6 +33,7 @@ use local_apsolu\core\federation\course as FederationCourse;
  * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\AllowDynamicProperties]
 class block_apsolu_dashboard extends block_base {
     /**
      * Initialise la classe block_apsolu_dashboard.
