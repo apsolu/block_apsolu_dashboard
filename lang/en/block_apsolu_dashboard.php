@@ -22,16 +22,35 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'APSOLU: Tableau de bord';
-$string['title'] = 'APSOLU: Tableau de bord';
+$string['apsolu_dashboard:addinstance'] = 'Ajouter un bloc "APSOLU: Tableau de bord"';
+$string['apsolu_dashboard:myaddinstance'] = 'Ajouter un nouveau bloc "APSOLU: Tableau de bord" au tableau de bord';
 
-$string['apsolu_dashboard:addinstance'] = 'Ajouter un bloc '.$string['pluginname'];
-$string['apsolu_dashboard:myaddinstance'] = 'Ajouter un nouveau bloc '.$string['pluginname'].' au tableau de bord';
-
+$string['contact_your_teacher'] = 'Contacter votre enseignant :';
+$string['courses_signup'] = 'S’inscrire à une activité';
 $string['download_all_my_attendances'] = 'Télécharger toutes mes présences';
+$string['enrol_users'] = 'Gérer les inscriptions';
+$string['enrolment_type'] = 'Type d’inscription';
+$string['export'] = 'Exporter la liste des inscrits';
+$string['important'] = 'Important :';
+$string['last_enrolment'] = 'Date de la dernière inscription';
+$string['my_attendances'] = 'Mes présences';
+$string['my_courses'] = 'Mes cours';
+$string['my_ffsu'] = 'Liste FFSU';
+$string['my_graded_students'] = 'Mes étudiants à évaluer';
+$string['my_main_teachings'] = 'Mes créneaux';
+$string['my_other_teachings'] = 'Mes autres enseignements';
+$string['my_payments'] = 'Mes paiements';
+$string['my_rendez-vous'] = 'Mes rendez-vous';
+$string['my_shnu'] = 'Liste SHNU';
+$string['my_students'] = 'Liste de mes étudiants';
+$string['my_teachings'] = 'Mes enseignements';
+$string['no_courses'] = 'Aucun cours';
 $string['no_description'] = 'Session régulière de cours';
+$string['no_payment_required'] = 'Aucune inscription nécessitant un paiement.';
 $string['no_upcoming_events'] = 'Aucun rendez-vous à venir';
-
+$string['pay'] = 'Payer';
+$string['pending_enrolments'] = 'Inscription en attente d’approbation';
+$string['pluginname'] = 'APSOLU: Tableau de bord';
 $string['pre-sessions'] = 'Séances de pré-rentrée';
 $string['pre-sessions_notice'] = '<div class="alert alert-info">'.
     '<p><strong>Si vous n’avez pu vous pré-inscrire que sur liste complémentaire :</strong></p>'.
@@ -42,35 +61,8 @@ $string['pre-sessions_notice'] = '<div class="alert alert-info">'.
     '</ul>'.
     '</div>';
 $string['sessions'] = 'Séances hebdomadaires';
-
-$string['important'] = 'Important :';
+$string['title'] = 'APSOLU: Tableau de bord';
 $string['unallowed_enrolment'] = 'D’après votre contrat pédagogique, vous ne pouvez pas :';
-$string['unallowed_enrolment_to'] = 'être inscrit en <strong>{$a->rolename}</strong> au cours <strong>{$a->coursename}</strong>';
 $string['unallowed_enrolment_contact'] = 'Merci de contacter votre enseignant pour plus d’information.';
-
-$string['my_attendances'] = 'Mes présences';
-$string['my_courses'] = 'Mes cours';
-$string['my_payments'] = 'Mes paiements';
-$string['my_rendez-vous'] = 'Mes rendez-vous';
-$string['my_teachings'] = 'Mes enseignements';
-$string['no_courses'] = 'Aucun cours';
-$string['enrolment_type'] = 'Type d’inscription';
-$string['courses_signup'] = 'S’inscrire à une activité';
-
-$string['my_students'] = 'Liste de mes étudiants';
-$string['my_ffsu'] = 'Liste FFSU';
-$string['my_shnu'] = 'Liste SHNU';
-$string['pending_enrolments'] = 'Inscription en attente d’approbation';
-$string['last_enrolment'] = 'Date de la dernière inscription';
-$string['pay'] = 'Payer';
-$string['my_main_teachings'] = 'Mes créneaux';
-$string['my_other_teachings'] = 'Mes autres enseignements';
-$string['no_payment_required'] = 'Aucune inscription nécessitant un paiement.';
-
-$string['my_graded_students'] = 'Mes étudiants à évaluer';
-$string['contact_your_teacher'] = 'Contacter votre enseignant :';
-
-$string['enrol_users'] = 'Gérer les inscriptions';
-$string['export'] = 'Exporter la liste des inscrits';
-
+$string['unallowed_enrolment_to'] = 'être inscrit en <strong>{$a->rolename}</strong> au cours <strong>{$a->coursename}</strong>';
 $string['your_course_registration_is_not_yet_complete_you_must_request_your_license_number'] = 'Votre inscription à la FFSU n’est pas encore terminée. Vous devez aller au bout de la démarche pour finaliser votre <a href="{$a}/local/apsolu/federation/adhesion/index.php">demande de licence FFSU</a>.';

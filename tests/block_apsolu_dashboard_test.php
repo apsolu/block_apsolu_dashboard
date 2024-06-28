@@ -47,7 +47,7 @@ require_once($CFG->dirroot.'/course/lib.php');
  * @copyright 2021 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_apsolu_dashboard_test extends advanced_testcase {
+final class block_apsolu_dashboard_test extends advanced_testcase {
     /**
      * Initialise un environnement de test.
      *
@@ -66,7 +66,7 @@ class block_apsolu_dashboard_test extends advanced_testcase {
      *
      * @return void
      */
-    public function test_init() {
+    public function test_init(): void {
         $block = new block_apsolu_dashboard();
         $block->init();
 
@@ -80,7 +80,7 @@ class block_apsolu_dashboard_test extends advanced_testcase {
      *
      * @return void
      */
-    public function test_format_rendez_vous() {
+    public function test_format_rendez_vous(): void {
 
     }
 
@@ -91,7 +91,7 @@ class block_apsolu_dashboard_test extends advanced_testcase {
      *
      * @return void
      */
-    public function test_get_rendez_vous() {
+    public function test_get_rendez_vous(): void {
         global $CFG, $DB, $USER;
 
         $backupuser = clone $USER;
