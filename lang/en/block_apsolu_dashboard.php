@@ -25,13 +25,13 @@
 $string['apsolu_dashboard:addinstance'] = 'Ajouter un bloc "APSOLU: Tableau de bord"';
 $string['apsolu_dashboard:myaddinstance'] = 'Ajouter un nouveau bloc "APSOLU: Tableau de bord" au tableau de bord';
 
-$string['contact_your_teacher'] = 'Contacter votre enseignant :';
+$string['contact_your_teacher'] = 'Contacter votre enseignant :';
 $string['courses_signup'] = 'S’inscrire à une activité';
 $string['download_all_my_attendances'] = 'Télécharger toutes mes présences';
 $string['enrol_users'] = 'Gérer les inscriptions';
 $string['enrolment_type'] = 'Type d’inscription';
 $string['export'] = 'Exporter la liste des inscrits';
-$string['important'] = 'Important :';
+$string['important'] = 'Important :';
 $string['last_enrolment'] = 'Date de la dernière inscription';
 $string['my_attendances'] = 'Mes présences';
 $string['my_courses'] = 'Mes cours';
@@ -53,16 +53,16 @@ $string['pending_enrolments'] = 'Inscription en attente d’approbation';
 $string['pluginname'] = 'APSOLU: Tableau de bord';
 $string['pre-sessions'] = 'Séances de pré-rentrée';
 $string['pre-sessions_notice'] = '<div class="alert alert-info">'.
-    '<p><strong>Si vous n’avez pu vous pré-inscrire que sur liste complémentaire :</strong></p>'.
-    '<p>Tout n’est pas perdu ! 2 possiblités :</p>'.
+    '<p><strong>Si vous n’avez pu vous pré-inscrire que sur liste complémentaire :</strong></p>'.
+    '<p>Tout n’est pas perdu ! 2 possiblités :</p>'.
     '<ul>'.
     '<li>Vous pouvez tenter de vous présenter au 1er cours (sans garantie d’obtenir une place).</li>'.
-    '<li>Vous attendez ; l’enseignant pourra vous notifier par mail si une place s’est libérée et s’il peut vous accueillir. N’oubliez pas de consulter votre adresse mail universitaire !</li>'.
+    '<li>Vous attendez ; l’enseignant pourra vous notifier par mail si une place s’est libérée et s’il peut vous accueillir. N’oubliez pas de consulter votre adresse mail universitaire !</li>'.
     '</ul>'.
     '</div>';
 $string['sessions'] = 'Séances hebdomadaires';
 $string['title'] = 'APSOLU: Tableau de bord';
-$string['unallowed_enrolment'] = 'D’après votre contrat pédagogique, vous ne pouvez pas :';
+$string['unallowed_enrolment'] = 'D’après votre contrat pédagogique, vous ne pouvez pas :';
 $string['unallowed_enrolment_contact'] = 'Merci de contacter votre enseignant pour plus d’information.';
 $string['unallowed_enrolment_to'] = 'être inscrit en <strong>{$a->rolename}</strong> au cours <strong>{$a->coursename}</strong>';
 $string['your_course_registration_is_not_yet_complete_you_must_request_your_license_number'] = 'Votre inscription à la FFSU n’est pas encore terminée. Vous devez aller au bout de la démarche pour finaliser votre <a href="{$a}/local/apsolu/federation/adhesion/index.php">demande de licence FFSU</a>.';
