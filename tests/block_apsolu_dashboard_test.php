@@ -98,14 +98,16 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
 
         $block = new block_apsolu_dashboard();
 
-        // Configure la période (ajoute 3 semaines, dont une passée).
+        // Configure la période (ajoute 3 semaines de cours: 1 passée + 2 à venir). La session pour la semaine de cours passée ne
+        // sera pas créée lors de l'enregistrement du cours. Il faudra créer cette session passée manuellement.
         $countsessions = 3;
-        $lastmonday = strtotime('last Monday');
+        $lastmonday = strtotime('Monday this week');
+        $midday = DAYSECS / 2;
 
-        if ((time() - $lastmonday) > WEEKSECS) {
-            // Si on est lundi, 'last Monday' retourne le lundi de la semaine précédente.
-            // On ajoute 7 jours pour avoir la date de la semaine en cours.
-            $lastmonday += WEEKSECS;
+        if (time() < ($lastmonday + $midday)) {
+            // Si la CI est exécutée avant le début du cours (lundi 12h), alors on décale de 7 jours afin d'avoir une semaine
+            // de cours passée.
+            $lastmonday -= WEEKSECS;
         }
 
         $weeks = [];
@@ -128,7 +130,7 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
         $location->name = 'location 1';
         $location->save();
 
-        // Configure le cours.
+        // Configure le cours (lundi 12h00-13h00).
         $course = new course();
         $data = advanced_testcase::getDataGenerator()->get_plugin_generator('local_apsolu')->get_course_data();
         $data->periodid = $period->id;
