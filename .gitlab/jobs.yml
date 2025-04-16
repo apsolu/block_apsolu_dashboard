@@ -1,23 +1,12 @@
 ---
 # yamllint disable rule:line-length
 
-default:
-  cache:
-    key: cache-$MOODLE_BRANCH
-    paths:
-      - $CI_PROJECT_DIR/.cache/apt
-      - $CI_PROJECT_DIR/.cache/composer
-      - $CI_PROJECT_DIR/.cache/npm
-      - $CI_PROJECT_DIR/.cache/nvm
-    policy: pull
-  after_script:
-    - rm -rf "$CI_PROJECT_DIR/.cache/moodle"*
-
 # Job savepoints : Validate your plugin’s upgrade steps.
 savepoints:
   stage: validations
+  needs: []  # Permet l'exécution en parallèle de différents stages.
   script:
-    - moodle-plugin-ci savepoints $PLUGIN_PATH
+    - moodle-plugin-ci savepoints "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_SAVEPOINTS == "false"
       when: never
@@ -28,8 +17,9 @@ savepoints:
 # Job validate : Run some light validation on the plugin file structure and code.
 validate:
   stage: validations
+  needs: []  # Permet l'exécution en parallèle de différents stages.
   script:
-    - moodle-plugin-ci validate $PLUGIN_PATH
+    - moodle-plugin-ci validate --moodle "$WWWMOODLE_PATH" -- "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_VALIDATE == "false"
       when: never
@@ -40,8 +30,9 @@ validate:
 # Job phplint : Run PHP Lint on a plugin.
 phplint:
   stage: analyses
+  needs: []  # Permet l'exécution en parallèle de différents stages.
   script:
-    - moodle-plugin-ci phplint $PLUGIN_PATH
+    - moodle-plugin-ci phplint "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_PHPLINT == "false"
       when: never
@@ -52,8 +43,9 @@ phplint:
 # Job phpcs : Run Moodle CodeSniffer standard on a plugin.
 phpcs:
   stage: analyses
+  needs: []  # Permet l'exécution en parallèle de différents stages.
   script:
-    - moodle-plugin-ci phpcs --max-warnings 0 $PLUGIN_PATH
+    - moodle-plugin-ci phpcs --max-warnings 0 "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_PHPCS == "false"
       when: never
@@ -64,8 +56,9 @@ phpcs:
 # Job phpdoc : Run Moodle PHPDoc Checker on a plugin.
 phpdoc:
   stage: analyses
+  needs: []  # Permet l'exécution en parallèle de différents stages.
   script:
-    - moodle-plugin-ci phpdoc --moodle=$CI_PROJECT_DIR/.cache/moodle --max-warnings 0 $PLUGIN_PATH
+    - moodle-plugin-ci phpdoc --moodle "$WWWMOODLE_PATH" --max-warnings 0 -- "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_PHPDOC == "false"
       when: never
@@ -76,8 +69,16 @@ phpdoc:
 # Job grunt : Run Grunt task on a plugin.
 grunt:
   stage: analyses
+  needs: []  # Permet l'exécution en parallèle de différents stages.
   script:
-    - moodle-plugin-ci grunt --moodle=$CI_PROJECT_DIR/.cache/moodle $PLUGIN_PATH
+    # Installe NVM (Node Version Manager).
+    - test -d "$NVM_DIR" || git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+    - git -C "$NVM_DIR" pull --ff-only origin master
+    - source "$NVM_DIR/nvm.sh"
+    - nvm install "$NODE_VERSION"
+    - npm --prefix "$WWWMOODLE_PATH" install
+
+    - moodle-plugin-ci grunt --moodle "$WWWMOODLE_PATH" -- "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_GRUNT == "false"
       when: never
@@ -88,8 +89,9 @@ grunt:
 # Job phpcpd : Run PHP Copy/Paste Detector on a plugin.
 phpcpd:
   stage: analyses
+  needs: []  # Permet l'exécution en parallèle de différents stages.
   script:
-    - moodle-plugin-ci phpcpd $PLUGIN_PATH
+    - moodle-plugin-ci phpcpd "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_PHPCPD == "false"
       when: never
@@ -100,8 +102,9 @@ phpcpd:
 # Job phpmd : Run PHP Mess Detector on a plugin.
 phpmd:
   stage: analyses
+  needs: []  # Permet l'exécution en parallèle de différents stages.
   script:
-    - moodle-plugin-ci phpmd $PLUGIN_PATH
+    - moodle-plugin-ci phpmd "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_PHPMD == "false"
       when: never
@@ -112,13 +115,29 @@ phpmd:
 # Job phpunit : Run PHPUnit on a plugin.
 phpunit:
   stage: tests
+  needs: []  # Permet l'exécution en parallèle de différents stages.
+  services:
+    - name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/mariadb:${MARIADB_VERSION}
+      alias: docker-mariadb
+      command:
+        - "--character-set-server=utf8mb4"
+        - "--collation-server=utf8mb4_unicode_ci"
+        - "--innodb_file_per_table=On"
+        - "--wait-timeout=28800"
+        - "--skip-log-bin"
+      variables:
+        MARIADB_DATABASE: moodle
+        MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
   script:
-    # La commande moodle-plugin-ci phpunit doit initier la DB... ça fonctionne sur ma machine, mais pas en CI. À creuser...
-    - cd "$CI_PROJECT_DIR/.cache/moodle/"
-    - php admin/tool/phpunit/cli/util.php --install
-    - php admin/tool/phpunit/cli/init.php
-    - cd -
-    - moodle-plugin-ci phpunit --moodle $CI_PROJECT_DIR/.cache/moodle $PLUGIN_PATH
+    - apt $apt_options install mariadb-client 1> /dev/null
+    # Si un dump SQL existe, on le restaure.
+    - test -f "$CACHE_SQLDUMP_PHPUNIT" && { zstdcat "$CACHE_SQLDUMP_PHPUNIT" | mysql --host=docker-mariadb --user=root moodle ; }
+    # Si l'environnement initialisé de PHPUnit n'est pas viable, on supprime le dump existant.
+    - php "$WWWMOODLE_PATH"/admin/tool/phpunit/cli/util.php --diag || rm -f "$CACHE_SQLDUMP_PHPUNIT"
+    - php "$WWWMOODLE_PATH"/admin/tool/phpunit/cli/init.php --disable-composer
+    # Si aucun dump SQL existe, on en fait un.
+    - test -f "$CACHE_SQLDUMP_PHPUNIT" || { mysqldump --host=docker-mariadb --user=root moodle | zstd --force --quiet -o "$CACHE_SQLDUMP_PHPUNIT" ; }
+    - moodle-plugin-ci phpunit --moodle "$WWWMOODLE_PATH" -- "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_PHPUNIT == "false"
       when: never
@@ -129,8 +148,16 @@ phpunit:
 # Job mustache : Run Mustache Lint on a plugin.
 mustache:
   stage: tests
+  needs: []  # Permet l'exécution en parallèle de différents stages.
   script:
-    - moodle-plugin-ci mustache $PLUGIN_PATH
+    # Installe NVM (Node Version Manager).
+    - apt $apt_options install default-jre-headless 1> /dev/null
+    - test -d "$NVM_DIR" || git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+    - git -C "$NVM_DIR" pull --ff-only origin master
+    - source "$NVM_DIR/nvm.sh"
+    - nvm install "$NODE_VERSION"
+    - npm --prefix "$CACHE_MOODLE_PLUGIN_CI/vendor/moodlehq/moodle-local_ci" install
+    - moodle-plugin-ci mustache --moodle "$WWWMOODLE_PATH" -- "$PLUGIN_PATH"
   rules:
     - if: $ENABLE_MUSTACHE == "false"
       when: never
@@ -139,18 +166,45 @@ mustache:
     - when: on_success
 
 # Job behat : Run Behat on a plugin.
-# TODO: Non implémenté.
-# behat:
-#   stage: tests
-#   script:
-#     - moodle-plugin-ci behat --profile chrome $PLUGIN_PATH
-#     # Alternative:
-#     - cd "$CI_PROJECT_DIR/.cache/moodle/"
-#     - vendor/bin/behat --config /builds/applis-fir-siuaps/local_apsolu/.cache/moodledata/behat_moodledata/behatrun/behat/behat.yml
-#     - cd -
-#   rules:
-#     - if: $ENABLE_BEHAT == "false"
-#       when: never
-#     - if: $ALLOW_FAILURE_BEHAT == "true"
-#       allow_failure: true
-#     - when: on_success
+behat:
+  stage: tests
+  needs: []  # Permet l'exécution en parallèle de différents stages.
+  services:
+    - name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/selenium/standalone-chrome:${SELENIUM_VERSION}
+      alias: docker-selenium-chrome
+    - name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/mariadb:${MARIADB_VERSION}
+      alias: docker-mariadb
+      command:
+        - "--character-set-server=utf8mb4"
+        - "--collation-server=utf8mb4_unicode_ci"
+        - "--innodb_file_per_table=On"
+        - "--wait-timeout=28800"
+        - "--skip-log-bin"
+      variables:
+        MARIADB_DATABASE: moodle
+        MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+  variables:
+    FF_NETWORK_PER_BUILD: 1
+    SELENIUM_HOST: "http://docker-selenium-chrome:4444/wd/hub"
+  script:
+    - /usr/bin/php -S 0.0.0.0:8000 -t /var/www/html/moodle 2> /var/log/phpserver.log &
+    - apt $apt_options install mariadb-client 1> /dev/null
+    - test -d "$CACHE_MOODLE_BROWSER_CONFIG" || git clone https://github.com/andrewnicols/moodle-browser-config "$CACHE_MOODLE_BROWSER_CONFIG"
+    - git -C "$CACHE_MOODLE_BROWSER_CONFIG" pull --ff-only origin main
+    - rsync -a "$CACHE_MOODLE_BROWSER_CONFIG" "$WWWMOODLE_PATH/"
+    # Si un dump SQL existe, on le restaure.
+    - test -f "$CACHE_SQLDUMP_BEHAT" && { zstdcat "$CACHE_SQLDUMP_BEHAT" | mysql --host=docker-mariadb --user=root moodle ; }
+    # Si l'environnement initialisé de Behat n'est pas viable, on supprime le dump existant.
+    - php "$WWWMOODLE_PATH"/admin/tool/behat/cli/util.php --diag || rm -f "$CACHE_SQLDUMP_BEHAT"
+    - php "$WWWMOODLE_PATH"/admin/tool/behat/cli/init.php --disable-composer
+    # Si aucun dump SQL existe, on en fait un.
+    - test -f "$CACHE_SQLDUMP_BEHAT" || { mysqldump --host=docker-mariadb --user=root moodle | zstd --force --quiet -o "$CACHE_SQLDUMP_BEHAT" ; }
+    - >  # Astuce pour échapper proprement le caractère ':' sans avoir à écrire la chaîne encadrée de double quotes.
+      sed -i 's#localhost:4444#docker-selenium-chrome:4444#' "$CACHE_MOODLE_DATA_BEHAT/behatrun/behat/behat.yml"
+    - /usr/bin/php "$WWWMOODLE_PATH"/vendor/bin/behat --config "$CACHE_MOODLE_DATA_BEHAT/behatrun/behat/behat.yml" --profile=chrome --stop-on-failure --tags=~@javascript --verbose=2 -- "$WWWMOODLE_PATH/$MOODLE_PLUGIN_INSTALL_PATH"
+  rules:
+    - if: $ENABLE_BEHAT == "false"
+      when: never
+    - if: $ALLOW_FAILURE_BEHAT == "true"
+      allow_failure: true
+    - when: on_success

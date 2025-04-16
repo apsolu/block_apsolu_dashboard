@@ -4,13 +4,15 @@
 variables:
   ALLOW_FAILURE_PHPCPD: "true"  # Problème de code dupliqué.
 
-  ENABLE_BEHAT: "false"  # Non implémenté.
+  ENABLE_BEHAT: "false"
+
+  MOODLE_PLUGIN_INSTALL_PATH: blocks/apsolu_dashboard
 
   MOODLE_EXTRA_PLUGINS: >
-    https://github.com/apsolu/block_apsolu_course.git
-    https://github.com/apsolu/enrol_select.git
-    https://github.com/apsolu/local_apsolu.git
-    https://github.com/apsolu/theme_apsolu.git
+    https://github.com/apsolu/block_apsolu_course.git;blocks/apsolu_course
+    https://github.com/apsolu/enrol_select.git;enrol/select
+    https://github.com/apsolu/local_apsolu.git;local/apsolu
+    https://github.com/apsolu/theme_apsolu.git;theme/apsolu
 
 include:
   # - local: "/.gitlab/moodle401.yml"
