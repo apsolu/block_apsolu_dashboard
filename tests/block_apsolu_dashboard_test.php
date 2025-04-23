@@ -74,17 +74,6 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
     }
 
     /**
-     * Teste la méthode format_rendez_vous().
-     *
-     * @covers \block_apsolu_dashboard::format_rendez_vous()
-     *
-     * @return void
-     */
-    public function test_format_rendez_vous(): void {
-
-    }
-
-    /**
      * Teste la méthode get_rendez_vous().
      *
      * @covers \block_apsolu_dashboard::get_rendez_vous()
