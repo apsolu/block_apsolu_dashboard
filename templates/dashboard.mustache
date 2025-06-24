@@ -74,34 +74,34 @@
 {{! Liste des onglets }}
 <ul id="block-apsolu-dashboard-nav-tabs" class="nav nav-tabs" role="tablist">
     <li class="nav-item">
-        <a role="tab" aria-controls="courses" aria-selected="false" class="nav-link" data-toggle="tab" href="#courses" id="courses-tab">{{#str}}my_courses, block_apsolu_dashboard{{/str}}</a>
+        <a aria-controls="courses" aria-selected="false" class="nav-link" data-toggle="tab" href="#courses" id="courses-tab" role="tab" tabindex="-1">{{#str}}my_courses, block_apsolu_dashboard{{/str}}</a>
     </li>
     <li class="nav-item">
-        <a role="tab" aria-controls="rendez-vous" aria-selected="true" class="nav-link active" data-toggle="tab" href="#rendez-vous" id="rendez-vous-tab">{{#str}}my_rendez-vous, block_apsolu_dashboard{{/str}}</a>
+        <a aria-controls="rendez-vous" aria-selected="true" class="nav-link active" data-toggle="tab" href="#rendez-vous" id="rendez-vous-tab" role="tab" tabindex="0">{{#str}}my_rendez-vous, block_apsolu_dashboard{{/str}}</a>
     </li>
     {{#count_attendances}}
     <li class="nav-item sr-only">
-        <a role="tab" aria-controls="attendances" aria-selected="true" class="nav-link" data-toggle="tab" href="#attendances" id="attendances-tab">{{#str}}my_attendances, block_apsolu_dashboard{{/str}}</a>
+        <a aria-controls="attendances" aria-selected="false" class="nav-link" data-toggle="tab" href="#attendances" id="attendances-tab" role="tab" tabindex="-1">{{#str}}my_attendances, block_apsolu_dashboard{{/str}}</a>
     </li>
     {{/count_attendances}}
     {{#count_teachings}}
     <li class="nav-item">
-        <a role="tab" aria-controls="teachings" aria-selected="true" class="nav-link" data-toggle="tab" href="#teachings" id="teachings-tab">{{#str}}my_teachings, block_apsolu_dashboard{{/str}}</a>
+        <a aria-controls="teachings" aria-selected="false" class="nav-link" data-toggle="tab" href="#teachings" id="teachings-tab" role="tab" tabindex="-1">{{#str}}my_teachings, block_apsolu_dashboard{{/str}}</a>
     </li>
     {{/count_teachings}}
     {{#payments_open}}
     <li class="nav-item">
-        <a role="tab" aria-controls="payments" aria-selected="true" class="nav-link" data-toggle="tab" href="#payments" id="payments-tab">{{#str}}my_payments, block_apsolu_dashboard{{/str}}</a>
+        <a aria-controls="payments" aria-selected="false" class="nav-link" data-toggle="tab" href="#payments" id="payments-tab" role="tab" tabindex="-1">{{#str}}my_payments, block_apsolu_dashboard{{/str}}</a>
     </li>
     {{/payments_open}}
     {{#collaborative}}
     <li class="nav-item">
-        <a class="nav-link" href="{{wwwroot}}/course/view.php?id={{ courseid }}">{{#str}}my_collaborative_course, local_apsolu{{/str}}</a>
+        <a class="nav-link" href="{{wwwroot}}/course/view.php?id={{ courseid }}" role="tab" tabindex="-1">{{#str}}my_collaborative_course, local_apsolu{{/str}}</a>
     </li>
     {{/collaborative}}
     {{#manageetape}}
     <li class="nav-item">
-        <a class="nav-link" href="{{wwwroot}}/local/apsolu_auth/etapes/index.php">{{#str}}etape_management, local_apsolu_auth{{/str}}</a>
+        <a class="nav-link" href="{{wwwroot}}/local/apsolu_auth/etapes/index.php" role="tab" tabindex="-1">{{#str}}etape_management, local_apsolu_auth{{/str}}</a>
     </li>
     {{/manageetape}}
 </ul>

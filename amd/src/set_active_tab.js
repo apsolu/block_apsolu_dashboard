@@ -35,11 +35,15 @@ define(["block_apsolu_dashboard/preference", "core/notification"], function(User
                     // Retire les classes sur l'onglet actuellement actif.
                     let currentActiveTabName = currentActiveTab.getAttribute("aria-controls");
                     currentActiveTab.classList.remove("active");
+                    currentActiveTab.setAttribute("tabindex", "-1");
+                    currentActiveTab.setAttribute("aria-selected", "false");
                     document.querySelector("#apsolu-dashboard-tab-content #" + currentActiveTabName).
                         classList.remove(...["active", "show"]);
 
                     // Ajoute les classes sur l'onglet à afficher.
                     tab.classList.add("active");
+                    tab.setAttribute("tabindex", "0");
+                    tab.setAttribute("aria-selected", "true");
                     document.querySelector("#apsolu-dashboard-tab-content #" + activeTab).classList.add(...["active", "show"]);
                 }
             }
