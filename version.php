@@ -29,11 +29,17 @@ $plugin->version = 2025061100;
 
 $plugin->release = '4.4.9';
 
-// Requires Moodle 4.4.0.
-$plugin->requires = 2024042200;
+// Requires Moodle 5.0.0.
+$plugin->requires = 2025041400;
 
 // Full name of the plugin (used for diagnostics).
 $plugin->component = 'block_apsolu_dashboard';
+
+// This is a stable release.
+$plugin->maturity = MATURITY_STABLE;
+
+// Support Moodle from 5.0.0 to 5.0.x.
+$plugin->supported = [500, 500];
 
 // Dependencies on another plugin.
 $plugin->dependencies = [
