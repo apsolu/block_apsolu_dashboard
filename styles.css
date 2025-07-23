@@ -21,6 +21,7 @@
     background-image: url('[[pix:core|t/email]]');
     background-position: left center;
     background-repeat: no-repeat;
+    background-size: .8em;
 }
 
 .block-apsolu-activities-contacts-email-li a {
@@ -49,6 +50,7 @@
 #apsolu-dashboard-search-pendingenrolments {
     background-position: .5em center;
     background-repeat: no-repeat;
+    background-size: .8em;
     margin: 0 1em;
     padding-left: 2em;
 }
