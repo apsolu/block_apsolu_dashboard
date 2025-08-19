@@ -42,11 +42,11 @@
 <p class="text-end"><a class="btn btn-default btn-secondary" href="{{wwwroot}}/blocks/apsolu_dashboard/attendances/download.php">{{#pix}}f/pdf{{/pix}} {{#str}}download_all_my_attendances, block_apsolu_dashboard{{/str}}</a></p>
 
 {{#attendances}}
-    <h5 class="font-weight-bold">{{fullname}}</h5>
+    <h5 class="fw-bold">{{fullname}}</h5>
     <dl>
         {{#sessions}}
         <div class="row">
-            <dt class="col-sm-4"><span class="font-weight-normal">{{sessionname}}</span></dt>
+            <dt class="col-sm-4"><span class="fw-normal">{{sessionname}}</span></dt>
             <dd class="col-sm-8"><span class="{{style}}">{{status}}</span></dd>
         </div>
         {{/sessions}}
