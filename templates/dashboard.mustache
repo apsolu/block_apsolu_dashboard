@@ -80,7 +80,7 @@
         <a aria-controls="rendez-vous" aria-selected="true" class="nav-link active" data-bs-toggle="tab" href="#rendez-vous" id="rendez-vous-tab" role="tab" tabindex="0">{{#str}}my_rendez-vous, block_apsolu_dashboard{{/str}}</a>
     </li>
     {{#count_attendances}}
-    <li class="nav-item sr-only">
+    <li class="nav-item visually-hidden">
         <a aria-controls="attendances" aria-selected="false" class="nav-link" data-bs-toggle="tab" href="#attendances" id="attendances-tab" role="tab" tabindex="-1">{{#str}}my_attendances, block_apsolu_dashboard{{/str}}</a>
     </li>
     {{/count_attendances}}
@@ -115,7 +115,7 @@
         {{> block_apsolu_dashboard/rendezvous }}
     </div>
     {{#count_attendances}}
-    <div id="attendances" class="tab-pane fade sr-only" role="tabpanel" aria-labelledby="attendances-tab">
+    <div id="attendances" class="tab-pane fade visually-hidden" role="tabpanel" aria-labelledby="attendances-tab">
         {{> block_apsolu_dashboard/attendances }}
     </div>
     {{/count_attendances}}
