@@ -1,6 +1,6 @@
 # block_apsolu_dashboard
 
-[![Build Status](https://github.com/apsolu/block_apsolu_dashboard/workflows/Moodle%20Plugin%20CI/badge.svg?branch=main)](https://github.com/apsolu/block_apsolu_dashboard/actions)
+[![Build Status](https://github.com/apsolu/block_apsolu_dashboard/actions/workflows/moodle-ci.yml/badge.svg?branch=main)](https://github.com/apsolu/block_apsolu_dashboard/actions)
 [![Coverage Status](https://coveralls.io/repos/github/apsolu/block_apsolu_dashboard/badge.svg?branch=main)](https://coveralls.io/github/apsolu/block_apsolu_dashboard?branch=main)
 [![Moodle Status](https://img.shields.io/badge/moodle-5.0-blue)](https://moodle.org)
 
