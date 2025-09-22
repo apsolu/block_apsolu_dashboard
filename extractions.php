@@ -334,6 +334,7 @@ if ($data = $mform->get_data()) {
         $headers[] = get_string('lastname');
         $headers[] = get_string('firstname');
         $headers[] = get_string('idnumber');
+        $headers[] = get_string('email');
         $headers[] = get_string('fields_apsolusex', 'local_apsolu');
         $headers[] = get_string('institution');
         $headers[] = get_string('department');
@@ -359,16 +360,17 @@ if ($data = $mform->get_data()) {
             $myxls->write_string($line, 0, $user->lastname, $excelformat);
             $myxls->write_string($line, 1, $user->firstname, $excelformat);
             $myxls->write_string($line, 2, $user->idnumber, $excelformat);
-            $myxls->write_string($line, 3, $user->customfields->apsolusex, $excelformat);
-            $myxls->write_string($line, 4, $user->institution, $excelformat);
-            $myxls->write_string($line, 5, $user->department, $excelformat);
-            $myxls->write_string($line, 6, $user->customfields->apsoluufr, $excelformat);
-            $myxls->write_string($line, 7, $user->customfields->apsolucycle, $excelformat);
-            $myxls->write_string($line, 8, $user->rolename, $excelformat);
-            $myxls->write_string($line, 9, $user->enrol, $excelformat);
-            $myxls->write_string($line, 10, $customdata[5][$user->listid], $excelformat);
+            $myxls->write_string($line, 3, $user->email, $excelformat);
+            $myxls->write_string($line, 4, $user->customfields->apsolusex, $excelformat);
+            $myxls->write_string($line, 5, $user->institution, $excelformat);
+            $myxls->write_string($line, 6, $user->department, $excelformat);
+            $myxls->write_string($line, 7, $user->customfields->apsoluufr, $excelformat);
+            $myxls->write_string($line, 8, $user->customfields->apsolucycle, $excelformat);
+            $myxls->write_string($line, 9, $user->rolename, $excelformat);
+            $myxls->write_string($line, 10, $user->enrol, $excelformat);
+            $myxls->write_string($line, 11, $customdata[5][$user->listid], $excelformat);
             if (!(isset($data->courses[0]) && $data->courses[0] !== '*' && !isset($data->courses[1]))) {
-                $myxls->write_string($line, 11, $user->course, $excelformat);
+                $myxls->write_string($line, 12, $user->course, $excelformat);
             }
 
             $line++;
