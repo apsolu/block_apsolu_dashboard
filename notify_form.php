@@ -42,24 +42,24 @@ class block_apsolu_dashboard_notify_form extends moodleform {
     protected function definition() {
         $mform = $this->_form;
 
-        list($users) = $this->_customdata;
+        [$users] = $this->_customdata;
 
         $label = get_string('users');
 
         $userslist = '<ul class="list list-unstyled">';
         foreach ($users as $user) {
             if (!empty($user->numberid)) {
-                $numberid = ' ('.$user->numberid.')';
+                $numberid = ' (' . $user->numberid . ')';
             } else {
                 $numberid = '';
             }
 
-            $userslist .= '<li>'.
-                $user->firstname.' '.$user->lastname.$numberid.
+            $userslist .= '<li>' .
+                $user->firstname . ' ' . $user->lastname . $numberid .
                 '</li>';
 
-            $mform->addElement('hidden', 'users['.$user->id.']', $user->id);
-            $mform->setType('users['.$user->id.']', PARAM_INT);
+            $mform->addElement('hidden', 'users[' . $user->id . ']', $user->id);
+            $mform->setType('users[' . $user->id . ']', PARAM_INT);
         }
         $userslist .= '</ul>';
         $mform->addElement('static', 'users', $label, $userslist);

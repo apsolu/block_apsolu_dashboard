@@ -52,13 +52,13 @@ $string['pay'] = 'Payer';
 $string['pending_enrolments'] = 'Inscription en attente d’approbation';
 $string['pluginname'] = 'APSOLU: Tableau de bord';
 $string['pre-sessions'] = 'Séances de pré-rentrée';
-$string['pre-sessions_notice'] = '<div class="alert alert-info">'.
-    '<p><strong>Si vous n’avez pu vous pré-inscrire que sur liste complémentaire :</strong></p>'.
-    '<p>Tout n’est pas perdu ! 2 possiblités :</p>'.
-    '<ul>'.
-    '<li>Vous pouvez tenter de vous présenter au 1er cours (sans garantie d’obtenir une place).</li>'.
-    '<li>Vous attendez ; l’enseignant pourra vous notifier par mail si une place s’est libérée et s’il peut vous accueillir. N’oubliez pas de consulter votre adresse mail universitaire !</li>'.
-    '</ul>'.
+$string['pre-sessions_notice'] = '<div class="alert alert-info">' .
+    '<p><strong>Si vous n’avez pu vous pré-inscrire que sur liste complémentaire :</strong></p>' .
+    '<p>Tout n’est pas perdu ! 2 possiblités :</p>' .
+    '<ul>' .
+    '<li>Vous pouvez tenter de vous présenter au 1er cours (sans garantie d’obtenir une place).</li>' .
+    '<li>Vous attendez ; l’enseignant pourra vous notifier par mail si une place s’est libérée et s’il peut vous accueillir. N’oubliez pas de consulter votre adresse mail universitaire !</li>' .
+    '</ul>' .
     '</div>';
 $string['sessions'] = 'Séances hebdomadaires';
 $string['title'] = 'APSOLU: Tableau de bord';

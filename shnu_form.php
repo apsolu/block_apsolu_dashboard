@@ -41,7 +41,7 @@ class block_apsolu_dashboard_shnu_export_form extends moodleform {
      */
     protected function definition() {
         $mform = $this->_form;
-        list($defaults, $institutions, $groups, $sexes) = $this->_customdata;
+        [$defaults, $institutions, $groups, $sexes] = $this->_customdata;
 
         $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), ['size' => '48']);
         $mform->setType('lastnames', PARAM_TEXT);

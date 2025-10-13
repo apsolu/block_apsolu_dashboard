@@ -37,9 +37,9 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-require_once($CFG->dirroot.'/blocks/moodleblock.class.php');
-require_once($CFG->dirroot.'/blocks/apsolu_dashboard/block_apsolu_dashboard.php');
-require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot . '/blocks/moodleblock.class.php');
+require_once($CFG->dirroot . '/blocks/apsolu_dashboard/block_apsolu_dashboard.php');
+require_once($CFG->dirroot . '/course/lib.php');
 
 /**
  * Classe PHPUnit permettant de tester la classe block_apsolu_dashboard.
@@ -132,7 +132,7 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
         // Ajoute la session passée qui n'est pas automatiquement créée.
         $session = new attendancesession();
         $session->name = 'session passée';
-        list($year, $month, $day) = explode('-', $weeks[0]);
+        [$year, $month, $day] = explode('-', $weeks[0]);
         $sessiontime = make_timestamp($year, $month, $day);
         $sessiontime += $course->get_session_offset();
         $session->sessiontime = $sessiontime;

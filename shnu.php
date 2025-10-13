@@ -24,10 +24,10 @@
 
 define('SHNUID', 423);
 
-require_once(__DIR__.'/../../config.php');
-require_once($CFG->dirroot.'/user/profile/lib.php');
-require_once($CFG->dirroot.'/blocks/apsolu_dashboard/shnu_form.php');
-require_once($CFG->libdir.'/excellib.class.php');
+require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/user/profile/lib.php');
+require_once($CFG->dirroot . '/blocks/apsolu_dashboard/shnu_form.php');
+require_once($CFG->libdir . '/excellib.class.php');
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
@@ -51,11 +51,11 @@ if (!$ismanager) {
 
 if (!$ismanager) {
     // Teachers.
-    $sql = "SELECT DISTINCT c.*".
-        " FROM {course} c".
-        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
-        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
-        " WHERE ra.userid = :userid".
+    $sql = "SELECT DISTINCT c.*" .
+        " FROM {course} c" .
+        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
+        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3" .
+        " WHERE ra.userid = :userid" .
         " AND c.id = :courseid";
     $records = $DB->get_records_sql($sql, ['userid' => $USER->id, 'courseid' => SHNUID]);
 
@@ -96,12 +96,12 @@ if ($data = $mform->get_data()) {
     // Save data.
     $conditions = [];
 
-    $sql = "SELECT u.*".
-        " FROM {user} u".
-        " JOIN {user_enrolments} ue ON u.id = ue.userid".
-        " JOIN {enrol} e ON e.id = ue.enrolid AND e.status = 0".
-        " JOIN {course} c ON c.id = e.courseid AND c.id = ".SHNUID.
-        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
+    $sql = "SELECT u.*" .
+        " FROM {user} u" .
+        " JOIN {user_enrolments} ue ON u.id = ue.userid" .
+        " JOIN {enrol} e ON e.id = ue.enrolid AND e.status = 0" .
+        " JOIN {course} c ON c.id = e.courseid AND c.id = " . SHNUID .
+        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
         " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND u.id = ra.userid AND ra.roleid = 5";
 
     $where = ['u.deleted = 0'];
@@ -113,12 +113,12 @@ if ($data = $mform->get_data()) {
             if (empty($lastname)) {
                 continue;
             }
-            $lastnames[] = 'u.lastname LIKE :lastname'.$i;
-            $conditions['lastname'.$i] = '%'.trim($lastname).'%';
+            $lastnames[] = 'u.lastname LIKE :lastname' . $i;
+            $conditions['lastname' . $i] = '%' . trim($lastname) . '%';
         }
 
         if (isset($lastnames[0])) {
-            $where[] = '( '.implode(' OR ', $lastnames).' )';
+            $where[] = '( ' . implode(' OR ', $lastnames) . ' )';
         }
     }
 
@@ -126,10 +126,10 @@ if ($data = $mform->get_data()) {
     if (isset($data->institutions[0]) && $data->institutions[0] !== '*') {
         $institutions = [];
         foreach ($data->institutions as $i => $institution) {
-            $institutions[] = ':institution'.$i;
-            $conditions['institution'.$i] = $institution;
+            $institutions[] = ':institution' . $i;
+            $conditions['institution' . $i] = $institution;
         }
-        $where[] = "u.institution IN (".implode(', ', $institutions).")";
+        $where[] = "u.institution IN (" . implode(', ', $institutions) . ")";
     }
 
     // UFR filter.
@@ -139,13 +139,13 @@ if ($data = $mform->get_data()) {
             if (empty($ufr)) {
                 continue;
             }
-            $ufrs[] = 'ui4.data LIKE :ufr'.$i;
-            $conditions['ufr'.$i] = '%'.trim($ufr).'%';
+            $ufrs[] = 'ui4.data LIKE :ufr' . $i;
+            $conditions['ufr' . $i] = '%' . trim($ufr) . '%';
         }
 
         if (isset($ufrs[0])) {
             $sql .= " LEFT JOIN {user_info_data} ui4 ON u.id = ui4.userid AND ui4.fieldid = 4";
-            $where[] = '( '.implode(' OR ', $ufrs).' )';
+            $where[] = '( ' . implode(' OR ', $ufrs) . ' )';
         }
     }
 
@@ -156,12 +156,12 @@ if ($data = $mform->get_data()) {
             if (empty($department)) {
                 continue;
             }
-            $departments[] = 'u.department LIKE :department'.$i;
-            $conditions['department'.$i] = '%'.trim($department).'%';
+            $departments[] = 'u.department LIKE :department' . $i;
+            $conditions['department' . $i] = '%' . trim($department) . '%';
         }
 
         if (isset($departments[0])) {
-            $where[] = '( '.implode(' OR ', $departments).' )';
+            $where[] = '( ' . implode(' OR ', $departments) . ' )';
         }
     }
 
@@ -178,7 +178,7 @@ if ($data = $mform->get_data()) {
             $sql .= " JOIN {groups} g ON c.id = g.courseid";
             $sql .= " JOIN {groups_members} gm ON g.id = gm.groupid AND u.id = gm.userid";
 
-            $where[] = "g.id IN (".implode(', ', $groups).")";
+            $where[] = "g.id IN (" . implode(', ', $groups) . ")";
         }
     }
 
@@ -195,7 +195,7 @@ if ($data = $mform->get_data()) {
 
     // Build final query.
     if (isset($where[0])) {
-        $sql .= " WHERE ".implode(' AND ', $where);
+        $sql .= " WHERE " . implode(' AND ', $where);
     }
 
     $sql .= " ORDER BY u.lastname, u.firstname, u.institution";
@@ -205,7 +205,7 @@ if ($data = $mform->get_data()) {
         $data = new stdClass();
         $data->users = [];
         $data->count_users = 0;
-        $data->action = $CFG->wwwroot.'/blocks/apsolu_dashboard/notify.php';
+        $data->action = $CFG->wwwroot . '/blocks/apsolu_dashboard/notify.php';
 
         $recordset = $DB->get_recordset_sql($sql, $conditions);
         foreach ($recordset as $user) {
@@ -225,14 +225,13 @@ if ($data = $mform->get_data()) {
         $mform->display();
         echo $OUTPUT->render_from_template('block_apsolu_dashboard/shnu', $data);
         echo $OUTPUT->footer();
-
     } else {
         // TODO: export csv.
 
         // Creating a workbook.
         $workbook = new MoodleExcelWorkbook("-");
         // Sending HTTP headers.
-        $workbook->send('liste_etudiants_shnu_'.time().'.xls');
+        $workbook->send('liste_etudiants_shnu_' . time() . '.xls');
         // Adding the worksheet.
         $myxls = $workbook->add_worksheet();
 

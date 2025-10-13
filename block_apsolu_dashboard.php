@@ -23,7 +23,7 @@
  */
 
 use UniversiteRennes2\Apsolu\Payment;
-use local_apsolu\core\attendance as Attendance;
+use local_apsolu\core\attendance;
 use local_apsolu\core\federation\course as FederationCourse;
 
 /**
@@ -79,29 +79,29 @@ class block_apsolu_dashboard extends block_base {
         $session->soon = false;
         if ($today > $session->sessiontime) {
             $session->soon = true;
-            $formatdate = '%FT%T%z|'.get_string('today', 'calendar').' '.get_string('strftimetime');
+            $formatdate = '%FT%T%z|' . get_string('today', 'calendar') . ' ' . get_string('strftimetime');
         } else if ($tomorrow > $session->sessiontime) {
             $session->soon = true;
-            $formatdate = '%FT%T%z|'.get_string('tomorrow', 'calendar').' '.get_string('strftimetime');
+            $formatdate = '%FT%T%z|' . get_string('tomorrow', 'calendar') . ' ' . get_string('strftimetime');
         } else {
-            $formatdate = '%FT%T%z|'.get_string('strftimedayshort').' '.get_string('strftimetime');
+            $formatdate = '%FT%T%z|' . get_string('strftimedayshort') . ' ' . get_string('strftimetime');
         }
 
-        list($start, $startstr) = explode('|', userdate($session->sessiontime, $formatdate));
+        [$start, $startstr] = explode('|', userdate($session->sessiontime, $formatdate));
 
         $endstr = $session->endtime;
-        $end = str_replace('T'.$session->starttime, 'T'.$session->endtime, $start);
+        $end = str_replace('T' . $session->starttime, 'T' . $session->endtime, $start);
 
         if (empty($session->location)) {
-            $session->location = '<p>'.get_string('no_description', 'block_apsolu_dashboard').'</p>';
+            $session->location = '<p>' . get_string('no_description', 'block_apsolu_dashboard') . '</p>';
         } else if ($session->locationid !== $session->defaultlocationid) {
-            $session->location = '<span class="block-apsolu-attendance-warning text-danger">'.$session->location.'</span>';
+            $session->location = '<span class="block-apsolu-attendance-warning text-danger">' . $session->location . '</span>';
         }
 
         if (empty($session->event) === true) {
-            $session->label = $session->activity.' - '.$session->skill;
+            $session->label = $session->activity . ' - ' . $session->skill;
         } else {
-            $session->label = $session->activity.' '.$session->event.' - '.$session->skill;
+            $session->label = $session->activity . ' ' . $session->event . ' - ' . $session->skill;
         }
 
         $listname = enrol_select_plugin::get_enrolment_list_name($session->status);
@@ -119,14 +119,14 @@ class block_apsolu_dashboard extends block_base {
                 $session->enrolment_deleted = $listname;
         }
 
-        $session->link = html_writer::link($CFG->wwwroot.'/course/view.php?id='.$session->courseid, $session->label);
+        $session->link = html_writer::link($CFG->wwwroot . '/course/view.php?id=' . $session->courseid, $session->label);
 
         $session->start = $start;
         $session->startstr = $startstr;
         $session->end = $end;
         $session->endstr = $endstr;
 
-        $session->defaultsessiontime = (userdate($session->sessiontime, '%u%H:%M') === $session->numweekday.$session->starttime);
+        $session->defaultsessiontime = (userdate($session->sessiontime, '%u%H:%M') === $session->numweekday . $session->starttime);
 
         return $session;
     }
@@ -193,7 +193,7 @@ class block_apsolu_dashboard extends block_base {
         $recordset = $DB->get_recordset_sql($sql, $parameters);
         foreach ($recordset as $course) {
             if (isset($courses[$course->id]) === false) {
-                $course->{'listname'.$course->status} = enrol_select_plugin::get_enrolment_list_name($course->status);
+                $course->{'listname' . $course->status} = enrol_select_plugin::get_enrolment_list_name($course->status);
                 $course->viewable = false;
                 $course->enrolments = [];
                 $course->count_enrolments = 0;
@@ -211,7 +211,8 @@ class block_apsolu_dashboard extends block_base {
                 // On force la conservation les données de l'inscription en cours pour trier les cours par statut.
                 $courses[$course->id]->status = $course->status;
                 $courses[$course->id]->customint7 = $startcourse;
-                $courses[$course->id]->{'listname'.$course->status} = enrol_select_plugin::get_enrolment_list_name($course->status);
+                $courses[$course->id]->{'listname' . $course->status} =
+                    enrol_select_plugin::get_enrolment_list_name($course->status);
             }
 
             $enrolment = new stdClass();
@@ -243,7 +244,7 @@ class block_apsolu_dashboard extends block_base {
         $recordset->close();
 
         // Tri les cours par statut, date de début du cours, nom du cours.
-        uasort($courses, function($a, $b) {
+        uasort($courses, function ($a, $b) {
             if ($a->status !== $b->status) {
                 if ($a->status > $b->status) {
                     return 1;
@@ -320,8 +321,10 @@ class block_apsolu_dashboard extends block_base {
                 $courses[$course->id] = $course;
             }
 
-            if ((empty($course->startcourse) === true || $course->startcourse <= time()) &&
-                (empty($course->endcourse) === true || $course->endcourse >= time())) {
+            if (
+                (empty($course->startcourse) === true || $course->startcourse <= time()) &&
+                (empty($course->endcourse) === true || $course->endcourse >= time())
+            ) {
                 // Détermine une inscription active à placer sur le bouton principal de téléchargement des étudiants.
                 // TODO: créer une fonction pour ça, car ces comparaisons sont certainement réutilisées ailleurs.
                 $courses[$course->id]->enrolid = $course->enrolid;
@@ -418,28 +421,28 @@ class block_apsolu_dashboard extends block_base {
         $lists = [];
         $sessions = [];
 
-        $sql = "SELECT sess.sessiontime, sess.courseid, sess.locationid, c.fullname, apc.event,".
-            " aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend,".
-            " apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location".
-            " FROM {apsolu_attendance_sessions} sess".
-            " JOIN {course} c ON c.id = sess.courseid".
-            " JOIN {course_categories} cc ON cc.id = c.category".
-            " JOIN {apsolu_courses} apc ON apc.id = c.id".
-            " JOIN {apsolu_skills} aps ON aps.id = apc.skillid".
-            " JOIN {apsolu_locations} apl ON apl.id = sess.locationid".
-            " JOIN {enrol} e ON c.id = e.courseid".
-            " JOIN {user_enrolments} ue ON e.id = ue.enrolid".
-            " WHERE c.visible = 1".
+        $sql = "SELECT sess.sessiontime, sess.courseid, sess.locationid, c.fullname, apc.event," .
+            " aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend," .
+            " apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location" .
+            " FROM {apsolu_attendance_sessions} sess" .
+            " JOIN {course} c ON c.id = sess.courseid" .
+            " JOIN {course_categories} cc ON cc.id = c.category" .
+            " JOIN {apsolu_courses} apc ON apc.id = c.id" .
+            " JOIN {apsolu_skills} aps ON aps.id = apc.skillid" .
+            " JOIN {apsolu_locations} apl ON apl.id = sess.locationid" .
+            " JOIN {enrol} e ON c.id = e.courseid" .
+            " JOIN {user_enrolments} ue ON e.id = ue.enrolid" .
+            " WHERE c.visible = 1" .
             // Seulement les méthodes d'inscription actives.
-            " AND e.status = 0".
+            " AND e.status = 0" .
             // Seulement les inscriptions acceptées, sur liste principale ou sur liste complémentaire.
-            " AND ue.status IN (0, 2, 3)".
+            " AND ue.status IN (0, 2, 3)" .
             // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
-            " AND (ue.timeend = 0 OR ue.timeend > :currenttime)".
+            " AND (ue.timeend = 0 OR ue.timeend > :currenttime)" .
             // Seulement les sessions correspondantes à la période d'inscription au cours.
-            " AND (sess.sessiontime BETWEEN ue.timestart AND ue.timeend OR ue.timeend = 0)".
-            " AND sess.sessiontime <= :maxtime".
-            " AND ue.userid = :userid".
+            " AND (sess.sessiontime BETWEEN ue.timestart AND ue.timeend OR ue.timeend = 0)" .
+            " AND sess.sessiontime <= :maxtime" .
+            " AND ue.userid = :userid" .
             " ORDER BY sess.sessiontime, c.fullname";
         $params = ['userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime];
 
@@ -523,11 +526,11 @@ class block_apsolu_dashboard extends block_base {
             return $this->content;
         }
 
-        require_once($CFG->dirroot.'/enrol/select/lib.php');
+        require_once($CFG->dirroot . '/enrol/select/lib.php');
 
         $federation = new FederationCourse();
 
-        $this->content = new stdClass;
+        $this->content = new stdClass();
         $this->content->text = '';
 
         $this->set_contacts();
@@ -589,7 +592,7 @@ class block_apsolu_dashboard extends block_base {
             // TODO: rendre plus flexible.
             $sesame = $DB->get_record('user_info_data', ['userid' => $USER->id, 'fieldid' => 11]);
             if ($sesame !== false && $sesame->data === '1') {
-                require_once($CFG->dirroot.'/enrol/select/locallib.php');
+                require_once($CFG->dirroot . '/enrol/select/locallib.php');
 
                 $roles = role_fix_names($DB->get_records('role'));
 
@@ -617,15 +620,15 @@ class block_apsolu_dashboard extends block_base {
         }
 
         // Récupère les cours que l'utilisateur suit.
-        list($data->courses, $data->count_courses) = $this->get_courses('student');
+        [$data->courses, $data->count_courses] = $this->get_courses('student');
 
         // Récupère les présences de l'utilisateur.
         $data->attendances = $this->get_attendances();
         $data->count_attendances = count($data->attendances);
 
         // Récupère les cours où l'utilisateur enseigne.
-        list($data->main_teachings, $data->count_main_teachings,
-            $data->other_teachings, $data->count_other_teachings) = $this->get_teachings();
+        [$data->main_teachings, $data->count_main_teachings,
+            $data->other_teachings, $data->count_other_teachings] = $this->get_teachings();
         $data->count_teachings = $data->count_main_teachings + $data->count_other_teachings;
 
         if ($data->count_teachings > 0) {
@@ -649,7 +652,7 @@ class block_apsolu_dashboard extends block_base {
             $data->grading = count($DB->get_records('apsolu_grade_items'));
 
             // Vérifie si des inscriptions sont en attente.
-            list($insql, $inparams) = $DB->get_in_or_equal([1, 2], SQL_PARAMS_NAMED); // Liste principale et liste complémentaire.
+            [$insql, $inparams] = $DB->get_in_or_equal([1, 2], SQL_PARAMS_NAMED); // Liste principale et liste complémentaire.
 
             $sql = "SELECT ue.id, ue.userid
                       FROM {user_enrolments} ue
@@ -676,8 +679,8 @@ class block_apsolu_dashboard extends block_base {
 
         if ($data->payments_open === true) {
             // Calcule des cartes dues.
-            require_once($CFG->dirroot.'/local/apsolu/locallib.php');
-            require_once($CFG->dirroot.'/local/apsolu/classes/apsolu/payment.php');
+            require_once($CFG->dirroot . '/local/apsolu/locallib.php');
+            require_once($CFG->dirroot . '/local/apsolu/classes/apsolu/payment.php');
 
             $data->images = Payment::get_statuses_images();
 
@@ -724,7 +727,7 @@ class block_apsolu_dashboard extends block_base {
         // Gestion de l'onglet "Gestion des étapes".
         $data->manageetape = false;
         // Affiche le lien si le module apsolu_auth existe. Cache le lien aux gestionnaires et administrateurs du site.
-        $authmoduleexists = is_dir($CFG->dirroot.'/local/apsolu_auth');
+        $authmoduleexists = is_dir($CFG->dirroot . '/local/apsolu_auth');
         if ($authmoduleexists === true && has_capability('moodle/site:configview', context_system::instance()) === false) {
             $data->manageetape = has_capability('local/apsolu_auth:manageetape', context_system::instance());
         }

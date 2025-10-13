@@ -22,8 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__.'/../../config.php');
-require_once($CFG->dirroot.'/enrol/select/lib.php');
+require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/enrol/select/lib.php');
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
@@ -36,16 +36,16 @@ $PAGE->navbar->add(get_string('pending_enrolments', 'block_apsolu_dashboard'));
 require_login();
 
 // Récupère les cours et les méthodes d'inscription de l'enseignant.
-$sql = "SELECT DISTINCT e.*, c.fullname".
-    " FROM {course} c".
-    " JOIN {apsolu_courses} ac ON ac.id = c.id".
-    " JOIN {course_categories} cc ON cc.id = c.category".
-    " JOIN {enrol} e ON c.id = e.courseid".
-    " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
-    " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
-    " WHERE ra.userid = ?".
-    " AND e.enrol = 'select'".
-    " AND e.status = 0".
+$sql = "SELECT DISTINCT e.*, c.fullname" .
+    " FROM {course} c" .
+    " JOIN {apsolu_courses} ac ON ac.id = c.id" .
+    " JOIN {course_categories} cc ON cc.id = c.category" .
+    " JOIN {enrol} e ON c.id = e.courseid" .
+    " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
+    " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3" .
+    " WHERE ra.userid = ?" .
+    " AND e.enrol = 'select'" .
+    " AND e.status = 0" .
     " ORDER BY cc.name, ac.numweekday, ac.starttime";
 $enrols = $DB->get_records_sql($sql, [$USER->id]);
 
@@ -54,15 +54,15 @@ if (count($enrols) === 0) {
 }
 
 // Récupère les utilisateurs inscrits au cours.
-$sql = "SELECT ue.status, ue.enrolid, e.courseid, COUNT(ue.id) AS total, MAX(ue.timecreated) AS lastenrolment".
-    " FROM {user_enrolments} ue".
-    " JOIN {enrol} e ON e.id = ue.enrolid".
-    " JOIN {context} ctx ON e.courseid = ctx.instanceid AND ctx.contextlevel = 50".
-    " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
-    " WHERE e.enrol = 'select'".
-    " AND e.status = 0".
-    " AND ra.userid = :userid".
-    " GROUP BY e.id, ue.status".
+$sql = "SELECT ue.status, ue.enrolid, e.courseid, COUNT(ue.id) AS total, MAX(ue.timecreated) AS lastenrolment" .
+    " FROM {user_enrolments} ue" .
+    " JOIN {enrol} e ON e.id = ue.enrolid" .
+    " JOIN {context} ctx ON e.courseid = ctx.instanceid AND ctx.contextlevel = 50" .
+    " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3" .
+    " WHERE e.enrol = 'select'" .
+    " AND e.status = 0" .
+    " AND ra.userid = :userid" .
+    " GROUP BY e.id, ue.status" .
     " ORDER BY e.id, ue.status";
 $recordset = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
 foreach ($recordset as $record) {

@@ -41,7 +41,7 @@ class local_apsolu_courses_users_export_form extends moodleform {
      */
     protected function definition() {
         $mform = $this->_form;
-        list($defaults, $courses, $institutions, $roles, $semesters, $lists, $forcemanager) = $this->_customdata;
+        [$defaults, $courses, $institutions, $roles, $semesters, $lists, $forcemanager] = $this->_customdata;
 
         // Family names.
         $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), ['size' => '48']);

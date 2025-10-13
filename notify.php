@@ -22,8 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__.'/../../config.php');
-require_once($CFG->dirroot.'/blocks/apsolu_dashboard/notify_form.php');
+require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/blocks/apsolu_dashboard/notify_form.php');
 
 if (!isset($_POST['users'])) {
     $_POST['users'] = [];
@@ -49,14 +49,14 @@ if (!$ismanager) {
 
 if (!$ismanager) {
     // Check if is teacher.
-    $sql = "SELECT DISTINCT c.*".
-        " FROM {enrol} e".
-        " JOIN {course} c ON c.id = e.courseid".
-        " JOIN {apsolu_courses} ac ON ac.id = c.id".
-        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
-        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
-        " WHERE ra.userid = ?".
-        " AND e.enrol = 'select'".
+    $sql = "SELECT DISTINCT c.*" .
+        " FROM {enrol} e" .
+        " JOIN {course} c ON c.id = e.courseid" .
+        " JOIN {apsolu_courses} ac ON ac.id = c.id" .
+        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
+        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3" .
+        " WHERE ra.userid = ?" .
+        " AND e.enrol = 'select'" .
         " AND e.status = 0";
     $records = $DB->get_records_sql($sql, [$USER->id]);
 
@@ -107,10 +107,10 @@ if ($mform->is_cancelled()) {
             message_send($eventdata);
         }
 
-        $url = $CFG->wwwroot.'/blocks/apsolu_dashboard/extractions.php';
+        $url = $CFG->wwwroot . '/blocks/apsolu_dashboard/extractions.php';
         redirect($url, 'Les utilisateurs ont été notifiés.', 5, \core\output\notification::NOTIFY_SUCCESS);
     } else {
-        $url = $CFG->wwwroot.'/blocks/apsolu_dashboard/extractions.php';
+        $url = $CFG->wwwroot . '/blocks/apsolu_dashboard/extractions.php';
         redirect($url, 'Le message ne peut pas être vide.', 5, \core\output\notification::NOTIFY_ERROR);
     }
 }

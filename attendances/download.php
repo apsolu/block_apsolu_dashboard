@@ -24,10 +24,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_apsolu\core\attendance as Attendance;
+use local_apsolu\core\attendance;
 
-require_once(__DIR__.'/../../../config.php');
-require_once($CFG->libdir.'/pdflib.php');
+require_once(__DIR__ . '/../../../config.php');
+require_once($CFG->libdir . '/pdflib.php');
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('base');
@@ -40,28 +40,28 @@ $pdf = new pdf();
 $courses = Attendance::getUserPresencesPerCourses($USER->id);
 
 if (empty($courses) === true) {
-    $html = '<h1>'.fullname($USER).'</h1>';
-    $html .= '<p>'.get_string('no_recorded_attendances', 'local_apsolu').'</p>';
+    $html = '<h1>' . fullname($USER) . '</h1>';
+    $html .= '<p>' . get_string('no_recorded_attendances', 'local_apsolu') . '</p>';
 
     $pdf->AddPage();
     $pdf->WriteHTML($html);
 } else {
     foreach ($courses as $course) {
-        $html = '<h1>'.fullname($USER).'</h1>';
-        $html .= '<h2>'.$course->fullname.'</h2>';
+        $html = '<h1>' . fullname($USER) . '</h1>';
+        $html .= '<h2>' . $course->fullname . '</h2>';
         if (empty($course->sessions) === true) {
             $html .= get_string('no_sessions', 'local_apsolu');
         } else {
-            $html .= '<table><thead><tr>'.
-                '<th><b>'.get_string('date').'</b></th>'.
-                '<th><b>'.get_string('status').'</b></th>'.
-                '<th><b>'.get_string('courseduration').'</b></th>'.
+            $html .= '<table><thead><tr>' .
+                '<th><b>' . get_string('date') . '</b></th>' .
+                '<th><b>' . get_string('status') . '</b></th>' .
+                '<th><b>' . get_string('courseduration') . '</b></th>' .
                 '</tr></thead><tbody>';
             foreach ($course->sessions as $session) {
-                $html .= '<tr>'.
-                    '<td>'.userdate($session->sessiontime, get_string('strftimedaydatetime')).'</td>'.
-                    '<td>'.$session->status.'</td>'.
-                    '<td>'.format_time($session->duration).'</td>'.
+                $html .= '<tr>' .
+                    '<td>' . userdate($session->sessiontime, get_string('strftimedaydatetime')) . '</td>' .
+                    '<td>' . $session->status . '</td>' .
+                    '<td>' . format_time($session->duration) . '</td>' .
                     '</tr>';
             }
             $html .= '</tbody></table>';
@@ -72,5 +72,5 @@ if (empty($courses) === true) {
     }
 }
 
-$filename = clean_filename(fullname($USER)).'.pdf';
+$filename = clean_filename(fullname($USER)) . '.pdf';
 $pdf->Output($filename, 'D');

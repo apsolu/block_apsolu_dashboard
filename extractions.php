@@ -22,10 +22,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__.'/../../config.php');
-require_once($CFG->dirroot.'/user/profile/lib.php');
-require_once($CFG->dirroot.'/blocks/apsolu_dashboard/extractions_form.php');
-require_once($CFG->libdir.'/excellib.class.php');
+require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/user/profile/lib.php');
+require_once($CFG->dirroot . '/blocks/apsolu_dashboard/extractions_form.php');
+require_once($CFG->libdir . '/excellib.class.php');
 
 $forcemanager = optional_param('manager', null, PARAM_INT);
 
@@ -54,22 +54,22 @@ if ($forcemanager) {
 
 if ($ismanager) {
     // Managers.
-    $sql = "SELECT c.id, c.fullname".
-        " FROM {course} c".
-        " JOIN {apsolu_courses} ac ON ac.id = c.id".
+    $sql = "SELECT c.id, c.fullname" .
+        " FROM {course} c" .
+        " JOIN {apsolu_courses} ac ON ac.id = c.id" .
         " ORDER BY c.fullname";
     $records = $DB->get_records_sql($sql);
 } else {
     // Teachers.
-    $sql = "SELECT DISTINCT c.*".
-        " FROM {enrol} e".
-        " JOIN {course} c ON c.id = e.courseid".
-        " JOIN {apsolu_courses} ac ON ac.id = c.id".
-        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
-        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3".
-        " WHERE ra.userid = ?".
-        " AND e.enrol = 'select'".
-        " AND e.status = 0".
+    $sql = "SELECT DISTINCT c.*" .
+        " FROM {enrol} e" .
+        " JOIN {course} c ON c.id = e.courseid" .
+        " JOIN {apsolu_courses} ac ON ac.id = c.id" .
+        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
+        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3" .
+        " WHERE ra.userid = ?" .
+        " AND e.enrol = 'select'" .
+        " AND e.status = 0" .
         " ORDER BY c.fullname";
     $records = $DB->get_records_sql($sql, [$USER->id]);
 }
@@ -140,15 +140,15 @@ if ($data = $mform->get_data()) {
     // Save data.
     $conditions = [];
 
-    $sql = "SELECT u.*, r.name AS rolename, ue.status AS listid, c.id AS courseid, c.fullname AS course, e.name AS enrol".
-        " FROM {user} u".
-        " JOIN {user_enrolments} ue ON u.id = ue.userid".
-        " JOIN {enrol} e ON e.id = ue.enrolid AND e.enrol = 'select' AND e.status = 0".
-        " JOIN {apsolu_calendars} cal ON cal.id = e.customchar1".
-        " JOIN {course} c ON c.id = e.courseid".
-        " JOIN {apsolu_courses} ac ON ac.id = c.id".
-        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50".
-        " JOIN {role_assignments} ra1 ON ctx.id = ra1.contextid AND ra1.userid = u.id AND ra1.itemid = e.id".
+    $sql = "SELECT u.*, r.name AS rolename, ue.status AS listid, c.id AS courseid, c.fullname AS course, e.name AS enrol" .
+        " FROM {user} u" .
+        " JOIN {user_enrolments} ue ON u.id = ue.userid" .
+        " JOIN {enrol} e ON e.id = ue.enrolid AND e.enrol = 'select' AND e.status = 0" .
+        " JOIN {apsolu_calendars} cal ON cal.id = e.customchar1" .
+        " JOIN {course} c ON c.id = e.courseid" .
+        " JOIN {apsolu_courses} ac ON ac.id = c.id" .
+        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
+        " JOIN {role_assignments} ra1 ON ctx.id = ra1.contextid AND ra1.userid = u.id AND ra1.itemid = e.id" .
         " JOIN {role} r ON r.id = ra1.roleid";
 
     if (!$ismanager) {
@@ -166,12 +166,12 @@ if ($data = $mform->get_data()) {
             if (empty($lastname)) {
                 continue;
             }
-            $lastnames[] = 'u.lastname LIKE :lastname'.$i;
-            $conditions['lastname'.$i] = '%'.trim($lastname).'%';
+            $lastnames[] = 'u.lastname LIKE :lastname' . $i;
+            $conditions['lastname' . $i] = '%' . trim($lastname) . '%';
         }
 
         if (isset($lastnames[0])) {
-            $where[] = '( '.implode(' OR ', $lastnames).' )';
+            $where[] = '( ' . implode(' OR ', $lastnames) . ' )';
         }
     }
 
@@ -185,7 +185,7 @@ if ($data = $mform->get_data()) {
         }
 
         if (isset($courses[0])) {
-            $where[] = "c.id IN (".implode(', ', $courses).")";
+            $where[] = "c.id IN (" . implode(', ', $courses) . ")";
         }
     }
 
@@ -193,10 +193,10 @@ if ($data = $mform->get_data()) {
     if (isset($data->institutions[0]) && $data->institutions[0] !== '*') {
         $institutions = [];
         foreach ($data->institutions as $i => $institution) {
-            $institutions[] = ':institution'.$i;
-            $conditions['institution'.$i] = $institution;
+            $institutions[] = ':institution' . $i;
+            $conditions['institution' . $i] = $institution;
         }
-        $where[] = "u.institution IN (".implode(', ', $institutions).")";
+        $where[] = "u.institution IN (" . implode(', ', $institutions) . ")";
     }
 
     // UFR filter.
@@ -206,13 +206,13 @@ if ($data = $mform->get_data()) {
             if (empty($ufr)) {
                 continue;
             }
-            $ufrs[] = 'ui4.data LIKE :ufr'.$i;
-            $conditions['ufr'.$i] = '%'.trim($ufr).'%';
+            $ufrs[] = 'ui4.data LIKE :ufr' . $i;
+            $conditions['ufr' . $i] = '%' . trim($ufr) . '%';
         }
 
         if (isset($ufrs[0])) {
             $sql .= " LEFT JOIN {user_info_data} ui4 ON u.id = ui4.userid AND ui4.fieldid = 4";
-            $where[] = '( '.implode(' OR ', $ufrs).' )';
+            $where[] = '( ' . implode(' OR ', $ufrs) . ' )';
         }
     }
 
@@ -223,12 +223,12 @@ if ($data = $mform->get_data()) {
             if (empty($department)) {
                 continue;
             }
-            $departments[] = 'u.department LIKE :department'.$i;
-            $conditions['department'.$i] = '%'.trim($department).'%';
+            $departments[] = 'u.department LIKE :department' . $i;
+            $conditions['department' . $i] = '%' . trim($department) . '%';
         }
 
         if (isset($departments[0])) {
-            $where[] = '( '.implode(' OR ', $departments).' )';
+            $where[] = '( ' . implode(' OR ', $departments) . ' )';
         }
     }
 
@@ -242,7 +242,7 @@ if ($data = $mform->get_data()) {
         }
 
         if (isset($roles[0])) {
-            $where[] = "ra1.roleid IN (".implode(', ', $roles).")";
+            $where[] = "ra1.roleid IN (" . implode(', ', $roles) . ")";
         }
     }
 
@@ -262,13 +262,13 @@ if ($data = $mform->get_data()) {
         }
 
         if (isset($lists[0])) {
-            $where[] = "ue.status IN (".implode(', ', $lists).")";
+            $where[] = "ue.status IN (" . implode(', ', $lists) . ")";
         }
     }
 
     // Build final query.
     if (isset($where[0])) {
-        $sql .= " WHERE ".implode(' AND ', $where);
+        $sql .= " WHERE " . implode(' AND ', $where);
     }
 
     $sql .= " ORDER BY u.lastname, u.firstname, u.institution";
@@ -278,7 +278,7 @@ if ($data = $mform->get_data()) {
         $data = new stdClass();
         $data->users = [];
         $data->count_users = 0;
-        $data->action = $CFG->wwwroot.'/blocks/apsolu_dashboard/notify.php';
+        $data->action = $CFG->wwwroot . '/blocks/apsolu_dashboard/notify.php';
 
         $recordset = $DB->get_recordset_sql($sql, $conditions);
         foreach ($recordset as $user) {
@@ -300,7 +300,6 @@ if ($data = $mform->get_data()) {
         echo $OUTPUT->render_from_template('block_apsolu_dashboard/extractions', $data);
         echo $OUTPUT->render_from_template('block_apsolu_dashboard/departments', (object) ['departments' => $departmentslist]);
         echo $OUTPUT->footer();
-
     } else {
         // TODO: export csv.
 
@@ -308,14 +307,14 @@ if ($data = $mform->get_data()) {
         $workbook = new MoodleExcelWorkbook("-");
         // Sending HTTP headers.
         if (isset($data->courses[0]) && $data->courses[0] !== '*' && !isset($data->courses[1])) {
-            $filename = preg_replace('/[^a-z0-9\-]/', '_', strtolower($customdata[1][$data->courses[0]])).'_';
+            $filename = preg_replace('/[^a-z0-9\-]/', '_', strtolower($customdata[1][$data->courses[0]])) . '_';
         } else if (isset($data->courses[0]) && $data->courses[0] === '*') {
             $filename = 'tout_';
         } else {
             $filename = '';
         }
 
-        $workbook->send('liste_etudiants_'.$filename.time().'.xls');
+        $workbook->send('liste_etudiants_' . $filename . time() . '.xls');
         // Adding the worksheet.
         $myxls = $workbook->add_worksheet();
 
