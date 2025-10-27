@@ -29,6 +29,7 @@
     * wwwroot
     * count_users
     * found_users
+    * headers
     * users
       * id
       * htmlpicture
@@ -53,6 +54,7 @@
         "wwwroot": "https://apsolu.fr",
         "count_users": 0,
         "found_users": 0,
+        "headers": [],
         "users": []
     }
 }}
@@ -72,19 +74,9 @@
         <tr>
             <th>{{#str}}action{{/str}}</th>
             <th>{{#str}}pictureofuser{{/str}}</th>
-            <th>{{#str}}lastname{{/str}}</th>
-            <th>{{#str}}firstname{{/str}}</th>
-            <th>{{#str}}idnumber{{/str}}</th>
-            <th>{{#str}}email{{/str}}</th>
-            <th>{{#str}}fields_apsolusex,local_apsolu{{/str}}</th>
-            <th>{{#str}}institution{{/str}}</th>
-            <th>{{#str}}department{{/str}}</th>
-            <th>{{#str}}fields_apsoluufr,local_apsolu{{/str}}</th>
-            <th>{{#str}}fields_apsolucycle,local_apsolu{{/str}}</th>
-            <!-- <th>{{#str}}course{{/str}}</th> -->
-            <th>{{#str}}role,local_apsolu{{/str}}</th>
-            <th>{{#str}}enrolments,enrol{{/str}}</th>
-            <!-- <th>{{#str}}list{{/str}}</th> -->
+            {{#headers}}
+            <th>{{.}}</th>
+            {{/headers}}
         </tr>
     </thead>
     <tbody>
@@ -92,19 +84,9 @@
         <tr>
             <td><input type="checkbox" class="apsolu-select-manage-users-input-checkbox" name="users[]" value="{{id}}" /></td>
             <td>{{{htmlpicture}}}</td>
-            <td>{{lastname}}</td>
-            <td>{{firstname}}</td>
-            <td>{{idnumber}}</td>
-            <td>{{email}}</td>
-            <td>{{customfields.apsolusex}}</td>
-            <td>{{institution}}</td>
-            <td>{{department}}</td>
-            <td>{{customfields.apsoluufr}}</td>
-            <td>{{customfields.apsolucycle}}</td>
-            <!-- <td>{{course}} - {{enrol}}</td> -->
-            <td>{{rolename}}</td>
-            <td>{{enrol}}</td>
-            <!-- <td>{{list}}</td> -->
+            {{#data}}
+            <td>{{.}}</td>
+            {{/data}}
         </tr>
         {{/users}}
     </tbody>

@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_apsolu\core\customfields;
+
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/user/profile/lib.php');
 require_once($CFG->dirroot . '/blocks/apsolu_dashboard/extractions_form.php');
@@ -273,18 +275,56 @@ if ($data = $mform->get_data()) {
 
     $sql .= " ORDER BY u.lastname, u.firstname, u.institution";
 
+    $headers = [];
+    $headers['lastname'] = get_string('lastname');
+    $headers['firstname'] = get_string('firstname');
+    $headers['idnumber'] = get_string('idnumber');
+
+    // Récupère les champs additionnels pour l'exportation.
+    $extrafields = customfields::get_extra_fields_for_export();
+    foreach ($extrafields as $fieldname => $label) {
+        $headers[$fieldname] = $label;
+    }
+
+    if (isset($data->courses[1]) === true || $data->courses[0] === '*') {
+        $headers['course'] = get_string('course');
+    }
+
+    if (isset($data->semesters[1]) === true || $data->semesters[0] === '*') {
+        $headers['enrol'] = get_string('enrolments', 'enrol');
+    }
+
+    if (isset($data->lists[1]) === true || $data->lists[0] === '*') {
+        $headers['list'] = get_string('list');
+    }
+
+    if (isset($data->roles[1]) === true || $data->roles[0] === '*') {
+        $headers['rolename'] = get_string('role', 'local_apsolu');
+    }
+
     if ($data->submitbutton === get_string('display', 'local_apsolu')) {
         // TODO: display.
         $data = new stdClass();
+        $data->headers = array_values($headers);
         $data->users = [];
         $data->count_users = 0;
         $data->action = $CFG->wwwroot . '/blocks/apsolu_dashboard/notify.php';
 
         $recordset = $DB->get_recordset_sql($sql, $conditions);
         foreach ($recordset as $user) {
-            $user->list = $customdata[5][$user->listid];
-            $user->customfields = profile_user_record($user->id);
+            $user->data = [];
             $user->htmlpicture = $OUTPUT->user_picture($user, ['courseid' => $user->courseid]);
+            $user->list = $customdata[5][$user->listid];
+
+            $customfields = profile_user_record($user->id);
+            foreach ($headers as $fieldname => $unused) {
+                if (isset($user->$fieldname) === true) {
+                    $user->data[] = $user->$fieldname;
+                } else if (isset($customfields->$fieldname) === true) {
+                    $user->data[] = $customfields->$fieldname;
+                }
+            }
+
             $data->users[] = $user;
             $data->count_users++;
         }
@@ -306,7 +346,7 @@ if ($data = $mform->get_data()) {
         // Creating a workbook.
         $workbook = new MoodleExcelWorkbook("-");
         // Sending HTTP headers.
-        if (isset($data->courses[0]) && $data->courses[0] !== '*' && !isset($data->courses[1])) {
+        if (isset($data->courses[1]) === false && $data->courses[0] !== '*') {
             $filename = preg_replace('/[^a-z0-9\-]/', '_', strtolower($customdata[1][$data->courses[0]])) . '_';
         } else if (isset($data->courses[0]) && $data->courses[0] === '*') {
             $filename = 'tout_';
@@ -318,58 +358,37 @@ if ($data = $mform->get_data()) {
         // Adding the worksheet.
         $myxls = $workbook->add_worksheet();
 
-        if (class_exists('PHPExcel_Style_Border') === true) {
-            // Jusqu'à Moodle 3.7.x.
-            $properties = ['border' => PHPExcel_Style_Border::BORDER_THIN];
-        } else {
-            // Depuis Moodle 3.8.x.
-            $properties = ['border' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN];
-        }
-
-        $excelformat = new MoodleExcelFormat($properties);
+        $excelformat = new MoodleExcelFormat(['border' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]);
 
         // Set headers.
-        $headers = [];
-        $headers[] = get_string('lastname');
-        $headers[] = get_string('firstname');
-        $headers[] = get_string('idnumber');
-        $headers[] = get_string('email');
-        $headers[] = get_string('fields_apsolusex', 'local_apsolu');
-        $headers[] = get_string('institution');
-        $headers[] = get_string('department');
-        $headers[] = get_string('fields_apsoluufr', 'local_apsolu');
-        $headers[] = get_string('fields_apsolucycle', 'local_apsolu');
-        $headers[] = get_string('role', 'local_apsolu');
-        $headers[] = get_string('enrolments', 'enrol');
-        $headers[] = get_string('list');
-        if (!(isset($data->courses[0]) && $data->courses[0] !== '*' && !isset($data->courses[1]))) {
-            $headers[] = get_string('course');
-        }
-
-        foreach ($headers as $position => $value) {
-            $myxls->write_string(0, $position, $value, $excelformat);
+        $i = 0;
+        foreach ($headers as $value) {
+            $myxls->write_string(0, $i, $value, $excelformat);
+            $i++;
         }
 
         // Set data.
         $line = 1;
         $recordset = $DB->get_recordset_sql($sql, $conditions);
         foreach ($recordset as $user) {
-            $user->customfields = profile_user_record($user->id);
+            $user->list = $customdata[5][$user->listid];
+            $customfields = profile_user_record($user->id);
 
-            $myxls->write_string($line, 0, $user->lastname, $excelformat);
-            $myxls->write_string($line, 1, $user->firstname, $excelformat);
-            $myxls->write_string($line, 2, $user->idnumber, $excelformat);
-            $myxls->write_string($line, 3, $user->email, $excelformat);
-            $myxls->write_string($line, 4, $user->customfields->apsolusex, $excelformat);
-            $myxls->write_string($line, 5, $user->institution, $excelformat);
-            $myxls->write_string($line, 6, $user->department, $excelformat);
-            $myxls->write_string($line, 7, $user->customfields->apsoluufr, $excelformat);
-            $myxls->write_string($line, 8, $user->customfields->apsolucycle, $excelformat);
-            $myxls->write_string($line, 9, $user->rolename, $excelformat);
-            $myxls->write_string($line, 10, $user->enrol, $excelformat);
-            $myxls->write_string($line, 11, $customdata[5][$user->listid], $excelformat);
-            if (!(isset($data->courses[0]) && $data->courses[0] !== '*' && !isset($data->courses[1]))) {
-                $myxls->write_string($line, 12, $user->course, $excelformat);
+            $i = 0;
+            foreach ($headers as $fieldname => $unused) {
+                $value = null;
+                if (isset($user->$fieldname) === true) {
+                    $value = $user->$fieldname;
+                } else if (isset($customfields->$fieldname) === true) {
+                    $value = $customfields->$fieldname;
+                }
+
+                if ($value === null) {
+                    continue;
+                }
+
+                $myxls->write_string($line, $i, $value, $excelformat);
+                $i++;
             }
 
             $line++;
