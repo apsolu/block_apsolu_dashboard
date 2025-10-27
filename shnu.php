@@ -29,6 +29,11 @@ require_once($CFG->dirroot . '/user/profile/lib.php');
 require_once($CFG->dirroot . '/blocks/apsolu_dashboard/shnu_form.php');
 require_once($CFG->libdir . '/excellib.class.php');
 
+// Script spécifique à l'instance de Rennes.
+if (isset($CFG->is_siuaps_rennes) === false) {
+    redirect(new moodle_url('/my'));
+}
+
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
 $PAGE->set_url('/blocks/apsolu_dashboard/shnu.php');
