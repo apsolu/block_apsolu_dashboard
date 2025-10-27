@@ -304,17 +304,39 @@ if ($data = $mform->get_data()) {
 
     if ($data->submitbutton === get_string('display', 'local_apsolu')) {
         // TODO: display.
+        $mastercheckbox = new \core\output\checkbox_toggleall('users-table', true, [
+            'id' => 'select-all-users',
+            'name' => 'select-all-users',
+            'label' => get_string('selectall'),
+            'labelclasses' => 'visually-hidden',
+            'classes' => 'm-1',
+            'checked' => false,
+            ]);
+
         $data = new stdClass();
         $data->headers = array_values($headers);
         $data->users = [];
         $data->count_users = 0;
+        $data->mastercheckbox = $OUTPUT->render($mastercheckbox);
         $data->action = $CFG->wwwroot . '/blocks/apsolu_dashboard/notify.php';
 
         $recordset = $DB->get_recordset_sql($sql, $conditions);
         foreach ($recordset as $user) {
-            $user->data = [];
+            $checkbox = new \core\output\checkbox_toggleall('users-table', false, [
+                'classes' => 'usercheckbox m-1',
+                'id' => 'checkbox-user-' . $user->id,
+                'name' => 'users[]',
+                'value' => $user->id,
+                'checked' => false,
+                'label' => get_string('selectitem', 'moodle', fullname($user)),
+                'labelclasses' => 'accesshide',
+            ]);
+
+            $user->checkbox = $OUTPUT->render($checkbox);
             $user->htmlpicture = $OUTPUT->user_picture($user, ['courseid' => $user->courseid]);
             $user->list = $customdata[5][$user->listid];
+
+            $user->data = [];
 
             $customfields = profile_user_record($user->id);
             foreach ($headers as $fieldname => $unused) {
@@ -331,8 +353,6 @@ if ($data = $mform->get_data()) {
         $recordset->close();
 
         $data->found_users = get_string('students_found', 'local_apsolu', $data->count_users);
-
-        $PAGE->requires->js_call_amd('block_apsolu_dashboard/select_all_checkboxes', 'initialise');
 
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('mystudents', 'local_apsolu'));

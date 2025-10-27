@@ -42,9 +42,6 @@ $PAGE->set_title(get_string('mystudents', 'local_apsolu'));
 // Navigation.
 $PAGE->navbar->add(get_string('mystudents', 'local_apsolu'));
 
-// Javascript.
-$PAGE->requires->js_call_amd('block_apsolu_dashboard/select_all_checkboxes', 'initialise');
-
 require_login();
 
 // Load courses.
@@ -207,13 +204,34 @@ if ($data = $mform->get_data()) {
 
     if ($data->submitbutton === get_string('display', 'local_apsolu')) {
         // TODO: display.
+        $mastercheckbox = new \core\output\checkbox_toggleall('users-table', true, [
+            'id' => 'select-all-users',
+            'name' => 'select-all-users',
+            'label' => get_string('selectall'),
+            'labelclasses' => 'visually-hidden',
+            'classes' => 'm-1',
+            'checked' => false,
+            ]);
+
         $data = new stdClass();
         $data->users = [];
         $data->count_users = 0;
+        $data->mastercheckbox = $OUTPUT->render($mastercheckbox);
         $data->action = $CFG->wwwroot . '/blocks/apsolu_dashboard/notify.php';
 
         $recordset = $DB->get_recordset_sql($sql, $conditions);
         foreach ($recordset as $user) {
+            $checkbox = new \core\output\checkbox_toggleall('users-table', false, [
+                'classes' => 'usercheckbox m-1',
+                'id' => 'checkbox-user-' . $user->id,
+                'name' => 'users[]',
+                'value' => $user->id,
+                'checked' => false,
+                'label' => get_string('selectitem', 'moodle', fullname($user)),
+                'labelclasses' => 'accesshide',
+            ]);
+
+            $user->checkbox = $OUTPUT->render($checkbox);
             $user->customfields = profile_user_record($user->id);
             $user->htmlpicture = $OUTPUT->user_picture($user, ['courseid' => SHNUID]);
             $data->users[] = $user;
