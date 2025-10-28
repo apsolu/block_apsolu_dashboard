@@ -100,7 +100,7 @@
                 <p class="pull-left"><a {{^visible}}class="text-muted" {{/visible}}href="{{wwwroot}}/course/view.php?id={{id}}">{{fullname}}</a></p>
                 {{#enrolid}}
                 <ul class="list-inline pull-right">
-                    <li class="list-inline-item"><a class="btn btn-sm btn-default btn-secondary" href="{{wwwroot}}/enrol/select/manage.php?enrolid={{enrolid}}">{{#str}}enrol_users, block_apsolu_dashboard{{/str}}</a></li>
+                    <li class="list-inline-item"><a class="btn btn-sm btn-default btn-secondary" href="{{wwwroot}}/enrol/select/manage.php?courseid={{id}}">{{#str}}enrol_users, block_apsolu_dashboard{{/str}}</a></li>
                     <li class="list-inline-item">
                         <div class="btn-group">
                             <a class="btn btn-sm btn-default btn-secondary" href="{{wwwroot}}/enrol/select/export.php?enrolid={{enrolid}}&format=xls">{{#str}}export, block_apsolu_dashboard{{/str}}</a>
