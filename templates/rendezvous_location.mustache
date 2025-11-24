@@ -41,29 +41,27 @@
     }
 }}
 
-<table>
+<table class="table table-borderless table-sm" role="presentation">
   <tr>
-    <td>
+    <td class="bg-transparent">
         {{#latitude}}
             <a target="_blank" href="https://www.openstreetmap.org/?mlat={{latitude}}&mlon={{longitude}}#map=15/{{latitude}}/{{longitude}}" class="apsolu-location-markers-a" data-longitude="{{ longitude }}" data-latitude="{{ latitude }}">
                 {{{ marker_pix }}}
             </a>
         {{/latitude}}
     </td>
-    <td>
+    <td class="bg-transparent w-100">
         <b>{{{ location }}}</b>
     </td>
   </tr>
   <tr>
-    <td>
+    <td class="bg-transparent">
         {{!
             <i class="icon fa fa-fw fa-globe navicon" aria-hidden="true" tabindex="-1"></i>
         }}
     </td>
-    <td>
+    <td class="bg-transparent">
     {{address}}
     </td>
   </tr>
 </table>
-
-
