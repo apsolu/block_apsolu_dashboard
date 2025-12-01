@@ -33,7 +33,7 @@ $PAGE->set_title(get_string('pending_enrolments', 'block_apsolu_dashboard'));
 // Navigation.
 $PAGE->navbar->add(get_string('pending_enrolments', 'block_apsolu_dashboard'));
 
-require_login();
+require_login($courseorid = null, $autologinguest = false);
 
 // Récupère les cours et les méthodes d'inscription de l'enseignant.
 $sql = "SELECT DISTINCT e.*, c.fullname" .

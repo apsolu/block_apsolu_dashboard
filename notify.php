@@ -37,7 +37,7 @@ $PAGE->set_title(get_string('mystudents', 'local_apsolu'));
 // Navigation.
 $PAGE->navbar->add(get_string('mystudents', 'local_apsolu'));
 
-require_login();
+require_login($courseorid = null, $autologinguest = false);
 
 // Load courses.
 $courses = ['*' => get_string('all')];

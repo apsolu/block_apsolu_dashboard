@@ -33,7 +33,7 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('base');
 $PAGE->set_url('/blocks/apsolu_dashboard/attendances/download.php');
 
-require_login();
+require_login($courseorid = null, $autologinguest = false);
 
 $pdf = new pdf();
 
