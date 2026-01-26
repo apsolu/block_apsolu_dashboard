@@ -14,14 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Gère l'affichage du bloc Mon espace.
- *
- * @package    block_apsolu_dashboard
- * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 use UniversiteRennes2\Apsolu\Payment;
 use local_apsolu\core\attendance;
 use local_apsolu\core\federation\course as FederationCourse;
@@ -30,7 +22,7 @@ use local_apsolu\core\federation\course as FederationCourse;
  * Classe principale du module block_apsolu_dashboard.
  *
  * @package    block_apsolu_dashboard
- * @copyright  2016 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @copyright  2016 Université Rennes 2
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[\AllowDynamicProperties]

@@ -20,7 +20,7 @@
  * Note : ce script n'est pas encore affiché sur la tableau de bord des étudiants.
  *
  * @package    block_apsolu_dashboard
- * @copyright  2019 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @copyright  2019 Université Rennes 2
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -18,7 +18,7 @@
  * et qu'il clique sur le lien "Mes cours" dans la barre de navigation en haut de la page.
  *
  * @module     block_apsolu_dashboard/preference
- * @copyright  2023 Université Rennes 2 <dsi-contact@univ-rennes2.fr>
+ * @copyright  2023 Université Rennes 2
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
