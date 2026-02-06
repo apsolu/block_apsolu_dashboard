@@ -136,7 +136,7 @@ foreach ($DB->get_records_sql('SELECT DISTINCT department FROM {user} ORDER BY d
 // Build form.
 $defaults = (object) ['institutions' => '*', 'roles' => '*', 'semesters' => $defaultsemester, 'lists' => '0'];
 $customdata = [$defaults, $courses, $institutions, $roles, $semesters, $lists, $forcemanager];
-$mform = new local_apsolu_courses_users_export_form(null, $customdata);
+$mform = new local_apsolu_courses_users_export_form($PAGE->url->out(false), $customdata);
 
 if ($data = $mform->get_data()) {
     // Save data.

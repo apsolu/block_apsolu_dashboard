@@ -82,7 +82,7 @@ if (!isset($users[$USER->id])) {
     $users[$USER->id] = $USER;
 }
 
-$mform = new block_apsolu_dashboard_notify_form(null, [$users]);
+$mform = new block_apsolu_dashboard_notify_form($PAGE->url->out(false), [$users]);
 
 if ($mform->is_cancelled()) {
     redirect($return);

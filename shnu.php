@@ -92,7 +92,7 @@ $sexes = [
 // Build form.
 $defaults = (object) ['institutions' => '*', 'groups' => '*', 'sexes' => '*'];
 $customdata = [$defaults, $institutions, $groups, $sexes];
-$mform = new block_apsolu_dashboard_shnu_export_form(null, $customdata);
+$mform = new block_apsolu_dashboard_shnu_export_form($PAGE->url->out(false), $customdata);
 
 if ($data = $mform->get_data()) {
     // Save data.
