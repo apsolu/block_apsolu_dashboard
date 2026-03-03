@@ -74,9 +74,10 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
      * @return void
      */
     public function test_get_rendez_vous(): void {
-        global $CFG, $DB, $USER;
+        global $CFG, $DB;
 
-        $backupuser = clone $USER;
+        // Pour permettre la création des cours, des sessions, etc.
+        $this->setAdminUser();
 
         $block = new block_apsolu_dashboard();
 
@@ -149,25 +150,26 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
         $roleid = '5';
         $timestart = 0;
         $timeend = 0;
-        $USER = advanced_testcase::getDataGenerator()->create_user();
+        $user1 = advanced_testcase::getDataGenerator()->create_user();
+        $this->setUser($user1);
 
         // Contrôle qu'il y a bien 3 sessions pour ce cours.
         $this->assertSame($countsessions, $DB->count_records('apsolu_attendance_sessions', ['courseid' => $course->id]));
 
         // Teste une inscription sur la liste des acceptés. On ne doit pas voir que les 2 sessions à venir.
-        $plugin->enrol_user($instance, $USER->id, $roleid, $timestart, $timeend, enrol_select_plugin::ACCEPTED);
+        $plugin->enrol_user($instance, $user1->id, $roleid, $timestart, $timeend, enrol_select_plugin::ACCEPTED);
 
         $countrendezvous = count($block->get_rendez_vous());
         $this->assertSame($countsessions - 1, $countrendezvous);
 
         // Teste une inscription sur liste principale. La 1ère session est déjà passée. Aucun rendez-vous à venir.
-        $plugin->enrol_user($instance, $USER->id, $roleid, $timestart, $timeend, enrol_select_plugin::MAIN);
+        $plugin->enrol_user($instance, $user1->id, $roleid, $timestart, $timeend, enrol_select_plugin::MAIN);
 
         $countrendezvous = count($block->get_rendez_vous());
         $this->assertSame(0, $countrendezvous);
 
         // Teste une inscription sur liste complémentaire. La 1ère session est déjà passée. Aucun rendez-vous à venir.
-        $plugin->enrol_user($instance, $USER->id, $roleid, $timestart, $timeend, enrol_select_plugin::WAIT);
+        $plugin->enrol_user($instance, $user1->id, $roleid, $timestart, $timeend, enrol_select_plugin::WAIT);
 
         $countrendezvous = count($block->get_rendez_vous());
         $this->assertSame(0, $countrendezvous);
@@ -176,12 +178,12 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
         $session->delete();
 
         // Teste une inscription sur liste principale. On doit voir un seul rendez-vous à venir.
-        $plugin->enrol_user($instance, $USER->id, $roleid, $timestart, $timeend, enrol_select_plugin::MAIN);
+        $plugin->enrol_user($instance, $user1->id, $roleid, $timestart, $timeend, enrol_select_plugin::MAIN);
         $countrendezvous = count($block->get_rendez_vous());
         $this->assertSame(1, $countrendezvous);
 
         // Teste une inscription sur liste complémentaire. On ne doit pas voir de rendez-vous à venir.
-        $plugin->enrol_user($instance, $USER->id, $roleid, $timestart, $timeend, enrol_select_plugin::WAIT);
+        $plugin->enrol_user($instance, $user1->id, $roleid, $timestart, $timeend, enrol_select_plugin::WAIT);
 
         $countrendezvous = count($block->get_rendez_vous());
         $this->assertSame(0, $countrendezvous);
@@ -193,7 +195,7 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
         $this->assertSame(1, $countrendezvous);
 
         // Teste l'affichage des sessions inférieures à 45 jours.
-        $plugin->enrol_user($instance, $USER->id, $roleid, $timestart, $timeend, enrol_select_plugin::ACCEPTED);
+        $plugin->enrol_user($instance, $user1->id, $roleid, $timestart, $timeend, enrol_select_plugin::ACCEPTED);
 
         unset($session->id);
         $session->sessiontime = ($block->maxtime - DAYSECS);
@@ -209,8 +211,5 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
 
         $countrendezvous = count($block->get_rendez_vous());
         $this->assertSame($countsessions, $countrendezvous);
-
-        // Restaure l'utilisateur.
-        $USER = $backupuser;
     }
 }
