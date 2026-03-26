@@ -336,16 +336,11 @@ if ($data = $mform->get_data()) {
             $user->htmlpicture = $OUTPUT->user_picture($user, ['courseid' => $user->courseid]);
             $user->list = $customdata[5][$user->listid];
 
-            $user->data = [];
+            // Custom fields (note: passse $onlyinuserobject = false pour récupérer le champ textarea 'apsoluothertrainings'.
+            $customfields = profile_user_record($user->id, $onlyinuserobject = false);
 
-            $customfields = profile_user_record($user->id);
-            foreach ($headers as $fieldname => $unused) {
-                if (isset($user->$fieldname) === true) {
-                    $user->data[] = $user->$fieldname;
-                } else if (isset($customfields->$fieldname) === true) {
-                    $user->data[] = $customfields->$fieldname;
-                }
-            }
+            // Formate les données personnalisées.
+            $user->data = customfields::format_extra_fields(array_keys($headers), $customfields, $user);
 
             $data->users[] = $user;
             $data->count_users++;
@@ -392,21 +387,13 @@ if ($data = $mform->get_data()) {
         $recordset = $DB->get_recordset_sql($sql, $conditions);
         foreach ($recordset as $user) {
             $user->list = $customdata[5][$user->listid];
-            $customfields = profile_user_record($user->id);
+
+            // Custom fields (note: passse $onlyinuserobject = false pour récupérer le champ textarea 'apsoluothertrainings'.
+            $customfields = profile_user_record($user->id, $onlyinuserobject = false);
 
             $i = 0;
-            foreach ($headers as $fieldname => $unused) {
-                $value = null;
-                if (isset($user->$fieldname) === true) {
-                    $value = $user->$fieldname;
-                } else if (isset($customfields->$fieldname) === true) {
-                    $value = $customfields->$fieldname;
-                }
-
-                if ($value === null) {
-                    continue;
-                }
-
+            $ishtmloutput = false;
+            foreach (customfields::format_extra_fields(array_keys($headers), $customfields, $user, $ishtmloutput) as $value) {
                 $myxls->write_string($line, $i, $value, $excelformat);
                 $i++;
             }
