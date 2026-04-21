@@ -26,8 +26,25 @@
 define(["block_apsolu_dashboard/preference", "core/notification"], function(UserRepository, Notification) {
     return {
         initialise: function(activeTab, userid) {
-            let tabSelector = "#block-apsolu-dashboard-nav-tabs li a[aria-controls=\"" + activeTab + "\"]";
-            let tab = document.querySelector(tabSelector);
+            var tab;
+            // On redirige l'ancre "#main_courses" (navbar "Mes cours") vers #teachings ou #courses.
+            const hash = window.location.hash;
+            if (hash && hash == "#main_courses") {
+                // Si l'utilisateur a des enseignements, l'ancre pointe vers cet onglet
+                const teachTab = document.querySelector("#block-apsolu-dashboard-nav-tabs[role='tablist'] [href='#teachings']");
+                if(teachTab) {
+                    window.location.hash = '#teachings';
+                    tab = teachTab;
+                } else {
+                    // Si l'utilisateur n'a pas l'onglet "Mes enseignements", l'ancre pointe vers "Mes activités".
+                    window.location.hash = '#courses';
+                    tab = document.querySelector("#block-apsolu-dashboard-nav-tabs[role='tablist'] [href='#courses']");
+                }
+            } else {
+                // S'il n'y a pas d'ancre l'onglet à activer est le dernier onglet consulté par l'utilisateur (préférences).
+                let tabSelector = "#block-apsolu-dashboard-nav-tabs li a[aria-controls=\"" + activeTab + "\"]";
+                tab = document.querySelector(tabSelector);
+            }
             if (tab) {
                 // Active l'onglet.
                 let currentActiveTab = document.querySelector("#block-apsolu-dashboard-nav-tabs li a.nav-link.active");

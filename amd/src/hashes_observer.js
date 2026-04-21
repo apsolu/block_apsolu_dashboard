@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Permet d'ouvrir l'onglet "Mes cours" lorsque l'utilisateur est déjà sur son tableau de bord
+ * Permet d'ouvrir l'onglet "Mes cours" ou "Mes enseignements" lorsque l'utilisateur est déjà sur son tableau de bord
  * et qu'il clique sur le lien "Mes cours" dans la barre de navigation en haut de la page.
  *
  * @module     block_apsolu_dashboard/hashes_observer
@@ -31,14 +31,20 @@ define([], function() {
             });
         },
         showHash: function() {
-            const hash = window.location.hash;
-
+            var hash = window.location.hash;
             if (!hash) {
                 // Il n'y a pas d'ancre dans l'URL appelée.
                 return;
             }
 
-            const element = document.querySelector(".nav-tabs a[aria-controls=" + hash.substring(1) + "]");
+            var element;
+            if(hash == "#main_courses") {  // On redirige l'ancre "#main_courses" (navbar "Mes cours").
+                const teachTab = document.querySelector(".nav-tabs[role='tablist'] [href='#teachings']");
+                // Vers #teachings ou #courses selon si l'utilisateur a un onglet "Mes enseignements".
+                hash = teachTab ? '#teachings' : '#courses';
+                window.location.hash = hash;
+            }
+            element = document.querySelector(".nav-tabs a[aria-controls=" + hash.substring(1) + "]");
             if (!element) {
                 // L'élément pointé par l'ancre n'existe pas.
                 return;
