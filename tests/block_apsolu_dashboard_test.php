@@ -131,7 +131,6 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
         $sessiontime += $course->get_session_offset();
         $session->sessiontime = $sessiontime;
         $session->courseid = $course->id;
-        $session->activityid = $course->category;
         $session->locationid = $course->locationid;
         $session->timecreated = time();
         $session->timemodified = time();
