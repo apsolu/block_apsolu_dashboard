@@ -531,9 +531,17 @@ class block_apsolu_dashboard extends block_base {
         $attributes = ['class' => 'apsolu-location-markers-img', 'width' => '15px', 'height' => '20px'];
         $this->marker_pix = $OUTPUT->pix_icon('a/marker', $alt = '', 'enrol_select', $attributes);
 
+        $params = [];
+        $params['userid']      = $USER->id;
+        $params['authtoken']   = calendar_get_export_token($USER);
+        $params['preset_what'] = 'all';
+        $params['preset_time'] = 'recentupcoming';
+        $ical = new moodle_url('/calendar/export_execute.php', $params);
+
         // Template data.
         $data = new stdClass();
         $data->wwwroot = $CFG->wwwroot;
+        $data->wwwical = $ical;
         $data->is_siuaps_rennes = isset($CFG->is_siuaps_rennes);
         $data->isonwaitlist = false;
         $data->sessions = [];
