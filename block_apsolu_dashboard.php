@@ -518,6 +518,7 @@ class block_apsolu_dashboard extends block_base {
             return $this->content;
         }
 
+        require_once($CFG->dirroot . '/calendar/lib.php');
         require_once($CFG->dirroot . '/enrol/select/lib.php');
 
         $federation = new FederationCourse();
