@@ -124,7 +124,7 @@ class block_apsolu_dashboard extends block_base {
     }
 
     /**
-     * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes cours".
+     * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes activités".
      *
      * @param int|null $courseid Identifiant du cours.
      *
@@ -147,7 +147,7 @@ class block_apsolu_dashboard extends block_base {
     }
 
     /**
-     * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes cours".
+     * Retourne la liste des cours où l'utilisateur courant étudie. Cette méthode est utilisée pour l'onglet "Mes activités".
      *
      * @param string $archetype Nom de l'archétype du rôle. TODO: à remplacer par une permission Moodle.
      *
