@@ -23,7 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot . '/blocks/apsolu_dashboard/notify_form.php');
+require_once($CFG->dirroot . '/local/apsolu/forms/notification_form.php');
 
 if (!isset($_POST['users'])) {
     $_POST['users'] = [];
@@ -82,37 +82,21 @@ if (!isset($users[$USER->id])) {
     $users[$USER->id] = $USER;
 }
 
-$mform = new block_apsolu_dashboard_notify_form($PAGE->url->out(false), [$users]);
+$redirecturl = new moodle_url('/blocks/apsolu_dashboard/extractions.php');
+$customdata = [];
+$customdata[] = (object) ['subject' => ''];
+$customdata[] = $users;
+$customdata[] = $redirecturl;
+
+$mform = new local_apsolu_notification_form($PAGE->url->out(false), $customdata);
 
 if ($mform->is_cancelled()) {
     redirect($return);
 } else if ($data = $mform->get_data()) {
-    if (!empty($data->message)) {
-        if (empty($data->subject)) {
-            $data->subject = get_string('defaultnotifysubject', 'block_apsolu_dashboard');
-        }
+    $mform->local_apsolu_notify($data->users, $course->id);
 
-        foreach ($users as $user) {
-            $eventdata = new \core\message\message();
-            $eventdata->name = 'select_notification';
-            $eventdata->component = 'enrol_select';
-            $eventdata->userfrom = $USER;
-            $eventdata->userto = $user;
-            $eventdata->subject = $data->subject;
-            $eventdata->fullmessage = $data->message;
-            $eventdata->fullmessageformat = FORMAT_PLAIN;
-            $eventdata->fullmessagehtml = '';
-            $eventdata->smallmessage = '';
-
-            message_send($eventdata);
-        }
-
-        $url = $CFG->wwwroot . '/blocks/apsolu_dashboard/extractions.php';
-        redirect($url, 'Les utilisateurs ont été notifiés.', 5, \core\output\notification::NOTIFY_SUCCESS);
-    } else {
-        $url = $CFG->wwwroot . '/blocks/apsolu_dashboard/extractions.php';
-        redirect($url, 'Le message ne peut pas être vide.', 5, \core\output\notification::NOTIFY_ERROR);
-    }
+    $message = get_string('notifications_have_been_sent', 'local_apsolu');
+    redirect($redirecturl, $message, 5, \core\output\notification::NOTIFY_SUCCESS);
 }
 
 echo $OUTPUT->header();
