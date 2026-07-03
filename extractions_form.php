@@ -35,47 +35,50 @@ class local_apsolu_courses_users_export_form extends moodleform {
         $mform = $this->_form;
         [$defaults, $courses, $institutions, $roles, $semesters, $lists, $forcemanager] = $this->_customdata;
 
+        $style = 'min-width: 500px;';
+
         // Family names.
-        $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), ['size' => '48']);
+        $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), ['style' => $style]);
         $mform->setType('lastnames', PARAM_TEXT);
         $mform->addHelpButton('lastnames', 'studentname', 'local_apsolu');
 
         // Courses.
-        $select = $mform->addElement('select', 'courses', get_string('mycourses'), $courses, ['size' => 10]);
+        $select = $mform->addElement('select', 'courses', get_string('mycourses'), $courses, ['size' => 10, 'style' => $style]);
         $mform->setType('courses', PARAM_TEXT);
         $mform->addRule('courses', get_string('required'), 'required', null, 'client');
         $select->setMultiple(true);
 
         // Institutions.
-        $select = $mform->addElement('select', 'institutions', get_string('institution'), $institutions, ['size' => 6]);
+        $attributes = ['size' => 6, 'style' => $style];
+        $select = $mform->addElement('select', 'institutions', get_string('institution'), $institutions, $attributes);
         $mform->setType('institutions', PARAM_TEXT);
         $mform->addRule('institutions', get_string('required'), 'required', null, 'client');
         $select->setMultiple(true);
 
         // UFR.
-        $mform->addElement('text', 'ufrs', get_string('fields_apsoluufr', 'local_apsolu'), ['size' => '48']);
+        $mform->addElement('text', 'ufrs', get_string('fields_apsoluufr', 'local_apsolu'), ['style' => $style]);
         $mform->setType('ufrs', PARAM_TEXT);
         $mform->addHelpButton('ufrs', 'ufrs', 'local_apsolu');
 
         // Departments.
-        $mform->addElement('text', 'departments', get_string('department'), ['size' => '48']);
+        $mform->addElement('text', 'departments', get_string('department'), ['style' => $style]);
         $mform->setType('departments', PARAM_TEXT);
         $mform->addHelpButton('departments', 'departments', 'local_apsolu');
 
         // Roles (evaluate, free, etc).
-        $select = $mform->addElement('select', 'roles', get_string('role'), $roles, ['size' => 4]);
+        $select = $mform->addElement('select', 'roles', get_string('role'), $roles, ['size' => 4, 'style' => $style]);
         $mform->setType('roles', PARAM_TEXT);
         $mform->addRule('roles', get_string('required'), 'required', null, 'client');
         $select->setMultiple(true);
 
         // Semesters.
-        $attributes = ['size' => 4];
+        $attributes = ['size' => 4, 'style' => $style];
         $select = $mform->addElement('select', 'semesters', get_string('semesters', 'local_apsolu'), $semesters, $attributes);
         $mform->setType('semesters', PARAM_TEXT);
         $mform->addRule('semesters', get_string('required'), 'required', null, 'client');
 
         // Lists (main list, wait list, etc).
-        $select = $mform->addElement('select', 'lists', get_string('list'), $lists, ['size' => 4]);
+        $select = $mform->addElement('select', 'lists', get_string('list'), $lists, ['size' => 4, 'style' => $style]);
         $mform->setType('lists', PARAM_TEXT);
         $mform->addRule('lists', get_string('required'), 'required', null, 'client');
         $select->setMultiple(true);

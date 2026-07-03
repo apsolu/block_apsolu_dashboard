@@ -35,29 +35,33 @@ class block_apsolu_dashboard_shnu_export_form extends moodleform {
         $mform = $this->_form;
         [$defaults, $institutions, $groups, $sexes] = $this->_customdata;
 
-        $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), ['size' => '48']);
+        $style = 'min-width: 500px;';
+
+        $mform->addElement('text', 'lastnames', get_string('studentname', 'local_apsolu'), ['style' => $style]);
         $mform->setType('lastnames', PARAM_TEXT);
         $mform->addHelpButton('lastnames', 'studentname', 'local_apsolu');
 
-        $select = $mform->addElement('select', 'institutions', get_string('institution'), $institutions, ['size' => 6]);
+        $attributes = ['size' => 6, 'style' => $style];
+        $select = $mform->addElement('select', 'institutions', get_string('institution'), $institutions, $attributes);
         $mform->setType('institutions', PARAM_TEXT);
         $mform->addRule('institutions', get_string('required'), 'required', null, 'client');
         $select->setMultiple(true);
 
-        $mform->addElement('text', 'ufrs', get_string('fields_apsoluufr', 'local_apsolu'), ['size' => '48']);
+        $mform->addElement('text', 'ufrs', get_string('fields_apsoluufr', 'local_apsolu'), ['style' => $style]);
         $mform->setType('ufrs', PARAM_TEXT);
         $mform->addHelpButton('ufrs', 'ufrs', 'local_apsolu');
 
-        $mform->addElement('text', 'departments', get_string('department'), ['size' => '48']);
+        $mform->addElement('text', 'departments', get_string('department'), ['style' => $style]);
         $mform->setType('departments', PARAM_TEXT);
         $mform->addHelpButton('departments', 'departments', 'local_apsolu');
 
-        $select = $mform->addElement('select', 'groups', get_string('group'), $groups, ['size' => 10]);
+        $select = $mform->addElement('select', 'groups', get_string('group'), $groups, ['size' => 10, 'style' => $style]);
         $mform->setType('groups', PARAM_TEXT);
         $mform->addRule('groups', get_string('required'), 'required', null, 'client');
         $select->setMultiple(true);
 
-        $select = $mform->addElement('select', 'sexes', get_string('sex', 'local_apsolu'), $sexes, ['size' => 4]);
+        $attributes = ['size' => 4, 'style' => $style];
+        $select = $mform->addElement('select', 'sexes', get_string('sex', 'local_apsolu'), $sexes, $attributes);
         $mform->setType('sexes', PARAM_TEXT);
         $mform->addRule('sexes', get_string('required'), 'required', null, 'client');
 
