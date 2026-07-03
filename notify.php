@@ -82,7 +82,7 @@ if (!isset($users[$USER->id])) {
     $users[$USER->id] = $USER;
 }
 
-$redirecturl = new moodle_url('/blocks/apsolu_dashboard/extractions.php');
+$redirecturl = new moodle_url('/my/#teachings');
 $customdata = [];
 $customdata[] = (object) ['subject' => ''];
 $customdata[] = $users;
