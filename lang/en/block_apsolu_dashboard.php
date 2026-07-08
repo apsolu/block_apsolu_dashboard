@@ -53,7 +53,7 @@ $string['pending_enrolments'] = 'Inscription en attente d’approbation';
 $string['pluginname'] = 'APSOLU: Tableau de bord';
 $string['pre-sessions'] = 'Séances de pré-rentrée';
 $string['pre-sessions_notice'] = '<div class="alert alert-info">' .
-    '<p><strong>Si vous n’avez pu vous pré-inscrire que sur liste complémentaire :</strong></p>' .
+    '<p><strong>Si vous n’avez pu vous pré-inscrire que sur la {$a} :</strong></p>' .
     '<p>Tout n’est pas perdu ! 2 possiblités :</p>' .
     '<ul>' .
     '<li>Vous pouvez tenter de vous présenter au 1er cours (sans garantie d’obtenir une place).</li>' .

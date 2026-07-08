@@ -112,7 +112,7 @@ foreach ($enrols as $enrolid => $enrol) {
 
 $enrolmentstypes = [];
 foreach (enrol_select_plugin::$states as $state => $label) {
-    $enrolmentstypes[] = enrol_select_plugin::get_enrolment_list_name($state);
+    $enrolmentstypes[] = get_enrol_list_fieldvalue($state, 'listname');
 }
 
 $data = new stdClass();

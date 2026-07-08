@@ -96,7 +96,8 @@ class block_apsolu_dashboard extends block_base {
             $session->label = $session->activity . ' ' . $session->event . ' - ' . $session->skill;
         }
 
-        $listname = enrol_select_plugin::get_enrolment_list_name($session->status);
+        $listname = get_enrol_list_fieldvalue($session->status, 'listname');
+
         switch ($session->status) {
             case enrol_select_plugin::ACCEPTED:
                 $session->enrolment_accepted = $listname;
@@ -185,7 +186,7 @@ class block_apsolu_dashboard extends block_base {
         $recordset = $DB->get_recordset_sql($sql, $parameters);
         foreach ($recordset as $course) {
             if (isset($courses[$course->id]) === false) {
-                $course->{'listname' . $course->status} = enrol_select_plugin::get_enrolment_list_name($course->status);
+                $course->{'listname' . $course->status} = get_enrol_list_fieldvalue($course->status, 'listname');
                 $course->viewable = false;
                 $course->enrolments = [];
                 $course->count_enrolments = 0;
@@ -204,7 +205,7 @@ class block_apsolu_dashboard extends block_base {
                 $courses[$course->id]->status = $course->status;
                 $courses[$course->id]->customint7 = $startcourse;
                 $courses[$course->id]->{'listname' . $course->status} =
-                    enrol_select_plugin::get_enrolment_list_name($course->status);
+                    get_enrol_list_fieldvalue($course->status, 'listname');
             }
 
             $enrolment = new stdClass();
@@ -215,7 +216,7 @@ class block_apsolu_dashboard extends block_base {
                 $enrolment->calendar = $calendartypes[$course->calendarid]->name;
             }
 
-            $listname = enrol_select_plugin::get_enrolment_list_name($course->status);
+            $listname = get_enrol_list_fieldvalue($course->status, 'listname');
             switch ($course->status) {
                 case enrol_select_plugin::ACCEPTED:
                     $enrolment->enrolment_accepted = $listname;
@@ -732,6 +733,10 @@ class block_apsolu_dashboard extends block_base {
         if ($authmoduleexists === true && has_capability('moodle/site:configview', context_system::instance()) === false) {
             $data->manageetape = has_capability('local/apsolu_auth:manageetape', context_system::instance());
         }
+
+        // Custom string for template.
+        $data->isonwaitlist = true;
+        $data->prenotice = get_string('pre-sessions_notice', 'block_apsolu_dashboard', get_accepted_listname());
 
         // Display templates.
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
