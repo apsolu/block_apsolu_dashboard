@@ -586,6 +586,7 @@ class block_apsolu_dashboard extends block_base {
 
             if (isset($CFG->is_siuaps_rennes) === true && $session->status === enrol_select_plugin::WAIT) {
                 $data->isonwaitlist = true;
+                $data->prenotice = get_string('pre-sessions_notice', 'block_apsolu_dashboard', get_wait_listname());
             }
         }
 
@@ -733,10 +734,6 @@ class block_apsolu_dashboard extends block_base {
         if ($authmoduleexists === true && has_capability('moodle/site:configview', context_system::instance()) === false) {
             $data->manageetape = has_capability('local/apsolu_auth:manageetape', context_system::instance());
         }
-
-        // Custom string for template.
-        $data->isonwaitlist = true;
-        $data->prenotice = get_string('pre-sessions_notice', 'block_apsolu_dashboard', get_accepted_listname());
 
         // Display templates.
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
