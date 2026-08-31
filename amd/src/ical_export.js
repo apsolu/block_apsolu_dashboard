@@ -19,8 +19,8 @@
  * @copyright  2026 Université Rennes 2
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/modal', 'core/str', 'core/templates', 'core/notification', 'core/first', 'core/modal_events'],
-    function($, Modal, Str, Templates, Notification, M, ModalEvents) {
+define(['jquery', 'core/modal', 'core/str', 'core/templates', 'core/notification', 'core/modal_events', 'core/config'],
+    function($, Modal, Str, Templates, Notification, ModalEvents, Config) {
 
     var helpModalPromise = null;
     var currentPage = 0;
@@ -58,6 +58,7 @@ define(['jquery', 'core/modal', 'core/str', 'core/templates', 'core/notification
     var renderPage = function(modal, index) {
         let data = index == 0 ? {isFirstStep: true} : (index === 1 ? {isSecondStep: true} : {isThirdStep: true});
         currentPage = index;
+        data.wwwroot = Config.wwwroot;
         Templates.render(
             'block_apsolu_dashboard/ical_export_help_modal', data
         ).then(function(html) {
