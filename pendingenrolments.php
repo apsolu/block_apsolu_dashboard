@@ -38,7 +38,6 @@ require_login($courseorid = null, $autologinguest = false);
 // Récupère les cours et les méthodes d'inscription de l'enseignant.
 $sql = "SELECT DISTINCT e.*, c.fullname" .
     " FROM {course} c" .
-    " JOIN {apsolu_courses} ac ON ac.id = c.id" .
     " JOIN {course_categories} cc ON cc.id = c.category" .
     " JOIN {enrol} e ON c.id = e.courseid" .
     " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
@@ -46,7 +45,7 @@ $sql = "SELECT DISTINCT e.*, c.fullname" .
     " WHERE ra.userid = ?" .
     " AND e.enrol = 'select'" .
     " AND e.status = 0" .
-    " ORDER BY cc.name, ac.numweekday, ac.starttime";
+    " ORDER BY cc.name";
 $enrols = $DB->get_records_sql($sql, [$USER->id]);
 
 if (count($enrols) === 0) {

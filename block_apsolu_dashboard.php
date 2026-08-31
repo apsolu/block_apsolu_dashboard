@@ -16,6 +16,7 @@
 
 use UniversiteRennes2\Apsolu\Payment;
 use local_apsolu\core\attendance;
+use local_apsolu\core\course;
 use local_apsolu\core\federation\course as FederationCourse;
 
 /**
@@ -28,6 +29,13 @@ use local_apsolu\core\federation\course as FederationCourse;
 #[\AllowDynamicProperties]
 class block_apsolu_dashboard extends block_base {
     /**
+     * Tableau contenant les cours de l'utilisateur.
+     *
+     * @var array $apsolucourses
+     */
+    public $apsolucourses;
+
+    /**
      * Initialise la classe block_apsolu_dashboard.
      *
      * @return void
@@ -35,6 +43,7 @@ class block_apsolu_dashboard extends block_base {
     public function __construct() {
         parent::__construct();
 
+        $this->apsolucourses = [];
         $this->currenttime = time();
         $this->maxtime = $this->currenttime + (45 * DAYSECS); // Affiche les rendez-vous des 45 prochains jours.
     }
@@ -65,6 +74,21 @@ class block_apsolu_dashboard extends block_base {
     private function format_session($session) {
         global $CFG;
 
+        if (isset($this->apsolucourses[$session->courseid]) === false) {
+            $this->apsolucourses[$session->courseid] = Course::get_record(['id' => $session->courseid]);
+        }
+
+        $course = (object) ['weekday' => null, 'skill' => null, 'event' => null, 'location' => null];
+        if ($this->apsolucourses[$session->courseid] !== false) {
+            $course->numweekday = $this->apsolucourses[$session->courseid]->customfields['weekday']->get_value();
+            $timerange = json_decode($this->apsolucourses[$session->courseid]->customfields['timerange']->get_value(), true);
+            $course->starttime = implode(':', $timerange['start']);
+            $course->skill = $this->apsolucourses[$session->courseid]->customfields['skill']->export_value();
+            $course->event = $this->apsolucourses[$session->courseid]->customfields['category']->get('charvalue');
+            $course->locationid = $this->apsolucourses[$session->courseid]->customfields['location']->get_value();
+        }
+
+        // Traite l'heure du rendez-vous.
         $today = mktime(23, 59, 59);
         $tomorrow = $today + 24 * 60 * 60;
 
@@ -80,21 +104,25 @@ class block_apsolu_dashboard extends block_base {
         }
 
         [$start, $startstr] = explode('|', userdate($session->sessiontime, $formatdate));
+        [$end, $endstr] = explode('|', userdate($session->sessiontime + $session->duration, $formatdate));
 
-        $endstr = $session->endtime;
-        $end = str_replace('T' . $session->starttime, 'T' . $session->endtime, $start);
-
+        // Traite le lieu du rendez-vous.
         if (empty($session->location)) {
             $session->location = '<p>' . get_string('no_description', 'block_apsolu_dashboard') . '</p>';
-        } else if ($session->locationid !== $session->defaultlocationid) {
+        } else if ($session->locationid != $course->locationid) {
             $session->location = '<span class="block-apsolu-attendance-warning text-danger">' . $session->location . '</span>';
         }
 
-        if (empty($session->event) === true) {
-            $session->label = $session->activity . ' - ' . $session->skill;
-        } else {
-            $session->label = $session->activity . ' ' . $session->event . ' - ' . $session->skill;
+        // Traite le libellé du cours.
+        $label = [$session->activity];
+        if (empty($course->event) === false) {
+            $label = [sprintf('%s (%s)', $session->activity, $course->event)];
         }
+
+        if (empty($course->skill) === false) {
+            $label[] = $course->skill;
+        }
+        $session->label = implode(' - ', $label);
 
         $listname = get_enrol_list_fieldvalue($session->status, 'listname');
 
@@ -119,7 +147,7 @@ class block_apsolu_dashboard extends block_base {
         $session->end = $end;
         $session->endstr = $endstr;
 
-        $session->defaultsessiontime = (userdate($session->sessiontime, '%u%H:%M') === $session->numweekday . $session->starttime);
+        $session->defaultsessiontime = (userdate($session->sessiontime, '%u%H:%M') === $course->numweekday . $course->starttime);
 
         return $session;
     }
@@ -168,9 +196,8 @@ class block_apsolu_dashboard extends block_base {
         $calendartypes = $DB->get_records_sql($sql);
 
         $sql = "SELECT c.id, c.fullname, e.id AS enrolid, e.customint7, e.customint8, e.enrol, e.customchar1 AS calendarid,
-                       ra.roleid, apc.id AS apsolucourse, ue.status
+                       ra.roleid, ue.status
                   FROM {course} c
-             LEFT JOIN {apsolu_courses} apc ON apc.id = c.id
                   JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50
                   JOIN {role_assignments} ra ON ctx.id = ra.contextid
                   JOIN {role} r ON r.id = ra.roleid
@@ -284,21 +311,25 @@ class block_apsolu_dashboard extends block_base {
         $countothers = 0;
 
         $sql = "SELECT c.id, c.fullname, c.visible, e.id AS enrolid, e.name AS enrolname, e.customint8 AS endcourse,
-                       e.customint7 AS startcourse, ra.roleid, apc.id AS apsolucourse
+                       e.customint7 AS startcourse, ra.roleid
                   FROM {course} c
-             LEFT JOIN {apsolu_courses} apc ON apc.id = c.id
                   JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50
                   JOIN {role_assignments} ra ON ctx.id = ra.contextid
                   JOIN {role} r ON r.id = ra.roleid
              LEFT JOIN {enrol} e ON c.id = e.courseid AND e.status = 0 AND e.enrol = 'select'
                  WHERE ra.userid = :userid
-                   AND r.archetype = 'editingteacher'
-              ORDER BY c.visible DESC, apc.numweekday, apc.starttime, c.fullname, e.enrolstartdate";
+                   AND r.archetype = 'editingteacher'";
         $parameters = ['userid' => $USER->id];
 
         $courses = [];
+        $apsolucourses = Course::get_records();
         $recordset = $DB->get_recordset_sql($sql, $parameters);
         foreach ($recordset as $course) {
+            $course->apsolucourse = null;
+            if (isset($apsolucourses[$course->id]) === true) {
+                $course->apsolucourse = $course->id;
+            }
+
             if (empty($course->enrolname) === true) {
                 $course->enrolname = get_string('pluginname', 'enrol_select');
             }
@@ -356,10 +387,9 @@ class block_apsolu_dashboard extends block_base {
 
         $this->courses_contacts = [];
 
-        $sql = "SELECT ra.id, ac.id AS courseid, u.firstname, u.lastname, u.email
+        $sql = "SELECT ra.id, ctx.instanceid AS courseid, u.firstname, u.lastname, u.email
                   FROM {role_assignments} ra
                   JOIN {context} ctx ON ctx.id = ra.contextid
-                  JOIN {apsolu_courses} ac ON ac.id = ctx.instanceid
                   JOIN {user} u ON u.id = ra.userid
                  WHERE ctx.contextlevel = 50
                    AND ra.roleid = 3
@@ -414,29 +444,26 @@ class block_apsolu_dashboard extends block_base {
         $lists = [];
         $sessions = [];
 
-        $sql = "SELECT sess.sessiontime, sess.courseid, sess.locationid, c.fullname, apc.event," .
-            " aps.name AS skill, cc.name AS activity, ue.status, ue.timestart, ue.timeend," .
-            " apc.numweekday, apc.starttime, apc.endtime, apc.locationid AS defaultlocationid, apl.name AS location" .
-            " FROM {apsolu_attendance_sessions} sess" .
-            " JOIN {course} c ON c.id = sess.courseid" .
-            " JOIN {course_categories} cc ON cc.id = c.category" .
-            " JOIN {apsolu_courses} apc ON apc.id = c.id" .
-            " JOIN {apsolu_skills} aps ON aps.id = apc.skillid" .
-            " JOIN {apsolu_locations} apl ON apl.id = sess.locationid" .
-            " JOIN {enrol} e ON c.id = e.courseid" .
-            " JOIN {user_enrolments} ue ON e.id = ue.enrolid" .
-            " WHERE c.visible = 1" .
-            // Seulement les méthodes d'inscription actives.
-            " AND e.status = 0" .
-            // Seulement les inscriptions acceptées, sur liste principale ou sur liste complémentaire.
-            " AND ue.status IN (0, 2, 3)" .
-            // Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
-            " AND (ue.timeend = 0 OR ue.timeend > :currenttime)" .
-            // Seulement les sessions correspondantes à la période d'inscription au cours.
-            " AND (sess.sessiontime BETWEEN ue.timestart AND ue.timeend OR ue.timeend = 0)" .
-            " AND sess.sessiontime <= :maxtime" .
-            " AND ue.userid = :userid" .
-            " ORDER BY sess.sessiontime, c.fullname";
+        $sql = "SELECT sess.sessiontime, sess.duration, sess.courseid, sess.locationid, c.fullname, cc.name AS activity,
+                       ue.status, ue.timestart, ue.timeend, apl.name AS location
+                  FROM {apsolu_attendance_sessions} sess
+                  JOIN {course} c ON c.id = sess.courseid
+                  JOIN {course_categories} cc ON cc.id = c.category
+                  JOIN {apsolu_locations} apl ON apl.id = sess.locationid
+                  JOIN {enrol} e ON c.id = e.courseid
+                  JOIN {user_enrolments} ue ON e.id = ue.enrolid
+                 WHERE c.visible = 1
+                    -- Seulement les méthodes d'inscription actives.
+                   AND e.status = 0
+                    -- Seulement les inscriptions acceptées, sur liste principale ou sur liste complémentaire.
+                   AND ue.status IN (0, 2, 3)
+                    -- Seulement les cours dont l'inscription n'est pas expirée (note: mais peut-être qu'elle n'a pas commencé...).
+                   AND (ue.timeend = 0 OR ue.timeend > :currenttime)
+                    -- Seulement les sessions correspondantes à la période d'inscription au cours.
+                   AND (sess.sessiontime BETWEEN ue.timestart AND ue.timeend OR ue.timeend = 0)
+                   AND sess.sessiontime <= :maxtime
+                   AND ue.userid = :userid
+              ORDER BY sess.sessiontime, c.fullname";
         $params = ['userid' => $USER->id, 'currenttime' => $this->currenttime, 'maxtime' => $this->maxtime];
 
         $recordset = $DB->get_recordset_sql($sql, $params);
@@ -457,25 +484,10 @@ class block_apsolu_dashboard extends block_base {
                 $lists[$session->courseid] = true;
             }
 
-            $duration = 0;
+            // Recalcule l'heure de fin du cours si ce n'est plus l'heure par défaut.
+            $session->endtime = userdate($session->sessiontime + $session->duration, '%H:%M');
 
-            $endtime = explode(':', $session->endtime);
-            $starttime = explode(':', $session->starttime);
-
-            if (isset($endtime[1], $starttime[1]) === true) {
-                $duration = ($endtime[0] * 60 * 60 + $endtime[1] * 60) - ($starttime[0] * 60 * 60 + $starttime[1] * 60);
-            }
-
-            if ($duration <= 0) {
-                $duration = 60 * 60;
-            }
-
-            if (userdate($session->sessiontime, '%H:%M') !== $session->starttime) {
-                // Recalcule l'heure de fin du cours si ce n'est plus l'heure par défaut.
-                $session->endtime = userdate($session->sessiontime + $duration, '%H:%M');
-            }
-
-            if ($session->sessiontime + $duration < $this->currenttime) {
+            if ($session->sessiontime + $session->duration < $this->currenttime) {
                 // N'affiche pas ce rendez-vous si la session du cours est déjà terminée.
                 continue;
             }
@@ -660,7 +672,6 @@ class block_apsolu_dashboard extends block_base {
             $sql = "SELECT ue.id, ue.userid
                       FROM {user_enrolments} ue
                       JOIN {enrol} e ON e.id = ue.enrolid
-                      JOIN {apsolu_courses} ac ON ac.id = e.courseid
                       JOIN {context} ctx ON e.courseid = ctx.instanceid AND ctx.contextlevel = 50
                       JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3
                      WHERE e.enrol = 'select'

@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_apsolu\core\course;
+
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/local/apsolu/forms/notification_form.php');
 
@@ -49,16 +51,7 @@ if (!$ismanager) {
 
 if (!$ismanager) {
     // Check if is teacher.
-    $sql = "SELECT DISTINCT c.*" .
-        " FROM {enrol} e" .
-        " JOIN {course} c ON c.id = e.courseid" .
-        " JOIN {apsolu_courses} ac ON ac.id = c.id" .
-        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
-        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3" .
-        " WHERE ra.userid = ?" .
-        " AND e.enrol = 'select'" .
-        " AND e.status = 0";
-    $records = $DB->get_records_sql($sql, [$USER->id]);
+    $records = Course::get_records_by_user($USER->id, $roleid = 3);
 
     if (count($records) === 0) {
         throw new moodle_exception('usernotavailable');

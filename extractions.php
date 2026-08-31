@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_apsolu\core\course;
 use local_apsolu\core\customfields;
 
 require_once(__DIR__ . '/../../config.php');
@@ -56,24 +57,10 @@ if ($forcemanager) {
 
 if ($ismanager) {
     // Managers.
-    $sql = "SELECT c.id, c.fullname" .
-        " FROM {course} c" .
-        " JOIN {apsolu_courses} ac ON ac.id = c.id" .
-        " ORDER BY c.fullname";
-    $records = $DB->get_records_sql($sql);
+    $records = Course::get_records();
 } else {
     // Teachers.
-    $sql = "SELECT DISTINCT c.*" .
-        " FROM {enrol} e" .
-        " JOIN {course} c ON c.id = e.courseid" .
-        " JOIN {apsolu_courses} ac ON ac.id = c.id" .
-        " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
-        " JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3" .
-        " WHERE ra.userid = ?" .
-        " AND e.enrol = 'select'" .
-        " AND e.status = 0" .
-        " ORDER BY c.fullname";
-    $records = $DB->get_records_sql($sql, [$USER->id]);
+    $records = Course::get_records_by_user($USER->id, $roleid = 3);
 }
 
 if (count($records) === 0) {
@@ -148,7 +135,6 @@ if ($data = $mform->get_data()) {
         " JOIN {enrol} e ON e.id = ue.enrolid AND e.enrol = 'select' AND e.status = 0" .
         " JOIN {apsolu_calendars} cal ON cal.id = e.customchar1" .
         " JOIN {course} c ON c.id = e.courseid" .
-        " JOIN {apsolu_courses} ac ON ac.id = c.id" .
         " JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50" .
         " JOIN {role_assignments} ra1 ON ctx.id = ra1.contextid AND ra1.userid = u.id AND ra1.itemid = e.id" .
         " JOIN {role} r ON r.id = ra1.roleid";
