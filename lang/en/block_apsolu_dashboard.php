@@ -25,12 +25,24 @@
 $string['apsolu_dashboard:addinstance'] = 'Ajouter un bloc "APSOLU: Tableau de bord"';
 $string['apsolu_dashboard:myaddinstance'] = 'Ajouter un nouveau bloc "APSOLU: Tableau de bord" au tableau de bord';
 
+$string['caption_str_1'] = 'Dans l’onglet Calendrier, cliquez sur l’icone de configuration de calendriers et ajoutez un calendrier externe.';
+$string['caption_str_2'] = 'Choisissez l’option « ajouter un calendrier externe », puis sélectionnez le type « Abonnement iCAL ». Collez ensuite l’URL de l’export dans le champ URL ICS.';
+$string['caption_str_3'] = 'Donnez un nom au calendrier, et choisissez une couleur pour l’identifier.';
+$string['close'] = 'Fermer';
 $string['contact_your_teacher'] = 'Contacter votre enseignant :';
 $string['courses_signup'] = 'S’inscrire à une activité';
 $string['download_all_my_attendances'] = 'Télécharger toutes mes présences';
 $string['enrol_users'] = 'Gérer les inscriptions';
 $string['enrolment_type'] = 'Type d’inscription';
 $string['export'] = 'Exporter la liste des inscrits';
+$string['export_calendar_url'] = 'Exporter votre planning d’activités';
+$string['export_help_partage'] = 'Aide à l’export vers PARTAGE';
+$string['export_ical_customize_calendar'] = 'Donnez un nom au calendrier, et choisissez une couleur pour l’identifier.';
+$string['export_ical_new_calendar'] = 'Dans l’onglet Calendrier, cliquez sur l’icone de configuration de calendriers et ajoutez un calendrier externe.';
+$string['export_ical_paste_url'] = 'Choisissez l’option « ajouter un calendrier externe », puis sélectionnez le type « Abonnement iCAL ». Collez ensuite l’URL de l’export dans le champ URL ICS.';
+$string['image_alt_1'] = 'Menu d’ajout de calendrier {$a}';
+$string['image_alt_2'] = 'Ajouter un calendrier externe, type Abonnement iCAL';
+$string['image_alt_3'] = 'Nommage et couleur';
 $string['important'] = 'Important :';
 $string['last_enrolment'] = 'Date de la dernière inscription';
 $string['my_attendances'] = 'Mes présences';
@@ -44,6 +56,7 @@ $string['my_rendez-vous'] = 'Mes rendez-vous';
 $string['my_shnu'] = 'Liste SHNU';
 $string['my_students'] = 'Liste de mes étudiants';
 $string['my_teachings'] = 'Mes enseignements';
+$string['next_step'] = 'Étape suivante';
 $string['no_courses'] = 'Aucune activité';
 $string['no_description'] = 'Session régulière de cours';
 $string['no_payment_required'] = 'Aucune inscription nécessitant un paiement.';
@@ -60,6 +73,7 @@ $string['pre-sessions_notice'] = '<div class="alert alert-info">' .
     '<li>Vous attendez ; l’enseignant pourra vous notifier par mail si une place s’est libérée et s’il peut vous accueillir. N’oubliez pas de consulter votre adresse mail universitaire !</li>' .
     '</ul>' .
     '</div>';
+$string['prev_step'] = 'Étape précédente';
 $string['sessions'] = 'Séances hebdomadaires';
 $string['title'] = 'APSOLU: Tableau de bord';
 $string['unallowed_enrolment'] = 'D’après votre contrat pédagogique, vous ne pouvez pas :';

@@ -78,7 +78,9 @@
     {{/count_enrolment_errors}}
 
     <div class="well">
-        <p class="text-end"><a class="btn btn-outline-primary" href="{{{wwwical}}}"><i class="icon fa fa-fw fa-calendar navicon" aria-hidden="true" tabindex="-1"></i> .ical</a></p>
+        <p class="text-end">
+            <a class="btn btn-outline-primary" href="#" data-action="show-ical-export"><i class="icon fa fa-fw fa-calendar navicon" aria-hidden="true" tabindex="-1"></i> .ical</a>    
+        </p>
         {{#sessions}}
         <div class="{{^enrolment_wait}}bg-light{{/enrolment_wait}}{{#enrolment_wait}}bg-secondary{{/enrolment_wait}} card mb-2 p-2">
             <div class="row">

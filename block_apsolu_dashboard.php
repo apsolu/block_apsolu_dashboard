@@ -755,6 +755,7 @@ class block_apsolu_dashboard extends block_base {
         $this->page->requires->js_call_amd('block_apsolu_dashboard/hashes_observer', 'initialise');
         $this->page->requires->js_call_amd('block_apsolu_dashboard/set_active_tab', 'initialise', [$activetab, $USER->id]);
         $this->page->requires->js_call_amd('enrol_select/select_mapping', 'initialise');
+        $this->page->requires->js_call_amd('block_apsolu_dashboard/ical_export', 'initialise', [$ical->out($escape = false)]);
 
         return $this->content;
     }

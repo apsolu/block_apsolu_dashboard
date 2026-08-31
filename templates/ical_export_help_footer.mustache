@@ -1,0 +1,37 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+ @template blocks/apsolu_dashboard/ical_export_help_footer
+
+    Template Moodle pour afficher les boutons de navigation du footer de la modal d'aide à l'export ical vers PARTAGE.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+    }
+}}
+{{! Boutons de navigation de la modale d'aide }}
+<button class="btn btn-outline-primary" data-action="help-prev"><i class="fa fa-chevron-left me-2"></i>{{#str}}prev_step, block_apsolu_dashboard {{/str}}</button>
+<button class="btn btn-primary" data-action="help-next">{{#str}}next_step, block_apsolu_dashboard {{/str}}<i class="fa fa-chevron-right ms-2"></i></button>
+<button class="btn btn-primary" data-action="hide">{{#str}}close, block_apsolu_dashboard {{/str}}<i class="fa-solid fa-check ms-2"></i></button>

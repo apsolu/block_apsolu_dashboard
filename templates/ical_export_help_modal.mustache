@@ -1,0 +1,54 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+ @template blocks/apsolu_dashboard/ical_export_help_modal
+
+    Template Moodle pour afficher une modal d'aide à l'export du calendrier .ical vers PARTAGE
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * isFirstStep - boolean - is current page 1/3 ?
+    * isSecondStep - boolean - is current page 2/3 ?
+    * isThirdStep - boolean - is current page 3/3 ?
+    * wwwroot - string - page location and protocol
+
+    Example context (json):
+    {
+        "isFirstStep": true,
+        "wwwroot": "https://apsolu.fr"
+    }
+}}
+
+<figure class="mb-0">
+{{#isFirstStep}}
+    <img class="d-block ms-3 mw-100 mb-3 border border-3 border-secondary rounded" src="{{ wwwroot }}/apsolu/blocks/apsolu_dashboard/pix/Step1.png" alt="{{#str}}img_alt_1, block_apsolu_dashboard {{/str}}" />
+    <figcaption class="ms-3"><strong class="text-primary">1. </strong>{{#str}}caption_str_1, block_apsolu_dashboard{{/str}}</figcaption>
+{{/isFirstStep}}
+{{#isSecondStep}}
+    <img class="d-block m-auto mw-100 mb-2 border border-3 border-secondary rounded" src="{{ wwwroot }}/apsolu/blocks/apsolu_dashboard/pix/Step2.png" alt="{{#str}}img_alt_2, block_apsolu_dashboard {{/str}}" />
+    <figcaption class="ms-3"><strong class="text-primary">2. </strong>{{#str}}caption_str_2, block_apsolu_dashboard{{/str}}</figcaption>
+{{/isSecondStep}}
+{{#isThirdStep}}
+    <img class="d-block m-auto mw-100 mb-2 border border-3 border-secondary rounded" src="{{ wwwroot }}/apsolu/blocks/apsolu_dashboard/pix/Step3.png" alt="{{#str}}img_alt_3, block_apsolu_dashboard {{/str}}" />
+    <figcaption class="ms-3"><strong class="text-primary">3. </strong>{{#str}}caption_str_3, block_apsolu_dashboard{{/str}}</figcaption>
+{{/isThirdStep}}
+</figure>

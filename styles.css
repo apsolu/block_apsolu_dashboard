@@ -54,3 +54,42 @@
     margin: 0 1em;
     padding-left: 2em;
 }
+
+.apsolu-ical {
+
+    & .apsolu-ical-link {
+        background-color: $gray-100;
+        width: 80%;
+        border-radius: 0.5rem 0 0 0.5rem;
+        outline-style: none;
+        &:hover {
+            outline-style: none;
+        }
+    }
+
+    & .input-group-append button {
+        border-radius: 0 0.5rem 0.5rem 0;
+        outline-style: none;
+    }
+
+    & button:has(.fa-check) {
+        background-color: $gray-100;
+    }
+
+}
+
+.apsolu-custom-modal-bg {
+
+    & .modal-body {
+        font-size: 1rem;
+    }
+
+    & .modal-header {
+        color: var(--apsolu-color-light);
+        background-color: var(--apsolu-color-custom-3);
+    }
+
+    & i.fa-circle-info {
+        color: var(--apsolu-color-custom-3);
+    }
+}
