@@ -116,11 +116,10 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
         // Configure le cours (lundi 12h00-13h00).
         $course = new course();
         $data = advanced_testcase::getDataGenerator()->get_plugin_generator('local_apsolu')->get_course_data();
-        $data->periodid = $period->id;
-        $data->skillid = $skill->id;
-        $data->locationid = $location->id;
-        $data->numweekday = '1';
-        $data->weekday = 'monday';
+        $data->customfield_period = $period->id;
+        $data->customfield_skill = $skill->id;
+        $data->customfield_location = $location->id;
+        $data->customfield_weekday = 1;
         $course->save($data);
 
         // Ajoute la session passée qui n'est pas automatiquement créée.
@@ -131,7 +130,7 @@ final class block_apsolu_dashboard_test extends advanced_testcase {
         $sessiontime += $course->get_session_offset();
         $session->sessiontime = $sessiontime;
         $session->courseid = $course->id;
-        $session->locationid = $course->locationid;
+        $session->locationid = $location->id;
         $session->timecreated = time();
         $session->timemodified = time();
         $session->save();
