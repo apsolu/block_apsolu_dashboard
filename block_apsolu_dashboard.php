@@ -82,7 +82,7 @@ class block_apsolu_dashboard extends block_base {
         if ($this->apsolucourses[$session->courseid] !== false) {
             $course->numweekday = $this->apsolucourses[$session->courseid]->customfields['weekday']->get_value();
             $timerange = json_decode($this->apsolucourses[$session->courseid]->customfields['timerange']->get_value(), true);
-            $course->starttime = implode(':', $timerange['start']);
+            $course->starttime = sprintf('%02d:%02d', $timerange['start']['hour'], $timerange['start']['minute']);
             $course->skill = $this->apsolucourses[$session->courseid]->customfields['skill']->export_value();
             $course->event = $this->apsolucourses[$session->courseid]->customfields['category']->get('charvalue');
             $course->locationid = $this->apsolucourses[$session->courseid]->customfields['location']->get_value();
