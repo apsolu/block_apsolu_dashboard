@@ -695,7 +695,7 @@ class block_apsolu_dashboard extends block_base {
                 'now2' => $now,
                 'teacherid' => $USER->id,
                 'userid' => $USER->id,
-                'lastlogin' => $USER->lastlogin
+                'lastlogin' => $USER->lastlogin,
             ];
             $params = array_merge($params, $inparams);
             $data->pendingenrolments = count($DB->get_records_sql($sql, $params));
