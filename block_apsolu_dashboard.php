@@ -675,6 +675,8 @@ class block_apsolu_dashboard extends block_base {
             // Vérifie si des inscriptions sont en attente.
             [$insql, $inparams] = $DB->get_in_or_equal([1, 2], SQL_PARAMS_NAMED); // Liste principale et liste complémentaire.
 
+            $now = time() - date('s'); // Calcule l'heure sans les secondes (HH:MM:00) pour bénéficier du cache SQL.
+
             $sql = "SELECT ue.id, ue.userid
                       FROM {user_enrolments} ue
                       JOIN {enrol} e ON e.id = ue.enrolid
@@ -682,11 +684,19 @@ class block_apsolu_dashboard extends block_base {
                       JOIN {role_assignments} ra ON ctx.id = ra.contextid AND ra.roleid = 3
                      WHERE e.enrol = 'select'
                        AND e.status = 0
+                       AND (e.enrolstartdate >= :now1 OR e.enrolstartdate = 0)
+                       AND (e.customint8 <= :now2 OR e.customint8 = 0)
                        AND ue.status $insql
                        AND ue.timecreated >= :lastlogin
                        AND ra.userid = :teacherid
                        AND ue.userid != :userid";
-            $params = ['teacherid' => $USER->id, 'userid' => $USER->id, 'lastlogin' => $USER->lastlogin];
+            $params = [
+                'now1' => $now,
+                'now2' => $now,
+                'teacherid' => $USER->id,
+                'userid' => $USER->id,
+                'lastlogin' => $USER->lastlogin
+            ];
             $params = array_merge($params, $inparams);
             $data->pendingenrolments = count($DB->get_records_sql($sql, $params));
         }
