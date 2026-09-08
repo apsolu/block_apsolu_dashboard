@@ -358,6 +358,7 @@ class block_apsolu_dashboard extends block_base {
         }
         $recordset->close();
 
+        // Gère les cours APSOLU.
         foreach ($apsolucourses as $apsolucourse) {
             if (isset($courses[$apsolucourse->id]) === false) {
                 continue;
@@ -365,19 +366,22 @@ class block_apsolu_dashboard extends block_base {
 
             $course = $courses[$apsolucourse->id];
 
-            // Différencie les cours apsolu et les 'autres' cours (meta-cours, etc).
-            if ($course->apsolucourse === null) {
-                $others[$course->id] = $course;
-                $countothers++;
-            } else {
-                // Détermine si le cours possède plusieurs méthodes d'inscription.
-                // Si ce n'est pas le cas, on ne propose pas de téléchargement par méthode d'inscription.
-                $course->has_many_enrolments = isset($course->enrolments[1]);
+            // Détermine si le cours possède plusieurs méthodes d'inscription.
+            // Si ce n'est pas le cas, on ne propose pas de téléchargement par méthode d'inscription.
+            $course->has_many_enrolments = isset($course->enrolments[1]);
 
-                $mains[$course->id] = $course;
-                $countmains++;
-            }
+            $mains[$course->id] = $course;
+            $countmains++;
+
+            unset($courses[$course->id]);
         }
+
+        // Gère les autres cours (meta-cours, etc).
+        foreach ($courses as $course) {
+            $others[$course->id] = $course;
+            $countothers++;
+        }
+
         unset($courses);
 
         return [array_values($mains), $countmains, array_values($others), $countothers];
