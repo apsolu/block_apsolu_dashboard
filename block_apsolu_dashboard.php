@@ -322,7 +322,7 @@ class block_apsolu_dashboard extends block_base {
         $parameters = ['userid' => $USER->id];
 
         $courses = [];
-        $apsolucourses = Course::sort(Course::get_records(), ['visible', 'weekday', 'daterange', 'timerange', 'activity']);
+        $apsolucourses = Course::sort(Course::get_records(), ['visible', 'category', 'weekday', 'daterange', 'timerange']);
         $recordset = $DB->get_recordset_sql($sql, $parameters);
         foreach ($recordset as $course) {
             $course->apsolucourse = null;
