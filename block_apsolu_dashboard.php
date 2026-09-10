@@ -784,7 +784,7 @@ class block_apsolu_dashboard extends block_base {
             }
 
             $data->headerclass = sprintf(
-                'alert alert-block fade in %s %s role="alert" data-aria-autofocus="true"',
+                'alert alert-block fade in %s %s',
                 $alertclass,
                 $alertdismiss
             );
