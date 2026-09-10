@@ -766,6 +766,32 @@ class block_apsolu_dashboard extends block_base {
             $data->manageetape = has_capability('local/apsolu_auth:manageetape', context_system::instance());
         }
 
+        $headeractive = get_config('local_apsolu', 'apsoludashboardheaderactive');
+
+        $data->countheaderdata = 0;
+        if ($headeractive !== false) {
+            $headerdata = [];
+
+            $data->headercontent = get_config('local_apsolu', 'apsoludashboardheadercontent');
+
+            $style = get_config('local_apsolu', 'apsoludashboardheaderstyle');
+            $alertclass = empty($style) == false && $style != 'none' ? "alert-" . $style : "";
+
+            $alertdismiss = "";
+            if (get_config('local_apsolu', 'apsoludashboardheaderdismiss') != false) {
+                $data->headerdismiss = true;
+                $alertdismiss = 'alert-dismissible';
+            }
+
+            $data->headerclass = sprintf(
+                'alert alert-block fade in %s %s role="alert" data-aria-autofocus="true"',
+                $alertclass,
+                $alertdismiss
+            );
+
+            $data->countheaderdata = 1;
+        }
+
         // Display templates.
         $this->content->text .= $OUTPUT->render_from_template('block_apsolu_dashboard/dashboard', $data);
 
