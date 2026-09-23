@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/apsolu/block_apsolu_dashboard/actions/workflows/moodle-ci.yml/badge.svg?branch=main)](https://github.com/apsolu/block_apsolu_dashboard/actions)
 [![Coverage Status](https://coveralls.io/repos/github/apsolu/block_apsolu_dashboard/badge.svg?branch=main)](https://coveralls.io/github/apsolu/block_apsolu_dashboard?branch=main)
-[![Moodle Status](https://img.shields.io/badge/moodle-5.0-blue)](https://moodle.org)
+[![Moodle Status](https://img.shields.io/badge/moodle-5.2-blue)](https://moodle.org)
 
 ## Description
 
@@ -18,7 +18,7 @@ Ce bloc de tableau de bord permet de regrouper par onglet toutes les information
 
 ```bash
 cd /your/moodle/path
-git clone https://github.com/apsolu/block_apsolu_dashboard blocks/apsolu_dashboard
+git clone https://github.com/apsolu/moodle-block_apsolu_dashboard blocks/apsolu_dashboard
 php admin/cli/upgrade.php
 ```
 
